@@ -2,6 +2,8 @@ package com.project.inventory.product.controller;
 
 import com.project.inventory.product.model.Product;
 import com.project.inventory.product.service.ProductService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,8 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "api/v1/product")
+@RequestMapping(value = "api/v1/products")
 public class ProductRestController {
+    Logger logger = LoggerFactory.getLogger(ProductRestController.class);
+
     @Autowired
     private ProductService productService;
 
@@ -19,9 +23,10 @@ public class ProductRestController {
         return ResponseEntity.ok(productService.saveProduct(product));
     }
 
-    @RequestMapping(value = "/update/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
     public ResponseEntity<?> updateProduct(@PathVariable int id,
                                     @RequestBody Product product){
+        logger.info("{}", product);
         return ResponseEntity.ok(productService.updateProduct(id, product));
     }
 

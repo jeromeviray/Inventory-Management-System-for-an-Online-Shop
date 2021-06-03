@@ -19,6 +19,7 @@ public class Product implements Serializable {
     @Column(name = "product_name")
     private String name;
 
+//    @NotEmpty(message = "Please provide a name")
     @Column(name = "product_descriptions")
     private String description;
 

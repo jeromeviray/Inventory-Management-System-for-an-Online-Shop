@@ -33,14 +33,17 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product updateProduct(int id, Product updateProduct) {
-        Product product = getProductById(id);
+        Product product = getProductById(id); // existing product in database
 
         product.setName(updateProduct.getName());
         product.setDescription(updateProduct.getDescription());
         product.setPrice(updateProduct.getPrice());
+        product.setDeleted(updateProduct.isDeleted());
 
         try{
-           return productRepository.save(product);
+            logger.info("{}", product);
+
+            return productRepository.save(product);
         }catch (ProductNotUpdatedException productNotUpdatedException){
             throw new ProductNotUpdatedException("Product with Id " + updateProduct.getId() + " Failed to Update" );
         }
