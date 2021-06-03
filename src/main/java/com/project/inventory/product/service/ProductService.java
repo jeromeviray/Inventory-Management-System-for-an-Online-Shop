@@ -5,10 +5,11 @@ import com.project.inventory.product.model.Product;
 import java.util.List;
 
 public interface ProductService {
-    Product save(Product product);
-    Product update(int id, Product product);
-    void delete(int id);
-    List<Product> findAll();
-    Product findById(int id);
-
+    Product saveProduct(Product product);
+    Product updateProduct(int id, Product product);
+    void deleteProduct(int id);
+    List<Product> getAllAvailableProducts();
+    List<Product> getProducts();
+    Product getProductById(int id);
+    Product getAvailableProductById(int id);
 }

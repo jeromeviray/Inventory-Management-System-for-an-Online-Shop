@@ -15,29 +15,35 @@ public class ProductRestController {
     private ProductService productService;
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public ResponseEntity<Product> save(@RequestBody Product product){
-        return ResponseEntity.ok(productService.save(product));
+    public ResponseEntity<Product> saveProduct(@RequestBody Product product){
+        return ResponseEntity.ok(productService.saveProduct(product));
     }
 
     @RequestMapping(value = "/update/{id}", method = RequestMethod.POST)
-    public ResponseEntity<?> update(@PathVariable int id,
-                                    Product product){
-        return ResponseEntity.ok(productService.update(id, product));
+    public ResponseEntity<?> updateProduct(@PathVariable int id,
+                                    @RequestBody Product product){
+        return ResponseEntity.ok(productService.updateProduct(id, product));
     }
 
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
-    public void delete(@PathVariable int id){
-        productService.delete(id);
+    public void deleteProduct(@PathVariable int id){
+        productService.deleteProduct(id);
     }
 
-    @RequestMapping(value = "find/all/products", method = RequestMethod.GET)
-    public List<Product> findAllAvailableProducts(){
-        return productService.findAll();
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public List<Product> getAllAvailableProducts(){
+        return productService.getAllAvailableProducts();
     }
 
-    @RequestMapping(value = "/find/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Product> findProductById(@PathVariable int id){
-        return ResponseEntity.ok(productService.findById(id));
+    @RequestMapping(value = "/all", method = RequestMethod.GET)
+    public List<Product> getAllProducts(){
+        return productService.getProducts();
     }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public ResponseEntity<Product> getAvailableProduct(@PathVariable int id){
+        return ResponseEntity.ok(productService.getAvailableProductById(id));
+    }
+
 }

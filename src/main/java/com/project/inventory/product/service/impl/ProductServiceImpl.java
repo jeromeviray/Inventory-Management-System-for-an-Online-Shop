@@ -21,7 +21,7 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
 
     @Override
-    public Product save(Product product) {
+    public Product saveProduct(Product product) {
         if(product != null){
             logger.info("{}", "Product with ID "+product.getId() +" is Saved Successfully");
             return productRepository.save(product);
@@ -32,8 +32,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product update(int id, Product updateProduct) {
-        Product product = findById(id);
+    public Product updateProduct(int id, Product updateProduct) {
+        Product product = getProductById(id);
 
         product.setName(updateProduct.getName());
         product.setDescription(updateProduct.getDescription());
@@ -48,8 +48,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void delete(int id) {
-        Product product = findById(id);
+    public void deleteProduct(int id) {
+        Product product = getProductById(id);
         if(product == null){
             throw new ProductNotFound("Product not Found");
         }
@@ -59,12 +59,28 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findAll() {
+    public List<Product> getAllAvailableProducts() {
+        return productRepository.findAllAvailableProducts();
+    }
+
+    @Override
+    public List<Product> getProducts() {
         return productRepository.findAll();
     }
 
     @Override
-    public Product findById(int id) {
+    public Product getProductById(int id) {
+        if(productRepository.findById(id) == null){
+            throw new ProductNotFound("Product Not Found");
+        }
         return productRepository.findById(id);
+    }
+
+    @Override
+    public Product getAvailableProductById(int id) {
+        if(productRepository.findAvailableProductById(id) == null){
+            throw new ProductNotFound("Product Not Found");
+        }
+        return productRepository.findAvailableProductById(id);
     }
 }
