@@ -2,6 +2,8 @@ package com.project.inventory.product.service.impl;
 
 import com.project.inventory.exception.product.ProductNotFound;
 import com.project.inventory.exception.product.ProductNotUpdatedException;
+import com.project.inventory.inventory.model.Inventory;
+import com.project.inventory.inventory.repository.InventoryRepository;
 import com.project.inventory.product.model.Product;
 import com.project.inventory.product.repository.ProductRepository;
 import com.project.inventory.product.service.ProductService;
@@ -19,18 +21,27 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private InventoryRepository inventoryRepository;
 
     @Override
     public Product saveProduct(Product product) {
         if(product != null){
             logger.info("{}", "Product with ID "+product.getId() +" is Saved Successfully");
-            return productRepository.save(product);
+            Product savedProduct = productRepository.save(product);
+            saveProductInventory(savedProduct);
+            return savedProduct;
         }else {
             logger.info("{}", "Failed to Saved the product with ID "+product.getId());
         }
         return null;
     }
-
+    public void saveProductInventory(Product product){
+        // it will save the product in inventory when creating a product
+        Inventory inventory = new Inventory();
+        inventory.setProduct(product);
+        inventoryRepository.save(inventory);
+    }
     @Override
     public Product updateProduct(int id, Product updateProduct) {
         Product product = getProductById(id); // existing product in database
@@ -41,8 +52,6 @@ public class ProductServiceImpl implements ProductService {
         product.setDeleted(updateProduct.isDeleted());
 
         try{
-            logger.info("{}", product);
-
             return productRepository.save(product);
         }catch (ProductNotUpdatedException productNotUpdatedException){
             throw new ProductNotUpdatedException("Product with Id " + updateProduct.getId() + " Failed to Update" );

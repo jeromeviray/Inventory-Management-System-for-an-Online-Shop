@@ -1,5 +1,6 @@
 package com.project.inventory.product.model;
 
+import com.project.inventory.inventory.model.Inventory;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -36,6 +37,9 @@ public class Product implements Serializable {
 
     @Column(name = "product_is_deleted", columnDefinition = "TINYINT(1)")
     private boolean isDeleted;
+
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Inventory inventory;
 
     public Product() {
     }
@@ -112,17 +116,19 @@ public class Product implements Serializable {
         isDeleted = deleted;
     }
 
+
     @Override
     public boolean equals(Object o) {
+
         if (this == o) return true;
         if (!(o instanceof Product)) return false;
         Product product = (Product) o;
-        return getId() == product.getId() && Double.compare(product.getPrice(), getPrice()) == 0 && isDeleted() == product.isDeleted() && Objects.equals(getName(), product.getName()) && Objects.equals(getDescription(), product.getDescription()) && Objects.equals(getCreated(), product.getCreated()) && Objects.equals(getUpdated(), product.getUpdated());
+        return getId() == product.getId() && Double.compare(product.getPrice(), getPrice()) == 0 && isDeleted() == product.isDeleted() && Objects.equals(getName(), product.getName()) && Objects.equals(getDescription(), product.getDescription()) && Objects.equals(getCreated(), product.getCreated()) && Objects.equals(getUpdated(), product.getUpdated()) && Objects.equals(inventory, product.inventory);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), getPrice(), getCreated(), getUpdated(), isDeleted());
+        return Objects.hash(getId(), getName(), getDescription(), getPrice(), getCreated(), getUpdated(), isDeleted(), inventory);
     }
 
     @Override
