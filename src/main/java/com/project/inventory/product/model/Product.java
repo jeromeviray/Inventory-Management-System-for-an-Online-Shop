@@ -1,6 +1,7 @@
 package com.project.inventory.product.model;
 
 import com.project.inventory.inventory.model.Inventory;
+import com.project.inventory.order.model.OrderItem;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -40,6 +41,9 @@ public class Product implements Serializable {
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Inventory inventory;
+
+    @OneToOne(mappedBy = "product", fetch = FetchType.LAZY)
+    private OrderItem orderItem;
 
     public Product() {
     }
