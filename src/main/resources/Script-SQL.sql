@@ -26,8 +26,7 @@
 
 create table imsos.cart(
 	cart_id int primary key auto_increment,
-    account_id int not null,
-    order_item_id int not null
+    account_id int not null
 );
 
 create table imsos.order_item(
@@ -44,8 +43,7 @@ create table imsos.cart_item(
 	cart_item_id int primary key auto_increment,
     quantity int not null default 1,
     amount double not null,
-    created_at datetime default current_timestamp,
-    remove_at datetime,
+    added_at datetime default current_timestamp,
     product_id int not null,
     cart_id int not null
 );
