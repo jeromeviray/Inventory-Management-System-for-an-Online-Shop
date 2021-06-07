@@ -6,6 +6,7 @@ import com.project.inventory.cart.service.CartService;
 import com.project.inventory.exception.account.AccountNotFoundException;
 import com.project.inventory.permission.model.Account;
 import com.project.inventory.permission.repository.AccountRepository;
+import com.project.inventory.permission.service.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private CartRepository cartRepository;
     @Autowired
-    private AccountRepository accountRepository;
+    private AccountService accountService;
 
     @Override
     public Cart getCartByCartIdAndAccountId(int cartId, int accountId) {
@@ -29,7 +30,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart createCart(int accountId) {
-        Account account = accountRepository.findById(accountId);
+        Account account = accountService.getAccountById(accountId);
         Cart cart = new Cart();
 
         if(account == null) throw new AccountNotFoundException("Account with ID '"+accountId+"' not Found");
