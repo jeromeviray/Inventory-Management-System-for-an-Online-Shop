@@ -1,5 +1,7 @@
 package com.project.inventory.product.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.project.inventory.jsonView.View;
 import com.project.inventory.product.model.Product;
 import com.project.inventory.product.service.ProductService;
 import org.slf4j.Logger;
