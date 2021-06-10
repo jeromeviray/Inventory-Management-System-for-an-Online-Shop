@@ -13,4 +13,7 @@ public class View {
 
         }
     }
+    public static interface Account{
+
+    }
 }

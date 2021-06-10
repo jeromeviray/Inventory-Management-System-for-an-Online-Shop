@@ -1,10 +1,9 @@
 package com.project.inventory.product.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.project.inventory.inventory.model.Inventory;
 import com.project.inventory.jsonView.View;
-import com.project.inventory.order.model.OrderItem;
+import com.project.inventory.order.orderItems.model.OrderItem;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
