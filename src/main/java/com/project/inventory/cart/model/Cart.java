@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.project.inventory.cart.cartItem.model.CartItem;
 import com.project.inventory.jsonView.View;
-import com.project.inventory.order.model.OrderItem;
 import com.project.inventory.permission.model.Account;
 
 import javax.persistence.*;

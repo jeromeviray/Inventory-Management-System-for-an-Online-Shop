@@ -31,4 +31,10 @@ public class CartItemRestController {
     public ResponseEntity<Integer> decreaseQuantity(@PathVariable int productId){
         return new ResponseEntity(cartItemService.decreaseQuantity(accountId, productId), HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/remove/{cartItemId}", method = RequestMethod.DELETE)
+    public ResponseEntity removeItem(@PathVariable int cartItemId){
+        cartItemService.removeItem(cartItemId);
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }

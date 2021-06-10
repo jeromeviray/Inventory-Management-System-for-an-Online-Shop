@@ -5,6 +5,7 @@ import com.project.inventory.cart.cartItem.repository.CartItemRepository;
 import com.project.inventory.cart.cartItem.service.CartItemService;
 import com.project.inventory.cart.model.Cart;
 import com.project.inventory.cart.service.CartService;
+import com.project.inventory.exception.cartItem.CartItemNotFoundException;
 import com.project.inventory.exception.cartItem.CartItemNotValidException;
 import com.project.inventory.product.model.Product;
 import com.project.inventory.product.service.ProductService;
@@ -12,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CartItemServiceImpl implements CartItemService {
@@ -55,7 +58,6 @@ public class CartItemServiceImpl implements CartItemService {
         }
     }
 
-
     // item can be increment and decrement of the quantity
     // this is for api when the user is in shopping cart
     @Override
@@ -74,20 +76,47 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     public CartItem getCartItemByCartIdAndProductId(int cartId, int productId) {
-        CartItem savedCartItem = cartItemRepository.findByCartIdAndProductId(cartId, productId);
-        return savedCartItem;
+        CartItem cartItem = cartItemRepository.findByCartIdAndProductId(cartId, productId);
+        return cartItem;
+    }
+
+    @Override
+    public void removeItems(List<CartItem> cartItems) {
+        Cart cart = getCart(1);
+        for(CartItem cartItem : cartItems){
+            CartItem item = getCartItemByIdAndCartId(cartItem.getId(), cart.getId());
+            deleteById(item.getId());
+        }
+    }
+
+    @Override
+    public void removeItem(int itemId) {
+       Cart cart = getCart(1);
+       CartItem item = getCartItemByIdAndCartId(itemId, cart.getId());
+       logger.info("item :"+item.getId());
+       deleteById(item.getId());
+    }
+
+    @Override
+    public void deleteById(int id) {
+        try{
+            cartItemRepository.deleteById(id);
+        }catch(CartItemNotValidException cartItemNotValidException){
+            throw new CartItemNotValidException("Not valid");
+        }
+
     }
 
     public Cart getCart(int accountId){
-        logger.info("{}", accountId);
         Cart cart = cartService.getCartByAccountId(accountId);
 
-//        logger.info("{}", cart.getAccount().getId());
         if(cart != null){
+            logger.info("Cart ID: " +cart.getId());
             return cart;
         }
         return null;
     }
+
     public void createCart(CartItem cartItem, Product product, int accountId){
         logger.info("Product ID: "+product.getId());
 
@@ -101,12 +130,14 @@ public class CartItemServiceImpl implements CartItemService {
         logger.info("{}", cartItem.getId());
 
     }
+
     public int incrementQuantity(int cartItemId){
         CartItem savedCartItem = cartItemRepository.findById(cartItemId);
         savedCartItem.setQuantity(savedCartItem.getQuantity() + 1); // increment the quantity of existing item in cart item
         CartItem updatedCartItem = cartItemRepository.save(savedCartItem);
         return updatedCartItem.getQuantity();
     }
+
     public int decrementQuantity(int cartItemId){
         CartItem savedCartItem = cartItemRepository.findById(cartItemId);
         if(savedCartItem.getQuantity() > 1){
@@ -115,5 +146,14 @@ public class CartItemServiceImpl implements CartItemService {
             return updatedCartItem.getQuantity();
         }
         throw new CartItemNotValidException("Not Valid");
+    }
+
+    public CartItem getCartItemByIdAndCartId(int id, int cartId) { // get the item with cart id
+        CartItem cartItem = cartItemRepository.findByIdAndCartId(id, cartId);
+        if(cartItem != null){
+            return cartItem;
+        }
+        throw new CartItemNotFoundException("Item not Found");
+//        return cartItemRepository.findByIdAndCartId(id, cartId);
     }
 }
