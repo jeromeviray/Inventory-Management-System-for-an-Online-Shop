@@ -24,12 +24,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     private OrderItemRepository orderItemRepository;
 
     @Override
-    public void saveItem(int productId, OrderItem orderItem) {
-
-    }
-
-    @Override
-    public void addItem() {
+    public void saveOrderItem(OrderItem orderItem) {
 
     }
 }
