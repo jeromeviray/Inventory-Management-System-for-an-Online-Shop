@@ -1,9 +1,8 @@
-package com.project.inventory.order.repository;
+package com.project.inventory.order.orderItems.repository;
 
-import com.project.inventory.order.model.OrderItem;
+import com.project.inventory.order.orderItems.model.OrderItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
 
-    OrderItem findByCartId(int id);
 }

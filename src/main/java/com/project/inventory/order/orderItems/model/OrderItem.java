@@ -1,11 +1,8 @@
-package com.project.inventory.order.model;
+package com.project.inventory.order.orderItems.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.project.inventory.cart.model.Cart;
+import com.project.inventory.order.orders.model.Order;
 import com.project.inventory.product.model.Product;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.ManyToAny;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -23,27 +20,20 @@ public class OrderItem {
     @Column(name = "quantity")
     private int quantity;
 
-    @Column(name = "total_amount")
-    private double totalAmount;
+    @Column(name = "amount")
+    private double amount;
 
     @CreationTimestamp
-    @Column(name = "created_at")
-    private Date created;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private Date updated;
-
-    @Column(name = "is_removed")
-    private boolean isRemoved;
+    @Column(name = "purchased_at")
+    private Date purchasedAt;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
     private Product product;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     public int getId() {
         return id;
@@ -61,36 +51,20 @@ public class OrderItem {
         this.quantity = quantity;
     }
 
-    public double getTotalAmount() {
-        return totalAmount;
+    public double getAmount() {
+        return amount;
     }
 
-    public void setTotalAmount(double totalAmount) {
-        this.totalAmount = totalAmount;
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 
-    public Date getCreated() {
-        return created;
+    public Date getPurchasedAt() {
+        return purchasedAt;
     }
 
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public Date getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(Date updated) {
-        this.updated = updated;
-    }
-
-    public boolean isRemoved() {
-        return isRemoved;
-    }
-
-    public void setRemoved(boolean removed) {
-        isRemoved = removed;
+    public void setPurchasedAt(Date purchasedAt) {
+        this.purchasedAt = purchasedAt;
     }
 
     public Product getProduct() {
@@ -101,12 +75,12 @@ public class OrderItem {
         this.product = product;
     }
 
-    public Cart getCart() {
-        return cart;
+    public Order getOrder() {
+        return order;
     }
 
-    public void setCart(Cart cart) {
-        this.cart = cart;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     @Override
@@ -114,12 +88,12 @@ public class OrderItem {
         if (this == o) return true;
         if (!(o instanceof OrderItem)) return false;
         OrderItem orderItem = (OrderItem) o;
-        return getId() == orderItem.getId() && getQuantity() == orderItem.getQuantity() && Double.compare(orderItem.getTotalAmount(), getTotalAmount()) == 0 && isRemoved() == orderItem.isRemoved() && Objects.equals(getCreated(), orderItem.getCreated()) && Objects.equals(getUpdated(), orderItem.getUpdated()) && Objects.equals(getProduct(), orderItem.getProduct()) && Objects.equals(getCart(), orderItem.getCart());
+        return getId() == orderItem.getId() && getQuantity() == orderItem.getQuantity() && Double.compare(orderItem.getAmount(), getAmount()) == 0 && Objects.equals(getPurchasedAt(), orderItem.getPurchasedAt()) && Objects.equals(getProduct(), orderItem.getProduct()) && Objects.equals(getOrder(), orderItem.getOrder());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getQuantity(), getTotalAmount(), getCreated(), getUpdated(), isRemoved(), getProduct(), getCart());
+        return Objects.hash(getId(), getQuantity(), getAmount(), getPurchasedAt(), getProduct(), getOrder());
     }
 
     @Override
@@ -127,12 +101,10 @@ public class OrderItem {
         return "OrderItem{" +
                 "id=" + id +
                 ", quantity=" + quantity +
-                ", totalAmount=" + totalAmount +
-                ", created=" + created +
-                ", updated=" + updated +
-                ", isRemoved=" + isRemoved +
+                ", amount=" + amount +
+                ", purchasedAt=" + purchasedAt +
                 ", product=" + product +
-                ", cart=" + cart +
+                ", order=" + order +
                 '}';
     }
 }

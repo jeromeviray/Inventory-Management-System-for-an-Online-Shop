@@ -1,7 +1,7 @@
-package com.project.inventory.order.controller;
+package com.project.inventory.order.orderItems.controller;
 
-import com.project.inventory.order.model.OrderItem;
-import com.project.inventory.order.service.OrderItemService;
+import com.project.inventory.order.orderItems.model.OrderItem;
+import com.project.inventory.order.orderItems.service.OrderItemService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
