@@ -1,14 +1,16 @@
 package com.project.inventory.customer.address.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.inventory.order.orders.model.Order;
+import com.project.inventory.order.shoppingOrder.model.ShoppingOrder;
 import com.project.inventory.permission.model.Account;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.Objects;
 
 @Entity
 @Table(name = "customer_address_info")
+@Transactional
 public class CustomerAddress {
 
     @Id
@@ -47,9 +49,9 @@ public class CustomerAddress {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @OneToOne(mappedBy = "customerAddress", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "customerAddress", fetch = FetchType.LAZY)
     @JsonIgnore
-    private Order order;
+    private ShoppingOrder shoppingOrder;
 
     public int getId() {
         return id;

@@ -1,16 +1,17 @@
 package com.project.inventory.permission.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.project.inventory.cart.model.Cart;
 import com.project.inventory.customer.address.model.CustomerAddress;
 import com.project.inventory.jsonView.View;
-import com.project.inventory.order.orders.model.Order;
+import com.project.inventory.order.shoppingOrder.model.ShoppingOrder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.asm.SpringAsmInfo;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "account")
+@Transactional
 public class Account implements Serializable {
 
     @Id
@@ -55,7 +57,8 @@ public class Account implements Serializable {
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<Order> orders;
+    private List<ShoppingOrder> shoppingOrders;
+
 
     public int getId() {
         return id;

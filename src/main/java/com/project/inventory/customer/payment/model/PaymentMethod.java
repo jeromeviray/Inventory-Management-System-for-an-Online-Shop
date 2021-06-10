@@ -1,13 +1,15 @@
 package com.project.inventory.customer.payment.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.inventory.order.orders.model.Order;
+import com.project.inventory.order.shoppingOrder.model.ShoppingOrder;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.Objects;
 
 @Entity
 @Table(name = "payment_method")
+@Transactional
 public class PaymentMethod {
 
     @Id
@@ -18,9 +20,9 @@ public class PaymentMethod {
     @Column(name = "payment_method")
     private String paymentMethod;
 
-    @OneToOne(mappedBy = "paymentMethod", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "paymentMethod", fetch = FetchType.LAZY)
     @JsonIgnore
-    private Order order;
+    private ShoppingOrder shoppingOrder;
 
     public int getId() {
         return id;
