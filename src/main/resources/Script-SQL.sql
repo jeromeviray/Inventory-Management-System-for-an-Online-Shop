@@ -39,13 +39,13 @@ create table imsos.order_item(
 
 create table imsos.order(
 	order_id int primary key auto_increment,
-    account_id int not null,
-    payment_id int not null,
-    customer_address_id int not null,
     order_status varchar(15) not null,
     total_amount double not null,
+    ordered_at datetime default current_timestamp,
     delivered_at datetime default current_timestamp on update current_timestamp,
-    ordered_at datetime default current_timestamp
+    account_id int not null,
+    payment_id int not null,
+    customer_address_id int not null
 );
 
 create table imsos.customer_address_info(
