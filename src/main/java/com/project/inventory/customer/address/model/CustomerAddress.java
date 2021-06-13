@@ -1,6 +1,8 @@
 package com.project.inventory.customer.address.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.project.inventory.jsonView.View;
 import com.project.inventory.order.shoppingOrder.model.ShoppingOrder;
 import com.project.inventory.permission.model.Account;
 
@@ -11,6 +13,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "customer_address_info")
 @Transactional
+@JsonView(value = {View.CustomerAddress.class})
 public class CustomerAddress {
 
     @Id
@@ -44,6 +47,9 @@ public class CustomerAddress {
 
     @Column(name = "street")
     private String street;
+
+    @Column(name = "is_default")
+    private boolean isDefault;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
@@ -133,6 +139,14 @@ public class CustomerAddress {
         this.street = street;
     }
 
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean aDefault) {
+        isDefault = aDefault;
+    }
+
     public Account getAccount() {
         return account;
     }
@@ -146,12 +160,12 @@ public class CustomerAddress {
         if (this == o) return true;
         if (!(o instanceof CustomerAddress)) return false;
         CustomerAddress that = (CustomerAddress) o;
-        return getId() == that.getId() && getPhoneNumber() == that.getPhoneNumber() && getPostalCode() == that.getPostalCode() && Objects.equals(getFirstName(), that.getFirstName()) && Objects.equals(getLastName(), that.getLastName()) && Objects.equals(getRegion(), that.getRegion()) && Objects.equals(getCity(), that.getCity()) && Objects.equals(getProvince(), that.getProvince()) && Objects.equals(getBarangay(), that.getBarangay()) && Objects.equals(getStreet(), that.getStreet()) && Objects.equals(getAccount(), that.getAccount());
+        return getId() == that.getId() && getPhoneNumber() == that.getPhoneNumber() && getPostalCode() == that.getPostalCode() && isDefault() == that.isDefault() && Objects.equals(getFirstName(), that.getFirstName()) && Objects.equals(getLastName(), that.getLastName()) && Objects.equals(getRegion(), that.getRegion()) && Objects.equals(getCity(), that.getCity()) && Objects.equals(getProvince(), that.getProvince()) && Objects.equals(getBarangay(), that.getBarangay()) && Objects.equals(getStreet(), that.getStreet()) && Objects.equals(getAccount(), that.getAccount()) && Objects.equals(shoppingOrder, that.shoppingOrder);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getFirstName(), getLastName(), getPhoneNumber(), getPostalCode(), getRegion(), getCity(), getProvince(), getBarangay(), getStreet(), getAccount());
+        return Objects.hash(getId(), getFirstName(), getLastName(), getPhoneNumber(), getPostalCode(), getRegion(), getCity(), getProvince(), getBarangay(), getStreet(), isDefault(), getAccount(), shoppingOrder);
     }
 
     @Override
@@ -167,7 +181,9 @@ public class CustomerAddress {
                 ", province='" + province + '\'' +
                 ", barangay='" + barangay + '\'' +
                 ", street='" + street + '\'' +
+                ", isDefault=" + isDefault +
                 ", account=" + account +
+                ", shoppingOrder=" + shoppingOrder +
                 '}';
     }
 }

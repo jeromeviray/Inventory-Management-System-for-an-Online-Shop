@@ -25,15 +25,15 @@ public class Account implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "account_id")
-    @JsonView(value = {View.Account.class})
+    @JsonView(value = {View.CustomerAddress.class})
     private int id;
 
     @Column(name = "first_name")
-    @JsonView(value = {View.Account.class})
+    @JsonView(value = {View.CustomerAddress.class})
     private String firstName;
 
     @Column(name = "last_name")
-    @JsonView(value = {View.Account.class})
+    @JsonView(value = {View.CustomerAddress.class})
     private String lastName;
 
     @CreationTimestamp

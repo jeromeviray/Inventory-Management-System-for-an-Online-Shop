@@ -6,15 +6,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
-    Product findById(int id);
+    Optional<Product> findById(int id);
 
     @Query( value = "SELECT * FROM product WHERE product_is_deleted = 0", nativeQuery = true)
     List<Product> findAllAvailableProducts();
 
     @Query(value = "SELECT * FROM product p WHERE p.product_is_deleted = 0 AND p.product_id =:id", nativeQuery = true)
-    Product findAvailableProductById(@Param("id") int id);
+    Optional<Product> findAvailableProductById(@Param("id") int id);
 
     List<Product> findAll();
 }

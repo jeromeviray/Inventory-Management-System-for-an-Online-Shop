@@ -16,4 +16,7 @@ public class View {
     public static interface Account{
 
     }
+    public static interface CustomerAddress{
+
+    }
 }

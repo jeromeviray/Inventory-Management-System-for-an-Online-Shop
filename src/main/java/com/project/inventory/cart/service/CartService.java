@@ -5,6 +5,7 @@ import com.project.inventory.cart.model.Cart;
 import com.project.inventory.product.model.Product;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CartService {
     Cart getCartByCartIdAndAccountId(int cartId, int AccountId);

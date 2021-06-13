@@ -26,19 +26,19 @@ public class CartItemServiceImpl implements CartItemService {
     private ProductService productService;
     @Autowired
     private CartService cartService;
+    private int tempId = 1;
 
     @Override
     public void addCartItem(int productId, CartItem cartItem) {
         // get the product
         // get the cart that exist with account id
-        int accountId = 2;
         Product product = productService.getAvailableProductById(productId);
-        Cart cart = getCart(accountId);
+        Cart cart = getCart(tempId);
 
         if(cart == null){
             // will create new cart
             // save the cart item
-            createCart(cartItem, product, accountId);
+            createCart(cartItem, product, tempId);
         }else {
             // get the saved item
             CartItem savedCartItem = getCartItemByCartIdAndProductId(cart.getId(), product.getId());
@@ -76,13 +76,12 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     public CartItem getCartItemByCartIdAndProductId(int cartId, int productId) {
-        CartItem cartItem = cartItemRepository.findByCartIdAndProductId(cartId, productId);
-        return cartItem;
+        return cartItemRepository.findByCartIdAndProductId(cartId, productId);
     }
 
     @Override
     public void removeItems(List<CartItem> cartItems) {
-        Cart cart = getCart(1);
+        Cart cart = getCart(tempId);
         for(CartItem cartItem : cartItems){
             CartItem item = getCartItemByIdAndCartId(cartItem.getId(), cart.getId());
             deleteById(item.getId());
@@ -91,7 +90,7 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     public void removeItem(int itemId) {
-       Cart cart = getCart(1);
+       Cart cart = getCart(tempId);
        CartItem item = getCartItemByIdAndCartId(itemId, cart.getId());
        logger.info("item :"+item.getId());
        deleteById(item.getId());
@@ -102,9 +101,14 @@ public class CartItemServiceImpl implements CartItemService {
         try{
             cartItemRepository.deleteById(id);
         }catch(CartItemNotValidException cartItemNotValidException){
-            throw new CartItemNotValidException("Not valid");
+            throw new CartItemNotFoundException("You can't Delete Remove this item with ID: "+ id);
         }
 
+    }
+
+    @Override
+    public CartItem getCartItemById(int id) {
+        return cartItemRepository.findById(id).orElseThrow(()-> new CartItemNotFoundException("Cart Item Not Found with ID: "+ id));
     }
 
     public Cart getCart(int accountId){
@@ -132,28 +136,37 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     public int incrementQuantity(int cartItemId){
-        CartItem savedCartItem = cartItemRepository.findById(cartItemId);
+        CartItem savedCartItem = getCartItemById(cartItemId);
+
         savedCartItem.setQuantity(savedCartItem.getQuantity() + 1); // increment the quantity of existing item in cart item
+
+        // existing amount of item plus the product price
+        // and save the new amount when incrementing the quantity
+        savedCartItem.setAmount(savedCartItem.getAmount() + savedCartItem.getProduct().getPrice());
+
         CartItem updatedCartItem = cartItemRepository.save(savedCartItem);
         return updatedCartItem.getQuantity();
     }
 
     public int decrementQuantity(int cartItemId){
-        CartItem savedCartItem = cartItemRepository.findById(cartItemId);
+        CartItem savedCartItem = getCartItemById(cartItemId);
+
         if(savedCartItem.getQuantity() > 1){
+
             savedCartItem.setQuantity(savedCartItem.getQuantity()-1);
+
+            // existing amount of item minus the product price
+            // and save the new amount when incrementing the quantity
+            savedCartItem.setAmount(savedCartItem.getAmount() - savedCartItem.getProduct().getPrice());
+
             CartItem updatedCartItem = cartItemRepository.save(savedCartItem);
             return updatedCartItem.getQuantity();
         }
-        throw new CartItemNotValidException("Not Valid");
+        throw new CartItemNotValidException("You Reach the Limitation of Quantity");
     }
 
     public CartItem getCartItemByIdAndCartId(int id, int cartId) { // get the item with cart id
-        CartItem cartItem = cartItemRepository.findByIdAndCartId(id, cartId);
-        if(cartItem != null){
-            return cartItem;
-        }
-        throw new CartItemNotFoundException("Item not Found");
-//        return cartItemRepository.findByIdAndCartId(id, cartId);
+        return cartItemRepository.findByIdAndCartId(id, cartId)
+                .orElseThrow(() -> new CartItemNotFoundException("Item not Found with ID"+ id) );
     }
 }

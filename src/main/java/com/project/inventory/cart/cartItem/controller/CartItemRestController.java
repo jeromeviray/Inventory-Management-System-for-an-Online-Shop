@@ -16,12 +16,12 @@ public class CartItemRestController {
 
     @Autowired
     private CartItemService cartItemService;
-    private int accountId = 2;
+    private int accountId = 1;
 
     @RequestMapping(value = "/add/{productId}", method = RequestMethod.POST)
-    public ResponseEntity<CartItem> addToCart(@PathVariable int productId, @RequestBody CartItem cartItem){
+    public ResponseEntity<?> addToCart(@PathVariable int productId, @RequestBody CartItem cartItem){
         cartItemService.addCartItem(productId, cartItem);
-        return new ResponseEntity(HttpStatus.ACCEPTED);
+        return new ResponseEntity(HttpStatus.OK);
     }
     @RequestMapping(value = "/increase/quantity/{productId}", method = RequestMethod.POST)
     public ResponseEntity<Integer> increaseQuantity(@PathVariable int productId){

@@ -7,9 +7,7 @@ import com.project.inventory.cart.service.CartService;
 import com.project.inventory.exception.account.AccountNotFoundException;
 import com.project.inventory.exception.cart.CartNotFound;
 import com.project.inventory.permission.model.Account;
-import com.project.inventory.permission.repository.AccountRepository;
 import com.project.inventory.permission.service.AccountService;
-import com.project.inventory.product.model.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +29,8 @@ public class CartServiceImpl implements CartService {
     @Override
     public Cart getCartByCartIdAndAccountId(int cartId, int accountId) {
         logger.info("{}", cartId +" " +accountId);
-        return cartRepository.findByIdAndAccountId(cartId, accountId);
+        return cartRepository.findByIdAndAccountId(cartId, accountId)
+                .orElseThrow(() -> new CartNotFound("Cart Not Found with ID: "+cartId));
     }
 
     @Override
@@ -50,16 +49,16 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart getCartByAccountId(int accountId) {
-        return cartRepository.findByAccountId(accountId);
+        Cart cart = cartRepository.findByAccountId(accountId);
+        if(cart == null) throw new CartNotFound("Cart Not Found");
+
+        return cart;
     }
 
     @Override
     public Cart getCartById(int id) {
-        Cart cart = cartRepository.findById(id);
-        if(cart != null){
-            return cart;
-        }
-        throw new CartNotFound("Cart not Found");
+        return cartRepository.findById(id)
+                .orElseThrow(() -> new CartNotFound("Cart Not Found with ID: "+id));
     }
 
     @Override

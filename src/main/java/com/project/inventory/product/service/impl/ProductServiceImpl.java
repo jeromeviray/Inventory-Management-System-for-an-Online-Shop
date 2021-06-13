@@ -62,9 +62,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteProduct(int id) {
         Product product = getProductById(id);
-        if(product == null){
-            throw new ProductNotFound("Product not Found");
-        }
+
         product.setDeleted(true);
         productRepository.save(product);
         logger.info("Product with ID "+product.getId()+" Deleted Successfully");
@@ -82,17 +80,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getProductById(int id) {
-        if(productRepository.findById(id) == null){
-            throw new ProductNotFound("Product Not Found");
-        }
-        return productRepository.findById(id);
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFound("Product Not Found with ID: "+ id));
     }
 
     @Override
     public Product getAvailableProductById(int id) {
-        if(productRepository.findAvailableProductById(id) == null){
-            throw new ProductNotFound("Product Not Found");
-        }
-        return productRepository.findAvailableProductById(id);
+        return productRepository.findAvailableProductById(id)
+                .orElseThrow(() -> new ProductNotFound("Product Not Found with ID: "+ id));
     }
 }
