@@ -29,15 +29,15 @@
 --     account_id int not null
 -- );
 
-create table imsos.order_item(
-	order_item_id int primary key auto_increment,
-    quantity int not null default 1,
-    amount double not null,
-    purchased_at datetime default current_timestamp,
-    product_id int not null
-);
+-- create table imsos.order_item(
+-- 	order_item_id int primary key auto_increment,
+--     quantity int not null default 1,
+--     amount double not null,
+--     purchased_at datetime default current_timestamp,
+--     product_id int not null
+-- );
 
-create table imsos.order(
+create table imsos.shopping_order(
 	order_id int primary key auto_increment,
     order_status varchar(15) not null,
     total_amount double not null,
@@ -48,23 +48,23 @@ create table imsos.order(
     customer_address_id int not null
 );
 
-create table imsos.customer_address_info(
-	customer_address_id int primary key auto_increment,
-    account_id int not null,
-    first_name varchar(15) not null,
-	last_name varchar(15) not null,
-    phone_number int(13) not null,
-    postal_code int(5) not null,
-    region varchar(15) not null,
-    city varchar(20) not null,
-    province varchar(20) not null,
-    barangay varchar(30) not null,
-    street varchar(30) not null
-);
-create table imsos.payment_method (
-	payment_id int primary key auto_increment,
-    payment_method varchar(10) not null
-);
+-- create table imsos.customer_address_info(
+-- 	customer_address_id int primary key auto_increment,
+--     account_id int not null,
+--     first_name varchar(15) not null,
+-- 	last_name varchar(15) not null,
+--     phone_number int(13) not null,
+--     postal_code int(5) not null,
+--     region varchar(15) not null,
+--     city varchar(20) not null,
+--     province varchar(20) not null,
+--     barangay varchar(30) not null,
+--     street varchar(30) not null
+-- );
+-- create table imsos.payment_method (
+-- 	payment_id int primary key auto_increment,
+--     payment_method varchar(10) not null
+-- );
 
 -- create table imsos.cart_item(
 -- 	cart_item_id int primary key auto_increment,
