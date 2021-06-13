@@ -14,8 +14,8 @@ public class OrderItemRestController {
     @Autowired
     private OrderItemService orderItemService;
 
-    @RequestMapping(value = "/add/{productId}", method = RequestMethod.POST)
-    public void addItem(@PathVariable int productId, @RequestBody OrderItem orderItem){
-        orderItemService.saveItem(productId, orderItem);
-    }
+//    @RequestMapping(value = "/add/{productId}", method = RequestMethod.POST)
+//    public void addItem(@PathVariable int productId, @RequestBody OrderItem orderItem){
+//        orderItemService.saveItem(productId, orderItem);
+//    }
 }

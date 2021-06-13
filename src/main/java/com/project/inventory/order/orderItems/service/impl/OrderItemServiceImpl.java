@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class OrderItemServiceImpl implements OrderItemService {
     Logger logger = LoggerFactory.getLogger(OrderItemServiceImpl.class);
@@ -24,7 +26,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     private OrderItemRepository orderItemRepository;
 
     @Override
-    public void saveOrderItem(OrderItem orderItem) {
-
+    public void saveOrderItem(List<OrderItem> orderItems) {
+        orderItemRepository.saveAll(orderItems);
     }
 }

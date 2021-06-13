@@ -2,10 +2,13 @@ package com.project.inventory.order.shoppingOrder.model;
 
 import com.project.inventory.customer.address.model.CustomerAddress;
 import com.project.inventory.customer.payment.model.PaymentMethod;
+import com.project.inventory.order.orderItems.model.OrderItem;
 import com.project.inventory.permission.model.Account;
+import org.hibernate.criterion.Order;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -18,7 +21,7 @@ public class ShoppingOrder {
     private int id;
 
     @Column(name = "order_status")
-    private String orderStatus;
+    private OrderStatus orderStatus;
 
     @Column(name = "total_amount")
     private double totalAmount;
@@ -41,6 +44,9 @@ public class ShoppingOrder {
     @JoinColumn(name = "customer_address_id")
     private CustomerAddress customerAddress;
 
+    @OneToMany(mappedBy = "shoppingOrder", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<OrderItem> orderItems;
+
 
     public int getId() {
         return id;
@@ -50,11 +56,11 @@ public class ShoppingOrder {
         this.id = id;
     }
 
-    public String getOrderStatus() {
+    public OrderStatus getOrderStatus() {
         return orderStatus;
     }
 
-    public void setOrderStatus(String orderStatus) {
+    public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
     }
 

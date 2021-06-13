@@ -6,6 +6,8 @@ import com.project.inventory.order.shoppingOrder.model.ShoppingOrder;
 import java.util.List;
 
 public interface ShoppingOrderService {
-    ShoppingOrder placeOrder(List<CartItem> cartItems);
+    ShoppingOrder placeOrder(int customerAddressId,
+                             int paymentId,
+                             List<CartItem> cartItems);
 
 }

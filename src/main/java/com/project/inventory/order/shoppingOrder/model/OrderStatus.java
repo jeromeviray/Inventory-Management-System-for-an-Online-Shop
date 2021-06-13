@@ -1,2 +1,9 @@
-package com.project.inventory.order.shoppingOrder.model;public enum OrderStatus {
+package com.project.inventory.order.shoppingOrder.model;
+
+public enum OrderStatus {
+    PENDING,
+    CONFIRMED,
+    NONE,
+    DELIVERED,
+    CURRIER
 }
