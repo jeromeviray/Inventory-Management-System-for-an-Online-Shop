@@ -13,39 +13,48 @@ import java.util.Objects;
 @Entity
 @Table(name = "customer_address_info")
 @Transactional
-@JsonView(value = {View.CustomerAddress.class})
 public class CustomerAddress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "customer_address_id")
+    @JsonView(value = {View.CustomerAddress.class})
     private int id;
 
     @Column(name = "first_name")
+    @JsonView(value = {View.PlaceOrder.class, View.CustomerAddress.class})
     private String firstName;
 
     @Column(name = "last_name")
+    @JsonView(value = {View.PlaceOrder.class, View.CustomerAddress.class})
     private String lastName;
 
     @Column(name = "phone_number")
+    @JsonView(value = {View.PlaceOrder.class, View.CustomerAddress.class})
     private int phoneNumber;
 
     @Column(name = "postal_code")
+    @JsonView(value = {View.PlaceOrder.class, View.CustomerAddress.class})
     private int postalCode;
 
     @Column(name = "region")
+    @JsonView(value = {View.PlaceOrder.class, View.CustomerAddress.class})
     private String region;
 
     @Column(name = "city")
+    @JsonView(value = {View.PlaceOrder.class, View.CustomerAddress.class})
     private String city;
 
     @Column(name = "province")
+    @JsonView(value = {View.PlaceOrder.class, View.CustomerAddress.class})
     private String province;
 
     @Column(name = "barangay")
+    @JsonView(value = {View.PlaceOrder.class, View.CustomerAddress.class})
     private String barangay;
 
     @Column(name = "street")
+    @JsonView(value = {View.PlaceOrder.class, View.CustomerAddress.class})
     private String street;
 
     @Column(name = "is_default")

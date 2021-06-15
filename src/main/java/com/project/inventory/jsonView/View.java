@@ -19,4 +19,5 @@ public class View {
     public static interface CustomerAddress{
 
     }
+    public static interface PlaceOrder{}
 }

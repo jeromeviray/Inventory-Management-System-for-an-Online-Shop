@@ -1,6 +1,8 @@
 package com.project.inventory.customer.payment.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.project.inventory.jsonView.View;
 import com.project.inventory.order.shoppingOrder.model.ShoppingOrder;
 
 import javax.persistence.*;
@@ -18,6 +20,7 @@ public class PaymentMethod {
     private int id;
 
     @Column(name = "payment_method")
+    @JsonView(value = View.PlaceOrder.class)
     private String paymentMethod;
 
     @OneToOne(mappedBy = "paymentMethod", fetch = FetchType.LAZY)

@@ -45,7 +45,7 @@ public class CustomGlobalException {
     @ExceptionHandler(CartItemNotValidException.class)
     public ResponseEntity<?> handleCartItemNotValidException(CartItemNotValidException cartItemNotValidException,
                                                              WebRequest request){
-        ErrorDetails errorDetails = new ErrorDetails(HttpStatus.BAD_REQUEST, new Date(), cartItemNotValidException.getMessage(), request.getDescription(false));
+        ErrorDetails errorDetails = new ErrorDetails(HttpStatus.INTERNAL_SERVER_ERROR, new Date(), cartItemNotValidException.getMessage(), request.getDescription(false));
         return new ResponseEntity(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -72,16 +72,16 @@ public class CustomGlobalException {
     @ExceptionHandler(ShoppingOrderInvalidException.class)
     public ResponseEntity<?> handleShoppingOrderInvalidException(ShoppingOrderInvalidException shoppingOrderInvalidException,
                                                                  WebRequest request){
-        ErrorDetails errorDetails = new ErrorDetails(HttpStatus.NOT_FOUND, new Date(), shoppingOrderInvalidException.getMessage(), request.getDescription(false));
+        ErrorDetails errorDetails = new ErrorDetails(HttpStatus.INTERNAL_SERVER_ERROR, new Date(), shoppingOrderInvalidException.getMessage(), request.getDescription(false));
         return new ResponseEntity(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     // handle global exceptions
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGlobalExceptions(ShoppingOrderInvalidException shoppingOrderInvalidException,
+    public ResponseEntity<?> handleGlobalExceptions(Exception exception,
                                                                  WebRequest request){
-        ErrorDetails errorDetails = new ErrorDetails(HttpStatus.NOT_FOUND, new Date(), shoppingOrderInvalidException.getMessage(), request.getDescription(false));
-        return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
+        ErrorDetails errorDetails = new ErrorDetails(HttpStatus.INTERNAL_SERVER_ERROR, new Date(), exception.getMessage(), request.getDescription(false));
+        return new ResponseEntity(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -1,16 +1,21 @@
 package com.project.inventory.order.orderItems.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.project.inventory.jsonView.View;
 import com.project.inventory.order.shoppingOrder.model.ShoppingOrder;
 import com.project.inventory.product.model.Product;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.Objects;
 
 @Entity
 @Table(name = "order_item")
+@JsonView(value = View.PlaceOrder.class)
+@Transactional
 public class OrderItem {
 
     @Id
@@ -32,7 +37,7 @@ public class OrderItem {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
     @JoinColumn(name = "order_id")
     private ShoppingOrder shoppingOrder;

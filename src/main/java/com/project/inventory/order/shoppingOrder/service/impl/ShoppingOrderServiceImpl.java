@@ -15,6 +15,7 @@ import com.project.inventory.order.shoppingOrder.repository.ShoppingOrderReposit
 import com.project.inventory.order.shoppingOrder.service.ShoppingOrderService;
 import com.project.inventory.permission.model.Account;
 import com.project.inventory.permission.service.AccountService;
+import com.project.inventory.product.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,14 +39,18 @@ public class ShoppingOrderServiceImpl implements ShoppingOrderService {
     @Autowired
     private OrderItemService orderItemService;
     @Autowired
+    private ProductService productService;
+    @Autowired
     private ShoppingOrderRepository shoppingOrderRepository;
+
 
     int tempId = 1;
 
     @Override
-    public ShoppingOrder placeOrder(int customerAddressId,
+    public void placeOrder(int customerAddressId,
                                     int paymentId,
-                                    List<CartItem> cartItems) {
+                                    List<CartItem> cartItems){
+        logger.info("{}", customerAddressId +" "+ paymentId + "\n" + cartItems);
         CustomerAddress customerAddress = getCustomerAddress(customerAddressId);
 
         PaymentMethod paymentMethod = getPaymentMethod(paymentId);
@@ -54,13 +59,25 @@ public class ShoppingOrderServiceImpl implements ShoppingOrderService {
         if(customerAddress != null && paymentMethod != null){
             ShoppingOrder savedShoppingOrder = getAllRequiredInformation(customerAddress, paymentMethod, cartItems);
             for (CartItem cartItem : cartItems){
-                OrderItem orderItem = new OrderItem(cartItem.getQuantity(), cartItem.getAmount(), cartItem.getProduct(), savedShoppingOrder);
+
+                OrderItem orderItem = new OrderItem( cartItem.getQuantity(),
+                        cartItem.getAmount(),
+                        productService.getProductById(cartItem.getProduct().getId()),
+                        savedShoppingOrder);
+
                 orderItems.add(orderItem);
+
             }
             orderItemService.saveOrderItem(orderItems);
             emptyCart(cartItems);
+        }else {
+            throw new ShoppingOrderInvalidException("Placing orders Unsuccessfully. Please Try Again");
         }
-        throw new ShoppingOrderInvalidException("Placing Order Unsuccessfully. Please Try again!");
+    }
+
+    @Override
+    public List<ShoppingOrder> getOrders() {
+        return shoppingOrderRepository.findAll();
     }
 
     public ShoppingOrder getAllRequiredInformation(CustomerAddress customerAddress, PaymentMethod paymentMethod, List<CartItem> cartItems){

@@ -1,10 +1,13 @@
 package com.project.inventory.order.shoppingOrder.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.project.inventory.customer.address.model.CustomerAddress;
 import com.project.inventory.customer.payment.model.PaymentMethod;
+import com.project.inventory.jsonView.View;
 import com.project.inventory.order.orderItems.model.OrderItem;
 import com.project.inventory.permission.model.Account;
-import org.hibernate.criterion.Order;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -13,6 +16,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "shopping_order")
+@JsonView(value = View.PlaceOrder.class)
 public class ShoppingOrder {
 
     @Id
@@ -26,9 +30,11 @@ public class ShoppingOrder {
     @Column(name = "total_amount")
     private double totalAmount;
 
+    @CreationTimestamp
     @Column(name = "ordered_at")
     private Date orderedAt;
 
+    @UpdateTimestamp
     @Column(name = "delivered_at")
     private Date deliveredAt;
 
@@ -112,30 +118,39 @@ public class ShoppingOrder {
         this.customerAddress = customerAddress;
     }
 
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ShoppingOrder)) return false;
         ShoppingOrder that = (ShoppingOrder) o;
-        return getId() == that.getId() && Double.compare(that.getTotalAmount(), getTotalAmount()) == 0 && Objects.equals(getOrderStatus(), that.getOrderStatus()) && Objects.equals(getOrderedAt(), that.getOrderedAt()) && Objects.equals(getDeliveredAt(), that.getDeliveredAt()) && Objects.equals(getAccount(), that.getAccount()) && Objects.equals(getPaymentMethod(), that.getPaymentMethod()) && Objects.equals(getCustomerAddress(), that.getCustomerAddress());
+        return getId() == that.getId() && Double.compare(that.getTotalAmount(), getTotalAmount()) == 0 && getOrderStatus() == that.getOrderStatus() && Objects.equals(getOrderedAt(), that.getOrderedAt()) && Objects.equals(getDeliveredAt(), that.getDeliveredAt()) && Objects.equals(getAccount(), that.getAccount()) && Objects.equals(getPaymentMethod(), that.getPaymentMethod()) && Objects.equals(getCustomerAddress(), that.getCustomerAddress()) && Objects.equals(getOrderItems(), that.getOrderItems());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getOrderStatus(), getTotalAmount(), getOrderedAt(), getDeliveredAt(), getAccount(), getPaymentMethod(), getCustomerAddress());
+        return Objects.hash(getId(), getOrderStatus(), getTotalAmount(), getOrderedAt(), getDeliveredAt(), getAccount(), getPaymentMethod(), getCustomerAddress(), getOrderItems());
     }
 
     @Override
     public String toString() {
         return "ShoppingOrder{" +
                 "id=" + id +
-                ", orderStatus='" + orderStatus + '\'' +
+                ", orderStatus=" + orderStatus +
                 ", totalAmount=" + totalAmount +
                 ", orderedAt=" + orderedAt +
                 ", deliveredAt=" + deliveredAt +
                 ", account=" + account +
                 ", paymentMethod=" + paymentMethod +
                 ", customerAddress=" + customerAddress +
+                ", orderItems=" + orderItems +
                 '}';
     }
 }
