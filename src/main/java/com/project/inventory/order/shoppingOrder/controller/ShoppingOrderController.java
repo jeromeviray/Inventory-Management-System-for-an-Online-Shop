@@ -1,9 +1,8 @@
 package com.project.inventory.order.shoppingOrder.controller;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.project.inventory.jsonView.View;
 import com.project.inventory.order.shoppingOrder.model.PlaceOrder;
 import com.project.inventory.order.shoppingOrder.model.ShoppingOrder;
+import com.project.inventory.order.shoppingOrder.model.ShoppingOrderDto;
 import com.project.inventory.order.shoppingOrder.service.ShoppingOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,8 +28,7 @@ public class ShoppingOrderController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    @JsonView(value = View.PlaceOrder.class)
-    public ResponseEntity<ShoppingOrder> getOrders(){
+    public ResponseEntity<ShoppingOrderDto> getOrders(){
         return new ResponseEntity(shoppingOrderService.getOrders(), HttpStatus.OK);
     }
 

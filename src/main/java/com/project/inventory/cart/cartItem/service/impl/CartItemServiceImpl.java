@@ -1,6 +1,7 @@
 package com.project.inventory.cart.cartItem.service.impl;
 
 import com.project.inventory.cart.cartItem.model.CartItem;
+import com.project.inventory.cart.cartItem.model.CartItemDto;
 import com.project.inventory.cart.cartItem.repository.CartItemRepository;
 import com.project.inventory.cart.cartItem.service.CartItemService;
 import com.project.inventory.cart.model.Cart;
@@ -8,7 +9,9 @@ import com.project.inventory.cart.service.CartService;
 import com.project.inventory.exception.cartItem.CartItemNotFoundException;
 import com.project.inventory.exception.cartItem.CartItemNotValidException;
 import com.project.inventory.product.model.Product;
+import com.project.inventory.product.model.ProductToDto;
 import com.project.inventory.product.service.ProductService;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@Service(value = "cartItemServiceImpl")
 public class CartItemServiceImpl implements CartItemService {
     Logger logger = LoggerFactory.getLogger(CartItemServiceImpl.class);
 
@@ -26,6 +29,8 @@ public class CartItemServiceImpl implements CartItemService {
     private ProductService productService;
     @Autowired
     private CartService cartService;
+    @Autowired
+    private ModelMapper mapper;
     private int tempId = 1;
 
     @Override
@@ -121,6 +126,14 @@ public class CartItemServiceImpl implements CartItemService {
         return null;
     }
 
+    @Override
+    public CartItemDto getCartItem(int id) {
+        CartItem cartItem = cartItemRepository.findById(id).orElseThrow(()-> new CartItemNotFoundException("Cart Item Not Found with ID: "+ id));
+
+        return convertEntityToDto(cartItem);
+
+    }
+
     public void createCart(CartItem cartItem, Product product, int accountId){
         logger.info("Product ID: "+product.getId());
 
@@ -168,5 +181,14 @@ public class CartItemServiceImpl implements CartItemService {
     public CartItem getCartItemByIdAndCartId(int id, int cartId) { // get the item with cart id
         return cartItemRepository.findByIdAndCartId(id, cartId)
                 .orElseThrow(() -> new CartItemNotFoundException("Item not Found with ID"+ id) );
+    }
+
+    // converting entity to dto
+    public CartItemDto convertEntityToDto(CartItem cartItem){
+        return mapper.map(cartItem, CartItemDto.class);
+    }
+    // converting dto to entity
+    public CartItem convertDtoToEntity(CartItemDto cartItemDto){
+        return mapper.map(cartItemDto, CartItem.class);
     }
 }

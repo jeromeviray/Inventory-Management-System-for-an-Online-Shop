@@ -1,9 +1,7 @@
 package com.project.inventory.order.shoppingOrder.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.project.inventory.customer.address.model.CustomerAddress;
 import com.project.inventory.customer.payment.model.PaymentMethod;
-import com.project.inventory.jsonView.View;
 import com.project.inventory.order.orderItems.model.OrderItem;
 import com.project.inventory.permission.model.Account;
 import org.hibernate.annotations.CreationTimestamp;
@@ -16,7 +14,6 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "shopping_order")
-@JsonView(value = View.PlaceOrder.class)
 public class ShoppingOrder {
 
     @Id

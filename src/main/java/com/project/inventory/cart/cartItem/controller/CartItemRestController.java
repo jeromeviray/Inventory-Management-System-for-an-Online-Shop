@@ -1,6 +1,7 @@
 package com.project.inventory.cart.cartItem.controller;
 
 import com.project.inventory.cart.cartItem.model.CartItem;
+import com.project.inventory.cart.cartItem.model.CartItemDto;
 import com.project.inventory.cart.cartItem.service.CartItemService;
 import com.project.inventory.cart.model.Cart;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,5 +37,10 @@ public class CartItemRestController {
     public ResponseEntity removeItem(@PathVariable int cartItemId){
         cartItemService.removeItem(cartItemId);
         return new ResponseEntity(HttpStatus.OK);
+    }
+    @RequestMapping(value = "{id}", method = RequestMethod.GET)
+    public ResponseEntity<CartItemDto> getCartItem(@PathVariable int id){
+
+        return new ResponseEntity( cartItemService.getCartItem(id), HttpStatus.OK);
     }
 }

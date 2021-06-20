@@ -1,8 +1,6 @@
 package com.project.inventory.order.orderItems.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.project.inventory.jsonView.View;
 import com.project.inventory.order.shoppingOrder.model.ShoppingOrder;
 import com.project.inventory.product.model.Product;
 import org.hibernate.annotations.CreationTimestamp;
@@ -14,7 +12,6 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "order_item")
-@JsonView(value = View.PlaceOrder.class)
 @Transactional
 public class OrderItem {
 

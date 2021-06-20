@@ -1,6 +1,7 @@
 package com.project.inventory.cart.cartItem.service;
 
 import com.project.inventory.cart.cartItem.model.CartItem;
+import com.project.inventory.cart.cartItem.model.CartItemDto;
 
 import java.util.List;
 
@@ -14,4 +15,5 @@ public interface CartItemService {
     void removeItems(List<CartItem> cartItems);
     void removeItem(int itemId);
     void deleteById(int id);
+    CartItemDto getCartItem(int id);
 }

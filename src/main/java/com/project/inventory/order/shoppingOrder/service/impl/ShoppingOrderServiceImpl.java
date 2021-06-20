@@ -3,19 +3,24 @@ package com.project.inventory.order.shoppingOrder.service.impl;
 import com.project.inventory.cart.cartItem.model.CartItem;
 import com.project.inventory.cart.cartItem.service.CartItemService;
 import com.project.inventory.customer.address.model.CustomerAddress;
+import com.project.inventory.customer.address.model.CustomerAddressDto;
 import com.project.inventory.customer.address.service.CustomerAddressService;
 import com.project.inventory.customer.payment.model.PaymentMethod;
+import com.project.inventory.customer.payment.model.PaymentMethodDto;
 import com.project.inventory.customer.payment.service.PaymentMethodService;
 import com.project.inventory.exception.order.ShoppingOrderInvalidException;
 import com.project.inventory.order.orderItems.model.OrderItem;
 import com.project.inventory.order.orderItems.service.OrderItemService;
 import com.project.inventory.order.shoppingOrder.model.OrderStatus;
 import com.project.inventory.order.shoppingOrder.model.ShoppingOrder;
+import com.project.inventory.order.shoppingOrder.model.ShoppingOrderDto;
 import com.project.inventory.order.shoppingOrder.repository.ShoppingOrderRepository;
 import com.project.inventory.order.shoppingOrder.service.ShoppingOrderService;
 import com.project.inventory.permission.model.Account;
+import com.project.inventory.permission.model.AccountDto;
 import com.project.inventory.permission.service.AccountService;
 import com.project.inventory.product.service.ProductService;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +46,8 @@ public class ShoppingOrderServiceImpl implements ShoppingOrderService {
     @Autowired
     private ProductService productService;
     @Autowired
+    private ModelMapper mapper;
+    @Autowired
     private ShoppingOrderRepository shoppingOrderRepository;
 
 
@@ -56,7 +63,7 @@ public class ShoppingOrderServiceImpl implements ShoppingOrderService {
         PaymentMethod paymentMethod = getPaymentMethod(paymentId);
         List<OrderItem> orderItems = new ArrayList<>();
 
-        if(customerAddress != null && paymentMethod != null){
+        if(customerAddress == null && paymentMethod != null){
             ShoppingOrder savedShoppingOrder = getAllRequiredInformation(customerAddress, paymentMethod, cartItems);
             for (CartItem cartItem : cartItems){
 
@@ -76,8 +83,38 @@ public class ShoppingOrderServiceImpl implements ShoppingOrderService {
     }
 
     @Override
-    public List<ShoppingOrder> getOrders() {
-        return shoppingOrderRepository.findAll();
+    public List<ShoppingOrderDto> getOrders() {
+        List<ShoppingOrderDto> shoppingOrders = new ArrayList<>();
+
+        for (ShoppingOrder savedShoppingOrder : shoppingOrderRepository.findAllByStatusPending()){
+            ShoppingOrderDto shoppingOrderDto = new ShoppingOrderDto();
+
+            shoppingOrderDto.setId(savedShoppingOrder.getId());
+            shoppingOrderDto.setOrderStatus(savedShoppingOrder.getOrderStatus());
+            shoppingOrderDto.setTotalAmount(savedShoppingOrder.getTotalAmount());
+            shoppingOrderDto.setOrderedAt(savedShoppingOrder.getOrderedAt());
+            shoppingOrderDto.setDeliveredAt(savedShoppingOrder.getDeliveredAt());
+            shoppingOrderDto.setAccount(mapper.map(savedShoppingOrder.getAccount(), AccountDto.class));
+            shoppingOrderDto.setPaymentMethod(mapper.map(savedShoppingOrder.getPaymentMethod(), PaymentMethodDto.class));
+            shoppingOrderDto.setCustomerAddress(mapper.map(savedShoppingOrder.getCustomerAddress(), CustomerAddressDto.class));
+            shoppingOrderDto.setOrderItem(orderItemService.convertOrderItemsToDto(savedShoppingOrder.getOrderItems()));
+
+            shoppingOrders.add(shoppingOrderDto);
+        }
+
+        return shoppingOrders;
+
+
+    }
+
+    @Override
+    public ShoppingOrderDto convertEntityToDto(ShoppingOrder shoppingOrder) {
+        return mapper.map(shoppingOrder, ShoppingOrderDto.class);
+    }
+
+    @Override
+    public ShoppingOrder convertDtoToEntity(ShoppingOrderDto shoppingOrderDto) {
+        return mapper.map(shoppingOrderDto, ShoppingOrder.class);
     }
 
     public ShoppingOrder getAllRequiredInformation(CustomerAddress customerAddress, PaymentMethod paymentMethod, List<CartItem> cartItems){
@@ -103,7 +140,7 @@ public class ShoppingOrderServiceImpl implements ShoppingOrderService {
     }
 
     public CustomerAddress getCustomerAddress(int customerAddressId){
-        return customerAddressService.getCustomerAddress(customerAddressId);
+        return customerAddressService.convertDtoToEntity(customerAddressService.getCustomerAddress(customerAddressId));
     }
     public PaymentMethod getPaymentMethod(int paymentId){
         return paymentMethodService.getPaymentMethodById(paymentId);

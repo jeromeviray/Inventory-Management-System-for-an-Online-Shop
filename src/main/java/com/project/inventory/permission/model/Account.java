@@ -1,14 +1,11 @@
 package com.project.inventory.permission.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
 import com.project.inventory.cart.model.Cart;
 import com.project.inventory.customer.address.model.CustomerAddress;
-import com.project.inventory.jsonView.View;
 import com.project.inventory.order.shoppingOrder.model.ShoppingOrder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.asm.SpringAsmInfo;
 
 import javax.persistence.*;
 import javax.transaction.Transactional;
@@ -25,15 +22,12 @@ public class Account implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "account_id")
-    @JsonView(value = {View.CustomerAddress.class, View.PlaceOrder.class})
     private int id;
 
     @Column(name = "first_name")
-    @JsonView(value = {View.CustomerAddress.class, View.PlaceOrder.class})
     private String firstName;
 
     @Column(name = "last_name")
-    @JsonView(value = {View.CustomerAddress.class, View.PlaceOrder.class})
     private String lastName;
 
     @CreationTimestamp

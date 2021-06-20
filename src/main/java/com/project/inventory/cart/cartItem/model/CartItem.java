@@ -1,9 +1,7 @@
 package com.project.inventory.cart.cartItem.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
 import com.project.inventory.cart.model.Cart;
-import com.project.inventory.jsonView.View;
 import com.project.inventory.product.model.Product;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -13,7 +11,6 @@ import java.util.Date;
 
 @Entity
 @Table(name = "cart_item")
-@JsonView(value = {View.ProductView.CartView.class})
 public class CartItem implements Serializable {
 
     @Id

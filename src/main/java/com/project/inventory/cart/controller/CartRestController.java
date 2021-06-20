@@ -1,11 +1,8 @@
 package com.project.inventory.cart.controller;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.project.inventory.cart.cartItem.model.CartItem;
 import com.project.inventory.cart.model.Cart;
 import com.project.inventory.cart.service.CartService;
-import com.project.inventory.jsonView.View;
-import com.project.inventory.product.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +19,11 @@ public class CartRestController {
     private CartService cartService;
 
     @RequestMapping(value = "/{accountId}", method = RequestMethod.GET)
-    @JsonView(value = View.ProductView.CartView.class)
     public ResponseEntity<Cart> getCart(@PathVariable int accountId){
-        return new ResponseEntity(cartService.getCartByAccountId(accountId), HttpStatus.ACCEPTED);
+        return new ResponseEntity(cartService.getCartByAccountIdDto(accountId), HttpStatus.ACCEPTED);
     }
 
     @RequestMapping(value = "/products/{cartId}", method = RequestMethod.GET)
-    @JsonView(value = View.ProductView.CartView.class)
     public ResponseEntity<CartItem> getCartProducts(@PathVariable int cartId){
         return new ResponseEntity(cartService.getCartProducts(cartId), HttpStatus.OK);
     }

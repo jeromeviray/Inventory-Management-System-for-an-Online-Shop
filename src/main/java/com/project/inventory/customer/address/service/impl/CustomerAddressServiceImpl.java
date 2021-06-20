@@ -1,16 +1,21 @@
 package com.project.inventory.customer.address.service.impl;
 
 import com.project.inventory.customer.address.model.CustomerAddress;
+import com.project.inventory.customer.address.model.CustomerAddressDto;
 import com.project.inventory.customer.address.repository.CustomerAddressRepository;
 import com.project.inventory.customer.address.service.CustomerAddressService;
 import com.project.inventory.exception.customer.CustomerAddressNotFoundException;
 import com.project.inventory.permission.model.Account;
 import com.project.inventory.permission.service.AccountService;
+import com.project.inventory.product.model.Product;
+import com.project.inventory.product.model.ProductToDto;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service(value = "customerAddressServiceImpl")
@@ -21,6 +26,8 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
     private CustomerAddressRepository customerAddressRepository;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private ModelMapper mapper;
 
     @Override
     public CustomerAddress saveCustomerAddress(CustomerAddress customerAddress) {
@@ -35,19 +42,24 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
     }
 
     @Override
-    public List<CustomerAddress> getCustomerAddresses() {
-        return customerAddressRepository.findAllCustomerAddresses();
+    public List<CustomerAddressDto> getCustomerAddresses() {
+        List<CustomerAddressDto> customerAddressesDto = new ArrayList<>();
+        for (CustomerAddress customerAddress : customerAddressRepository.findAllCustomerAddresses()){
+            customerAddressesDto.add(convertEntityToDto(customerAddress));
+        }
+        return customerAddressesDto;
     }
 
     @Override
-    public CustomerAddress getCustomerAddress(int id) {
-        return customerAddressRepository.findById(id)
+    public CustomerAddressDto getCustomerAddress(int id) {
+        CustomerAddress customerAddress = customerAddressRepository.findById(id)
                 .orElseThrow(() -> new CustomerAddressNotFoundException("Customer Address Not Found with ID: " + id));
+        return convertEntityToDto(customerAddress);
     }
 
     @Override
     public CustomerAddress updateCustomerAddress(int id, CustomerAddress customerAddress) {
-        CustomerAddress savedCustomerAddress = getCustomerAddress(id);
+        CustomerAddress savedCustomerAddress = customerAddressRepository.findByAccountId(id);
 
         savedCustomerAddress.setFirstName(customerAddress.getFirstName());
         savedCustomerAddress.setLastName(customerAddress.getLastName());
@@ -62,13 +74,25 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
         return customerAddressRepository.save(savedCustomerAddress);
     }
 
+
     @Override
     public void deleteCustomerAddress(int id) {
         customerAddressRepository.deleteById(id);
     }
 
     @Override
-    public CustomerAddress getCustomerAddressByAccountId(int accountId) {
-        return customerAddressRepository.findByAccountId(accountId);
+    public CustomerAddressDto getCustomerAddressByAccountId(int accountId) {
+        return convertEntityToDto(customerAddressRepository.findByAccountId(accountId));
+    }
+
+    // converting entity to dto
+    @Override
+    public CustomerAddressDto convertEntityToDto(CustomerAddress customerAddress){
+        return mapper.map(customerAddress, CustomerAddressDto.class);
+    }
+    // converting dto to entity
+    @Override
+    public CustomerAddress convertDtoToEntity(CustomerAddressDto customerAddressDto){
+        return mapper.map(customerAddressDto, CustomerAddress.class);
     }
 }

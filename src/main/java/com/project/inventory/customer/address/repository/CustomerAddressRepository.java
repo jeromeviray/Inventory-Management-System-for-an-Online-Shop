@@ -15,6 +15,9 @@ public interface CustomerAddressRepository extends JpaRepository<CustomerAddress
 
     Optional<CustomerAddress> findById(int id);
 
-    @Query(value = "SELECT * FROM customer_address_info WHERE is_default = 0", nativeQuery = true)
+    @Query(value = "SELECT * FROM customer_address_info WHERE is_default = 1 AND account_id = :accountId", nativeQuery = true)
     CustomerAddress findByAccountId(int accountId);
+
+//    @Query(value = "SELECT * FROM customer_address_info WHERE is_default = 1", nativeQuery = true)
+//    CustomerAddress findByDefault();
 }

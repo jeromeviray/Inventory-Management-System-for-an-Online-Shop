@@ -5,8 +5,10 @@ import com.project.inventory.exception.product.ProductNotUpdatedException;
 import com.project.inventory.inventory.model.Inventory;
 import com.project.inventory.inventory.repository.InventoryRepository;
 import com.project.inventory.product.model.Product;
+import com.project.inventory.product.model.ProductToDto;
 import com.project.inventory.product.repository.ProductRepository;
 import com.project.inventory.product.service.ProductService;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
     @Autowired
     private InventoryRepository inventoryRepository;
+    @Autowired
+    private ModelMapper mapper;
 
     @Override
     public Product saveProduct(Product product) {
@@ -88,5 +92,14 @@ public class ProductServiceImpl implements ProductService {
     public Product getAvailableProductById(int id) {
         return productRepository.findAvailableProductById(id)
                 .orElseThrow(() -> new ProductNotFound("Product Not Found with ID: "+ id));
+    }
+
+    // converting entity to dto
+    public ProductToDto convertEntityToDto(Product product){
+        return mapper.map(product, ProductToDto.class);
+    }
+    // converting dto to entity
+    public Product convertDtoToEntity(ProductToDto productToDto){
+        return mapper.map(productToDto, Product.class);
     }
 }

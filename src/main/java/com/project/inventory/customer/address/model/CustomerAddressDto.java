@@ -1,60 +1,17 @@
 package com.project.inventory.customer.address.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.inventory.order.shoppingOrder.model.ShoppingOrder;
-import com.project.inventory.permission.model.Account;
-
-import javax.persistence.*;
-import javax.transaction.Transactional;
-import java.util.Objects;
-
-@Entity
-@Table(name = "customer_address_info")
-@Transactional
-public class CustomerAddress {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "customer_address_id")
+public class CustomerAddressDto {
     private int id;
-
-    @Column(name = "first_name")
     private String firstName;
-
-    @Column(name = "last_name")
     private String lastName;
-
-    @Column(name = "phone_number")
     private int phoneNumber;
-
-    @Column(name = "postal_code")
     private int postalCode;
-
-    @Column(name = "region")
     private String region;
-
-    @Column(name = "city")
     private String city;
-
-    @Column(name = "province")
     private String province;
-
-    @Column(name = "barangay")
     private String barangay;
-
-    @Column(name = "street")
     private String street;
-
-    @Column(name = "is_default")
     private boolean isDefault;
-
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "account_id")
-    private Account account;
-
-    @OneToOne(mappedBy = "customerAddress", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private ShoppingOrder shoppingOrder;
 
     public int getId() {
         return id;
@@ -144,30 +101,9 @@ public class CustomerAddress {
         isDefault = aDefault;
     }
 
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CustomerAddress)) return false;
-        CustomerAddress that = (CustomerAddress) o;
-        return getId() == that.getId() && getPhoneNumber() == that.getPhoneNumber() && getPostalCode() == that.getPostalCode() && isDefault() == that.isDefault() && Objects.equals(getFirstName(), that.getFirstName()) && Objects.equals(getLastName(), that.getLastName()) && Objects.equals(getRegion(), that.getRegion()) && Objects.equals(getCity(), that.getCity()) && Objects.equals(getProvince(), that.getProvince()) && Objects.equals(getBarangay(), that.getBarangay()) && Objects.equals(getStreet(), that.getStreet()) && Objects.equals(getAccount(), that.getAccount()) && Objects.equals(shoppingOrder, that.shoppingOrder);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getFirstName(), getLastName(), getPhoneNumber(), getPostalCode(), getRegion(), getCity(), getProvince(), getBarangay(), getStreet(), isDefault(), getAccount(), shoppingOrder);
-    }
-
     @Override
     public String toString() {
-        return "CustomerAddress{" +
+        return "CustomerAddressDto{" +
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
@@ -179,8 +115,6 @@ public class CustomerAddress {
                 ", barangay='" + barangay + '\'' +
                 ", street='" + street + '\'' +
                 ", isDefault=" + isDefault +
-                ", account=" + account +
-                ", shoppingOrder=" + shoppingOrder +
                 '}';
     }
 }

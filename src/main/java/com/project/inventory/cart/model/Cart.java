@@ -1,9 +1,7 @@
 package com.project.inventory.cart.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
 import com.project.inventory.cart.cartItem.model.CartItem;
-import com.project.inventory.jsonView.View;
 import com.project.inventory.permission.model.Account;
 
 import javax.persistence.*;
@@ -12,7 +10,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "cart")
-@JsonView(value = {View.ProductView.CartView.class})
 public class Cart implements Serializable {
 
     @Id

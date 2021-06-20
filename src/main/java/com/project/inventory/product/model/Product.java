@@ -1,9 +1,6 @@
 package com.project.inventory.product.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.project.inventory.inventory.model.Inventory;
-import com.project.inventory.jsonView.View;
-import com.project.inventory.order.orderItems.model.OrderItem;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,16 +13,13 @@ import java.util.Objects;
 @Entity
 @Table(name = "product")
 @Transactional
-//@JsonView(value = {View.ProductView.ProductsView.class})
 public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
-    @JsonView(value = {View.ProductView.CartView.class, View.PlaceOrder.class})
     private int id;
 
     @Column(name = "product_name")
-    @JsonView(value = { View.ProductView.CartView.class, View.PlaceOrder.class})
     private String name;
 
 //    @NotEmpty(message = "Please provide a name")
@@ -33,7 +27,6 @@ public class Product implements Serializable {
     private String description;
 
     @Column(name = "product_price")
-    @JsonView(value = {View.ProductView.CartView.class, View.PlaceOrder.class})
     private double price;
 
     @Column(name = "created_at", updatable = false)
@@ -50,8 +43,6 @@ public class Product implements Serializable {
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Inventory inventory;
 
-    @OneToOne(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private OrderItem orderItem;
 
     public Product() {
     }

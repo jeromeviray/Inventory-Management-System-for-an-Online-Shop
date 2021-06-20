@@ -6,6 +6,7 @@ import com.project.inventory.exception.cartItem.CartItemNotFoundException;
 import com.project.inventory.exception.cartItem.CartItemNotValidException;
 import com.project.inventory.exception.customer.CustomerAddressNotFoundException;
 import com.project.inventory.exception.errorDetails.ErrorDetails;
+import com.project.inventory.exception.order.OrderItemNotFoundException;
 import com.project.inventory.exception.order.ShoppingOrderInvalidException;
 import com.project.inventory.exception.paymentMethod.PaymentMethodNotFoundException;
 import com.project.inventory.exception.product.ProductNotFound;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 import java.util.Date;
+import java.util.regex.Pattern;
 
 @ControllerAdvice
 public class CustomGlobalException {
@@ -76,6 +78,15 @@ public class CustomGlobalException {
         return new ResponseEntity(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(OrderItemNotFoundException.class)
+    public ResponseEntity<?> handleOrderItemNotFoundException(OrderItemNotFoundException orderItemNotFoundException,
+                                                              WebRequest request){
+        ErrorDetails errorDetails = new ErrorDetails(HttpStatus.NOT_FOUND,
+                new Date(),
+                orderItemNotFoundException.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity(errorDetails, HttpStatus.NOT_FOUND);
+    }
     // handle global exceptions
 
     @ExceptionHandler(Exception.class)
