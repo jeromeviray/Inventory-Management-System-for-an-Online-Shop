@@ -19,6 +19,7 @@ import com.project.inventory.order.shoppingOrder.service.ShoppingOrderService;
 import com.project.inventory.permission.model.Account;
 import com.project.inventory.permission.model.AccountDto;
 import com.project.inventory.permission.service.AccountService;
+import com.project.inventory.permission.service.AuthenticatedUser;
 import com.project.inventory.product.service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -49,22 +50,27 @@ public class ShoppingOrderServiceImpl implements ShoppingOrderService {
     private ModelMapper mapper;
     @Autowired
     private ShoppingOrderRepository shoppingOrderRepository;
-
-
-    int tempId = 1;
+    @Autowired
+    private AuthenticatedUser authenticatedUser;
 
     @Override
     public void placeOrder(int customerAddressId,
                                     int paymentId,
                                     List<CartItem> cartItems){
+
         logger.info("{}", customerAddressId +" "+ paymentId + "\n" + cartItems);
+
+        //get customer address
         CustomerAddress customerAddress = getCustomerAddress(customerAddressId);
 
+        // get payment method
         PaymentMethod paymentMethod = getPaymentMethod(paymentId);
+
         List<OrderItem> orderItems = new ArrayList<>();
 
-        if(customerAddress == null && paymentMethod != null){
+        if(customerAddress != null && paymentMethod != null){
             ShoppingOrder savedShoppingOrder = getAllRequiredInformation(customerAddress, paymentMethod, cartItems);
+
             for (CartItem cartItem : cartItems){
 
                 OrderItem orderItem = new OrderItem( cartItem.getQuantity(),
@@ -120,7 +126,7 @@ public class ShoppingOrderServiceImpl implements ShoppingOrderService {
     public ShoppingOrder getAllRequiredInformation(CustomerAddress customerAddress, PaymentMethod paymentMethod, List<CartItem> cartItems){
         double totalAmount = 0.0;
         ShoppingOrder shoppingOrder = new ShoppingOrder();
-        Account account = accountService.getAccountById(tempId);
+        Account account = accountService.getAccountById(authenticatedUser.getUserDetails().getId());
 
         for (CartItem cartItem : cartItems){
             totalAmount += cartItem.getAmount();

@@ -5,7 +5,7 @@ import com.project.inventory.exception.product.ProductNotUpdatedException;
 import com.project.inventory.inventory.model.Inventory;
 import com.project.inventory.inventory.repository.InventoryRepository;
 import com.project.inventory.product.model.Product;
-import com.project.inventory.product.model.ProductToDto;
+import com.project.inventory.product.model.ProductDto;
 import com.project.inventory.product.repository.ProductRepository;
 import com.project.inventory.product.service.ProductService;
 import org.modelmapper.ModelMapper;
@@ -58,7 +58,7 @@ public class ProductServiceImpl implements ProductService {
         try{
             return productRepository.save(product);
         }catch (ProductNotUpdatedException productNotUpdatedException){
-            throw new ProductNotUpdatedException("Product with Id " + updateProduct.getId() + " Failed to Update" );
+            throw new ProductNotUpdatedException(String.format("Product with Id " + updateProduct.getId() + " Failed to Update") );
         }
 
     }
@@ -69,7 +69,7 @@ public class ProductServiceImpl implements ProductService {
 
         product.setDeleted(true);
         productRepository.save(product);
-        logger.info("Product with ID "+product.getId()+" Deleted Successfully");
+        logger.info(String.format("Product with ID "+product.getId()+" Deleted Successfully"));
     }
 
     @Override
@@ -85,21 +85,22 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getProductById(int id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFound("Product Not Found with ID: "+ id));
+                .orElseThrow(() -> new ProductNotFound(String.format("Product Not Found with ID: "+ id)));
     }
 
     @Override
     public Product getAvailableProductById(int id) {
+        logger.info("{}", "product ID: "+id);
         return productRepository.findAvailableProductById(id)
-                .orElseThrow(() -> new ProductNotFound("Product Not Found with ID: "+ id));
+                .orElseThrow(() -> new ProductNotFound(String.format("Product Not Found with ID: "+ id)));
     }
 
     // converting entity to dto
-    public ProductToDto convertEntityToDto(Product product){
-        return mapper.map(product, ProductToDto.class);
+    public ProductDto convertEntityToDto(Product product){
+        return mapper.map(product, ProductDto.class);
     }
     // converting dto to entity
-    public Product convertDtoToEntity(ProductToDto productToDto){
-        return mapper.map(productToDto, Product.class);
+    public Product convertDtoToEntity(ProductDto productDto){
+        return mapper.map(productDto, Product.class);
     }
 }

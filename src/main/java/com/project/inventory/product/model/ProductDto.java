@@ -1,6 +1,6 @@
 package com.project.inventory.product.model;
 
-public class ProductToDto {
+public class ProductDto {
 
     private int id;
     private String productName;

@@ -22,14 +22,19 @@ public class InventoryController {
         return inventoryService.getAllInventory();
     }
 
-    @RequestMapping(value = "/{inventory_id}/{product_id}", method = RequestMethod.GET)
-    public Inventory getInventory(@PathVariable int inventory_id, @PathVariable int product_id){
-        logger.info("{}", inventoryService.getInventory(inventory_id, product_id));
-        return inventoryService.getInventory(inventory_id, product_id);
+    @RequestMapping(value = "/{inventoryId}/{productId}", method = RequestMethod.GET)
+    public Inventory getInventory(@PathVariable int inventoryId,
+                                  @PathVariable int productId){
+
+        logger.info(String.format("{} %s", inventoryService.getInventory(inventoryId, productId)));
+
+        return inventoryService.getInventory(inventoryId, productId);
     }
 
-    @RequestMapping(value = "/stock/{inventory_id}/{product_id}", method =  RequestMethod.PUT)
-    public void addStock(@PathVariable int product_id,@PathVariable int inventory_id, @RequestParam int stock){
-        inventoryService.addStock(inventory_id, product_id, stock);
+    @RequestMapping(value = "/stock/{inventoryId}/{productId}", method =  RequestMethod.PUT)
+    public void addStock(@PathVariable int inventoryId,
+                         @PathVariable int productId,
+                         @RequestParam int stock){
+        inventoryService.addStock(inventoryId, productId, stock);
     }
 }

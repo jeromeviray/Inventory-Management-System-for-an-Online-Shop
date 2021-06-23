@@ -1,6 +1,6 @@
 package com.project.inventory.order.orderItems.model;
 
-import com.project.inventory.product.model.ProductToDto;
+import com.project.inventory.product.model.ProductDto;
 
 import java.util.Date;
 
@@ -9,7 +9,7 @@ public class OrderItemDto {
     private int quantity;
     private double amount;
     private Date purchasedAt;
-    private ProductToDto product;
+    private ProductDto product;
 
     public int getId() {
         return id;
@@ -43,11 +43,11 @@ public class OrderItemDto {
         this.purchasedAt = purchasedAt;
     }
 
-    public ProductToDto getProduct() {
+    public ProductDto getProduct() {
         return product;
     }
 
-    public void setProduct(ProductToDto product) {
+    public void setProduct(ProductDto product) {
         this.product = product;
     }
 }

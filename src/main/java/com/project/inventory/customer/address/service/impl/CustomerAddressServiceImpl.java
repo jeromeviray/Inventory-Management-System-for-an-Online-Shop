@@ -7,8 +7,6 @@ import com.project.inventory.customer.address.service.CustomerAddressService;
 import com.project.inventory.exception.customer.CustomerAddressNotFoundException;
 import com.project.inventory.permission.model.Account;
 import com.project.inventory.permission.service.AccountService;
-import com.project.inventory.product.model.Product;
-import com.project.inventory.product.model.ProductToDto;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +30,11 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
     @Override
     public CustomerAddress saveCustomerAddress(CustomerAddress customerAddress) {
         Account account = accountService.getAccountById(1);
-        logger.info("{}",
+        logger.info(String.format("{}",
                 customerAddress
-                        .getFirstName()
-                        .concat(" "+customerAddress
-                                .getLastName())+ "Customer Address Saved Successfully");
+                        .getFirstName().concat(" "+customerAddress
+                        .getLastName())+ "Customer Address Saved Successfully"));
+
         customerAddress.setAccount(account);
         return customerAddressRepository.save(customerAddress);
     }
@@ -53,7 +51,7 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
     @Override
     public CustomerAddressDto getCustomerAddress(int id) {
         CustomerAddress customerAddress = customerAddressRepository.findById(id)
-                .orElseThrow(() -> new CustomerAddressNotFoundException("Customer Address Not Found with ID: " + id));
+                .orElseThrow(() -> new CustomerAddressNotFoundException(String.format("Customer Address Not Found with ID: " + id)));
         return convertEntityToDto(customerAddress);
     }
 

@@ -18,7 +18,7 @@ public class ShoppingOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_id")
+    @Column(name = "shopping_order_id")
     private int id;
 
     @Column(name = "order_status")

@@ -21,7 +21,8 @@ public class ShoppingOrderController {
 
     @RequestMapping(value = "/place", method = RequestMethod.POST)
     public ResponseEntity<?> placeOrder(@RequestBody PlaceOrder placeOrder){
-        shoppingOrderService.placeOrder( placeOrder.getCustomerAddressId(),
+        shoppingOrderService.placeOrder(
+                placeOrder.getCustomerAddressId(),
                 placeOrder.getPaymentId(),
                 placeOrder.getCartItems());
         return new ResponseEntity(HttpStatus.OK);

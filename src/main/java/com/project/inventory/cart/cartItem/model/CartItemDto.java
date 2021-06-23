@@ -1,5 +1,7 @@
 package com.project.inventory.cart.cartItem.model;
 
+import com.project.inventory.product.model.ProductDto;
+
 import java.util.Date;
 
 public class CartItemDto {
@@ -8,10 +10,8 @@ public class CartItemDto {
     private int quantity;
     private double amount;
     private Date addedAt;
-    private int productId;
-    private String productName;
-    private String productDescription;
-    private double productPrice;
+    private ProductDto product;
+
 
     public int getCartItemId() {
         return cartItemId;
@@ -45,35 +45,11 @@ public class CartItemDto {
         this.addedAt = addedAt;
     }
 
-    public int getProductId() {
-        return productId;
+    public ProductDto getProduct() {
+        return product;
     }
 
-    public void setProductId(int productId) {
-        this.productId = productId;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public String getProductDescription() {
-        return productDescription;
-    }
-
-    public void setProductDescription(String productDescription) {
-        this.productDescription = productDescription;
-    }
-
-    public double getProductPrice() {
-        return productPrice;
-    }
-
-    public void setProductPrice(double productPrice) {
-        this.productPrice = productPrice;
+    public void setProduct(ProductDto product) {
+        this.product = product;
     }
 }

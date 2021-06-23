@@ -23,12 +23,6 @@ public class Account implements Serializable {
     @Column(name = "account_id")
     private int id;
 
-    @Column(name = "first_name", nullable = false, length = 30)
-    private String firstName;
-
-    @Column(name = "last_name", nullable = false, length = 30)
-    private String lastName;
-
     @Column( name = "username", unique = true, nullable = false, length = 30 )
     private String username;
 
@@ -62,22 +56,6 @@ public class Account implements Serializable {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     public String getUsername() {
@@ -141,12 +119,12 @@ public class Account implements Serializable {
         if (this == o) return true;
         if (!(o instanceof Account)) return false;
         Account account = (Account) o;
-        return getId() == account.getId() && isDeleted() == account.isDeleted() && Objects.equals(getFirstName(), account.getFirstName()) && Objects.equals(getLastName(), account.getLastName()) && Objects.equals(getUsername(), account.getUsername()) && Objects.equals(getPassword(), account.getPassword()) && Objects.equals(getEmail(), account.getEmail()) && Objects.equals(getCreated(), account.getCreated()) && Objects.equals(getUpdated(), account.getUpdated()) && Objects.equals(getRoles(), account.getRoles());
+        return getId() == account.getId() && isDeleted() == account.isDeleted() && Objects.equals(getUsername(), account.getUsername()) && Objects.equals(getPassword(), account.getPassword()) && Objects.equals(getEmail(), account.getEmail()) && Objects.equals(getCreated(), account.getCreated()) && Objects.equals(getUpdated(), account.getUpdated()) && Objects.equals(getRoles(), account.getRoles());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getFirstName(), getLastName(), getUsername(), getPassword(), getEmail(), getCreated(), getUpdated(), isDeleted(), getRoles());
+        return Objects.hash(getId(), getUsername(), getPassword(), getEmail(), getCreated(), getUpdated(), isDeleted(), getRoles());
     }
 
     @Override

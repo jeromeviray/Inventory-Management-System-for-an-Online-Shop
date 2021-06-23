@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface CartItemService {
 
-    void addCartItem(int productId, CartItem cartItem);
-    int increaseQuantity(int accountId, int productId);
-    int decreaseQuantity(int accountId, int productId);
+    void addCartItem(int productId);
+    int increaseQuantity(int productId);
+    int decreaseQuantity(int productId);
     CartItem getCartItemByCartIdAndProductId(int cartId, int productId);
     CartItem getCartItemById(int id);
     void removeItems(List<CartItem> cartItems);

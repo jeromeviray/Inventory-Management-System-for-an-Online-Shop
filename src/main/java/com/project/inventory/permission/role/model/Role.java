@@ -13,7 +13,7 @@ public class Role {
     private int id;
 
     @Column(name = " role_name ")
-    private String roleName = RoleType.CUSTOMER.toString();
+    private String roleName;
 
     public int getId() {
         return id;

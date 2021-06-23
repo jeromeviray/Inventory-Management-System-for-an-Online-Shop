@@ -36,7 +36,7 @@ public class InventoryServiceImpl implements InventoryService {
         Inventory inventory = inventoryRepository.findByInventoryIdAndProductId(inventory_id, product_id);
         logger.info("{}", inventory);
         if(inventory == null){
-            throw new ProductNotFound("Product not found");
+            throw new ProductNotFound(String.format("Product not found"));
         }
         return inventory;
     }
@@ -44,7 +44,7 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public void addStock(int inventory_id, int product_id, int stock) {
         Inventory inventory = inventoryRepository.findByInventoryIdAndProductId(inventory_id, product_id);
-        if(inventory == null) throw new ProductNotFound("Product not found");
+        if(inventory == null) throw new ProductNotFound(String.format("Product not found"));
 
         int stocks = inventory.getStock() + stock;
         logger.info("{}", stocks);

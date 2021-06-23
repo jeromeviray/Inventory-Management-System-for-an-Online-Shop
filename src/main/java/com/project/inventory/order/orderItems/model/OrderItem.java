@@ -35,8 +35,7 @@ public class OrderItem {
     private Product product;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonIgnore
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "shopping_order_id")
     private ShoppingOrder shoppingOrder;
 
     public OrderItem() {

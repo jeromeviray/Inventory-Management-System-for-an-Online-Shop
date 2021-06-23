@@ -26,7 +26,7 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     @Override
     public PaymentMethod getPaymentMethodById(int id) {
         PaymentMethod paymentMethod = paymentMethodRepository.findById(id);
-        if(paymentMethod == null) throw new PaymentMethodNotFoundException("Payment Method Not Found.");
+        if(paymentMethod == null) throw new PaymentMethodNotFoundException(String.format("Payment Method Not Found."));
 
         return paymentMethod;
     }
@@ -34,7 +34,7 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     @Override
     public PaymentMethod getPaymentMethodByName(String paymentMethodName) {
         PaymentMethod paymentMethod = paymentMethodRepository.findByPaymentMethod(paymentMethodName);
-        if(paymentMethod == null) throw new PaymentMethodNotFoundException("Payment Method Not Found.");
+        if(paymentMethod == null) throw new PaymentMethodNotFoundException(String.format("Payment Method Not Found."));
 
         return paymentMethod;
     }

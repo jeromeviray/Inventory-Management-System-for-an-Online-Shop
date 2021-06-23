@@ -40,15 +40,16 @@ public class CartServiceImpl implements CartService {
     public Cart getCartByCartIdAndAccountId(int cartId, int accountId) {
         logger.info("{}", cartId +" " +accountId);
         return cartRepository.findByIdAndAccountId(cartId, accountId)
-                .orElseThrow(() -> new CartNotFound("Cart Not Found with ID: "+cartId));
+                .orElseThrow(() -> new CartNotFound(String.format("Cart Not Found with ID: "+cartId)));
     }
 
     @Override
     public Cart createCart(int accountId) {
+
         Account account = accountService.getAccountById(accountId);
         Cart cart = new Cart();
 
-        if(account == null) throw new AccountNotFoundException("Account with ID '"+accountId+"' not Found");
+        if(account == null) throw new AccountNotFoundException(String.format("Account Not Found! " + accountId));
 
         cart.setAccount(account);
         logger.info("{}", cart +" created successfully");
@@ -59,9 +60,10 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart getCartByAccountId(int accountId) {
+        logger.info("{}", "Account id" + accountId);
         Cart cart = cartRepository.findByAccountId(accountId);
 
-        if(cart == null) throw new CartNotFound("Cart Not Found");
+        if(cart == null) throw new CartNotFound(String.format("Cart Not Found"));
 
         return cart;
     }
@@ -70,7 +72,7 @@ public class CartServiceImpl implements CartService {
     public CartDto getCartByAccountIdDto(int accountId) {
         Cart cart = cartRepository.findByAccountId(accountId);
 
-        if(cart == null) throw new CartNotFound("Cart Not Found");
+        if(cart == null) throw new CartNotFound(String.format("Cart Not Found"));
 
         return convertEntityToDto(cart);
     }
@@ -78,7 +80,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public Cart getCartById(int id) {
         return cartRepository.findById(id)
-                .orElseThrow(() -> new CartNotFound("Cart Not Found with ID: "+id));
+                .orElseThrow(() -> new CartNotFound(String.format("Cart Not Found with ID: "+id)));
     }
 
     @Override

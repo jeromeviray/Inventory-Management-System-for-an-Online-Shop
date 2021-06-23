@@ -68,7 +68,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Override
     public OrderItemDto getOrderItem(int id) {
         OrderItem orderItem = orderItemRepository.findById(id)
-                .orElseThrow(() -> new OrderItemNotFoundException("Order Item Not Found with ID: "+ id));
+                .orElseThrow(() -> new OrderItemNotFoundException(String.format("Order Item Not Found with ID: "+ id)));
         return convertEntityToDto(orderItem);
     }
 }
