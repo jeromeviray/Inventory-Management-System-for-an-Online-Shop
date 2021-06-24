@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -14,14 +15,22 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.security.web.authentication.AuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.http.HttpServletResponse;
 
-@EnableWebSecurity
+
 @Configuration
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(
+//        securedEnabled = true,
+//        jsr250Enabled = true,
+        prePostEnabled = true
+)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -54,11 +63,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable();
 
         // Set session management to stateless
-        http.sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
+//        http.sessionManagement()
+//            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//            .and()
                 // Set unauthorized requests exception handler
-            .exceptionHandling()
+            http.exceptionHandling()
                 .authenticationEntryPoint(
                         (request, response, ex) -> {
                             response.sendError(
@@ -69,7 +78,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             // Set permissions on endpoints
             .authorizeRequests()
             // Our public endpoints
-            .antMatchers(HttpMethod.POST,"/api/v1/account/register").permitAll()
+            .antMatchers(HttpMethod.POST,"/api/v1/account/**").permitAll()
             // Our private endpoints
             .anyRequest().authenticated();
 
