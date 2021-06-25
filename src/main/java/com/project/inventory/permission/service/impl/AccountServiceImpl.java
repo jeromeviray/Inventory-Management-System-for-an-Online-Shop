@@ -9,6 +9,8 @@ import com.project.inventory.permission.role.model.Role;
 import com.project.inventory.permission.role.model.RoleType;
 import com.project.inventory.permission.role.service.RoleService;
 import com.project.inventory.permission.service.AccountService;
+import com.project.inventory.user.information.model.UserInformation;
+import com.project.inventory.user.information.service.UserInformationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-@Service
+@Service(value = "accountServiceImpl")
 public class AccountServiceImpl implements AccountService {
     Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     @Autowired
@@ -26,6 +28,8 @@ public class AccountServiceImpl implements AccountService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private RoleService roleService;
+    @Autowired
+    private UserInformationService userInformationService;
 
 
     @Override
@@ -33,9 +37,9 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.findById(accountId);
     }
 
+
     @Override
     public void saveUserAccount(Account account) {
-
         account.setPassword( passwordEncoder.encode(account.getPassword()) );
 
         Role role = roleService.getRoleByRoleName(RoleType.CUSTOMER);
@@ -45,7 +49,9 @@ public class AccountServiceImpl implements AccountService {
 
         account.setRoles(authority);
 
-        accountRepository.save(account);
+        Account savedAccount = accountRepository.save(account);
+
+        userInformationService.saveUserInformation(account, new UserInformation());
     }
 
     @Override

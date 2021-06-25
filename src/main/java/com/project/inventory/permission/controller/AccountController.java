@@ -23,7 +23,6 @@ public class AccountController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity<?> saveAccount(@RequestBody Account account){
-        logger.info("{}", account.getEmail());
         accountService.saveUserAccount(account);
         return new ResponseEntity(HttpStatus.OK);
     }

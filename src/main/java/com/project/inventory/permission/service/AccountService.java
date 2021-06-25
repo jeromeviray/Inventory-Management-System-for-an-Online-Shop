@@ -3,8 +3,6 @@ package com.project.inventory.permission.service;
 import com.project.inventory.permission.model.Account;
 import com.project.inventory.permission.model.ChangePassword;
 
-import java.util.Optional;
-
 public interface AccountService {
     Account getAccountById(int accountId);
     void saveUserAccount(Account account);
