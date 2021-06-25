@@ -16,7 +16,7 @@ public class Account implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "account_id")
+    @Column(name = "account_id", columnDefinition = "int(7)")
     private int id;
 
     @Column( name = "username", unique = true, nullable = false, length = 30 )
@@ -29,15 +29,15 @@ public class Account implements Serializable {
     private String email;
 
     @CreationTimestamp
-    @Column(name = " created_at ")
+    @Column(name = " created_at ", nullable = false)
     private Date created;
 
     @UpdateTimestamp
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private Date updated;
 
-    @Column(name = "is_deleted")
-    private boolean deleted;
+    @Column(name = "is_deleted", columnDefinition = "TINYINT(1) default 0", nullable = false)
+    private boolean isDeleted;
 
     @ManyToMany
     @JoinTable(name = " user_privilege ",
@@ -95,11 +95,11 @@ public class Account implements Serializable {
     }
 
     public boolean isDeleted() {
-        return deleted;
+        return isDeleted;
     }
 
     public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
+        isDeleted = deleted;
     }
 
     public Set<Role> getRoles() {

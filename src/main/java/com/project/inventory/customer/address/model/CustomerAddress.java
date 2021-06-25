@@ -1,60 +1,59 @@
 package com.project.inventory.customer.address.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.inventory.store.order.shoppingOrder.model.ShoppingOrder;
 import com.project.inventory.permission.model.Account;
+import com.project.inventory.user.information.model.UserInformation;
 
 import javax.persistence.*;
 import javax.transaction.Transactional;
 import java.util.Objects;
 
 @Entity
-@Table(name = "customer_address_info")
+@Table(name = "address_detail")
 @Transactional
 public class CustomerAddress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "customer_address_id")
+    @Column(name = "address_id", columnDefinition = "int(7)")
     private int id;
 
-    @Column(name = "first_name")
+    @Column(name = "firstName", nullable = false, length = 20)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "lastName", nullable = false, length = 20)
     private String lastName;
 
-    @Column(name = "phone_number")
+    @Column(name = "phoneNumber", nullable = false)
     private int phoneNumber;
 
-    @Column(name = "postal_code")
+    @Column(name = "postalCode", nullable = false, columnDefinition = "int(7)")
     private int postalCode;
 
-    @Column(name = "region")
+    @Column(name = "region", nullable = false, length = 50)
     private String region;
 
-    @Column(name = "city")
+    @Column(name = "city", nullable = false, length = 50)
     private String city;
 
-    @Column(name = "province")
+    @Column(name = "province", nullable = false, length = 50)
     private String province;
 
-    @Column(name = "barangay")
+    @Column(name = "barangay", nullable = false, length = 100)
     private String barangay;
 
-    @Column(name = "street")
+    @Column(name = "street", nullable = false, length = 100)
     private String street;
 
-    @Column(name = "is_default")
+    @Column(name = "isDefault", columnDefinition = "TINYINT(1) default 0", nullable = false)
     private boolean isDefault;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "accountId", nullable = false)
     private Account account;
 
-    @OneToOne(mappedBy = "customerAddress", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private ShoppingOrder shoppingOrder;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "userInformation_id", nullable = false)
+    private UserInformation userInformation;
 
     public int getId() {
         return id;
@@ -152,17 +151,25 @@ public class CustomerAddress {
         this.account = account;
     }
 
+    public UserInformation getUserInformation() {
+        return userInformation;
+    }
+
+    public void setUserInformation(UserInformation userInformation) {
+        this.userInformation = userInformation;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof CustomerAddress)) return false;
         CustomerAddress that = (CustomerAddress) o;
-        return getId() == that.getId() && getPhoneNumber() == that.getPhoneNumber() && getPostalCode() == that.getPostalCode() && isDefault() == that.isDefault() && Objects.equals(getFirstName(), that.getFirstName()) && Objects.equals(getLastName(), that.getLastName()) && Objects.equals(getRegion(), that.getRegion()) && Objects.equals(getCity(), that.getCity()) && Objects.equals(getProvince(), that.getProvince()) && Objects.equals(getBarangay(), that.getBarangay()) && Objects.equals(getStreet(), that.getStreet()) && Objects.equals(getAccount(), that.getAccount()) && Objects.equals(shoppingOrder, that.shoppingOrder);
+        return getId() == that.getId() && getPhoneNumber() == that.getPhoneNumber() && getPostalCode() == that.getPostalCode() && isDefault() == that.isDefault() && Objects.equals(getFirstName(), that.getFirstName()) && Objects.equals(getLastName(), that.getLastName()) && Objects.equals(getRegion(), that.getRegion()) && Objects.equals(getCity(), that.getCity()) && Objects.equals(getProvince(), that.getProvince()) && Objects.equals(getBarangay(), that.getBarangay()) && Objects.equals(getStreet(), that.getStreet()) && Objects.equals(getAccount(), that.getAccount()) && Objects.equals(getUserInformation(), that.getUserInformation());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getFirstName(), getLastName(), getPhoneNumber(), getPostalCode(), getRegion(), getCity(), getProvince(), getBarangay(), getStreet(), isDefault(), getAccount(), shoppingOrder);
+        return Objects.hash(getId(), getFirstName(), getLastName(), getPhoneNumber(), getPostalCode(), getRegion(), getCity(), getProvince(), getBarangay(), getStreet(), isDefault(), getAccount(), getUserInformation());
     }
 
     @Override
@@ -180,7 +187,7 @@ public class CustomerAddress {
                 ", street='" + street + '\'' +
                 ", isDefault=" + isDefault +
                 ", account=" + account +
-                ", shoppingOrder=" + shoppingOrder +
+                ", userInformation=" + userInformation +
                 '}';
     }
 }

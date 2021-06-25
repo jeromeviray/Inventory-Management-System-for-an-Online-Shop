@@ -14,10 +14,10 @@ public class PaymentMethod {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "payment_id")
+    @Column(name = "payment_id", columnDefinition = "int(7)")
     private int id;
 
-    @Column(name = "payment_method")
+    @Column(name = "payment_method", length = 30, nullable = false)
     private String paymentMethod;
 
     @OneToOne(mappedBy = "paymentMethod", fetch = FetchType.LAZY)

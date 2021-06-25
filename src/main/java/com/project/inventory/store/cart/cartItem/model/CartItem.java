@@ -15,25 +15,25 @@ public class CartItem implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cart_item_id")
+    @Column(name = "cart_item_id", columnDefinition = "int(7)")
     private int id;
 
-    @Column( name = "quantity")
+    @Column( name = "quantity", columnDefinition = "int default 1")
     private int quantity;
 
     @Column(name = "amount")
     private double amount;
 
     @CreationTimestamp
-    @Column(name = "added_at")
+    @Column(name = "added_at", nullable = false)
     private Date addedAt;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "cart_id")
+    @JoinColumn(name = "cart_id", nullable = false)
     @JsonIgnore
     private Cart cart;
 

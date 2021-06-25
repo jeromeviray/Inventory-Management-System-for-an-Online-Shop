@@ -19,26 +19,26 @@ public class Product implements Serializable {
     @Column(name = "product_id")
     private int id;
 
-    @Column(name = "product_name")
+    @Column(name = "product_name", nullable = false)
     private String name;
 
 //    @NotEmpty(message = "Please provide a name")
-    @Column(name = "product_descriptions")
+    @Column(name = "product_descriptions", nullable = false, columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "product_price")
+    @Column(name = "product_price", nullable = false)
     private double price;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false, nullable = false, columnDefinition = "DATETIME default current_timestamp")
     @CreationTimestamp
     private Date created;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false, columnDefinition = "DATETIME default current_timestamp on update current_timestamp")
     @UpdateTimestamp
     private Date updated;
 
-    @Column(name = "product_is_deleted", columnDefinition = "TINYINT(1)")
-    private boolean isDeleted;
+    @Column(name = "product_is_deleted", columnDefinition = "TINYINT(1) default 0", nullable = false)
+    private boolean isDeleted = false;
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Inventory inventory;

@@ -12,14 +12,14 @@ public class Inventory implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "inventory_id")
+    @Column(name = "inventory_id", columnDefinition = "int(7)")
     private int id;
 
-    @Column(name = "stock")
+    @Column(name = "stock", nullable = false, columnDefinition = "INT default 1")
     private int stock;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     public int getId() {

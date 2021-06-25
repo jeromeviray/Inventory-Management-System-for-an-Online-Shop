@@ -40,8 +40,8 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public void addStock(int inventory_id, int product_id, int stock) {
-        Inventory inventory = inventoryRepository.findByInventoryIdAndProductId(inventory_id, product_id);
+    public void addStock(int inventoryId, int productId, int stock) {
+        Inventory inventory = inventoryRepository.findByInventoryIdAndProductId(inventoryId, productId);
         if(inventory == null) throw new ProductNotFound(String.format("Product not found"));
 
         int stocks = inventory.getStock() + stock;

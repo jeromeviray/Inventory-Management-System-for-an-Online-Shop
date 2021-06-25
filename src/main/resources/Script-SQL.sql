@@ -74,6 +74,13 @@ create table imsos.shopping_order(
 --     product_id int not null,
 --     cart_id int not null
 -- );
+create table imsos.user_information(
+	user_information_id int(7) primary key auto_increment,
+    first_name varchar(50),
+    last_name varchar(50),
+    phone_number int(10),
+    birthday date
+);
 
 
 

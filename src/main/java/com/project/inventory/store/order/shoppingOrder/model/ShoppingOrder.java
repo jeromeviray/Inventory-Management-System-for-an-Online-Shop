@@ -8,43 +8,46 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "shopping_order")
+@Transactional
 public class ShoppingOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "shopping_order_id")
+    @Column(name = "shopping_order_id", columnDefinition = "int(7)")
     private int id;
 
-    @Column(name = "order_status")
+    @Column(name = "order_status", nullable = false, columnDefinition = "varchar(30)")
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    @Column(name = "total_amount")
+    @Column(name = "total_amount", nullable = false)
     private double totalAmount;
 
     @CreationTimestamp
-    @Column(name = "ordered_at")
+    @Column(name = "ordered_at", nullable = false, columnDefinition = "DATETIME default current_timestamp")
     private Date orderedAt;
 
     @UpdateTimestamp
-    @Column(name = "delivered_at")
+    @Column(name = "delivered_at", nullable = false, columnDefinition = "DATETIME default current_timestamp on update current_timestamp")
     private Date deliveredAt;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "payment_id")
+    @JoinColumn(name = "payment_id", nullable = false)
     private PaymentMethod paymentMethod;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "customer_address_id")
+    @JoinColumn(name = "customer_address_id", nullable = false)
     private CustomerAddress customerAddress;
 
     @OneToMany(mappedBy = "shoppingOrder", fetch = FetchType.EAGER, cascade = CascadeType.ALL)

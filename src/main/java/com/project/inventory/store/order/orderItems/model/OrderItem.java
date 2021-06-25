@@ -19,22 +19,22 @@ public class OrderItem {
     @Column(name = "order_item_id")
     private int id;
 
-    @Column(name = "quantity")
+    @Column(name = "quantity", columnDefinition = "INT default 1", nullable = false)
     private int quantity;
 
-    @Column(name = "amount")
+    @Column(name = "amount", nullable = false)
     private double amount;
 
     @CreationTimestamp
-    @Column(name = "purchased_at")
+    @Column(name = "purchased_at", columnDefinition = "DATETIME default current_timestamp", nullable = false)
     private Date purchasedAt;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "shopping_order_id")
+    @JoinColumn(name = "shopping_order_id", nullable = false)
     private ShoppingOrder shoppingOrder;
 
     public OrderItem() {
