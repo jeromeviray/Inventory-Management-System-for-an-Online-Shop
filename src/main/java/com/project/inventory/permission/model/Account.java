@@ -1,9 +1,5 @@
 package com.project.inventory.permission.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.inventory.cart.model.Cart;
-import com.project.inventory.customer.address.model.CustomerAddress;
-import com.project.inventory.order.shoppingOrder.model.ShoppingOrder;
 import com.project.inventory.permission.role.model.Role;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;

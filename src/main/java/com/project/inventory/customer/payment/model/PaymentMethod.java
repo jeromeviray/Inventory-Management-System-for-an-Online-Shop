@@ -1,7 +1,7 @@
 package com.project.inventory.customer.payment.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.inventory.order.shoppingOrder.model.ShoppingOrder;
+import com.project.inventory.store.order.shoppingOrder.model.ShoppingOrder;
 
 import javax.persistence.*;
 import javax.transaction.Transactional;
