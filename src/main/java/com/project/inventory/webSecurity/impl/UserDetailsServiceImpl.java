@@ -29,15 +29,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Account account = accountService.getAccountByUsername(username);
         if(account == null){
             logger.info( "Username {} not found!", username );
-            throw new UsernameNotFoundException(String.format("Username Not Found %s"+ username));
+            throw new UsernameNotFoundException(String.format("Username Not Found" + username));
         }
         return new User(
                             account.getUsername(),
                             account.getPassword(),
-                            account.isDeleted(),
+                            account.isEnabled(),
                             true,
                             true,
-                            true,
+                            account.isLocked(),
                             getGrantedAuthorities(account) );
 
     }

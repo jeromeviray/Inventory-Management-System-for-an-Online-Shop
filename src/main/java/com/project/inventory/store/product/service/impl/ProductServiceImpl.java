@@ -1,13 +1,18 @@
 package com.project.inventory.store.product.service.impl;
 
+import com.project.inventory.exception.InvalidException;
 import com.project.inventory.exception.product.ProductNotFound;
 import com.project.inventory.exception.product.ProductNotUpdatedException;
+import com.project.inventory.store.information.model.StoreInformation;
+import com.project.inventory.store.information.repository.StoreInformationRepository;
+import com.project.inventory.store.information.service.StoreInformationService;
 import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.inventory.repository.InventoryRepository;
 import com.project.inventory.store.product.model.Product;
 import com.project.inventory.store.product.model.ProductDto;
 import com.project.inventory.store.product.repository.ProductRepository;
 import com.project.inventory.store.product.service.ProductService;
+import org.hibernate.service.NullServiceException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,18 +32,27 @@ public class ProductServiceImpl implements ProductService {
     private InventoryRepository inventoryRepository;
     @Autowired
     private ModelMapper mapper;
+    @Autowired
+    private StoreInformationService storeInformationService;
 
     @Override
     public Product saveProduct(Product product) {
         if(product != null){
-            logger.info("{}", "Product with ID "+product.getId() +" is Saved Successfully");
-            Product savedProduct = productRepository.save(product);
-            saveProductInventory(savedProduct);
-            return savedProduct;
+            try {
+                StoreInformation storeInformation = storeInformationService.getStoreInformationByLocation(product.getStoreInformation().getLocation());
+
+                product.setStoreInformation(storeInformation);
+                Product savedProduct = productRepository.save(product);
+
+                saveProductInventory(savedProduct);
+                return savedProduct;
+
+            } catch (InvalidException e) {
+                throw new InvalidException("Unsuccessfully saved. Please Try Again!");
+            }
         }else {
-            logger.info("{}", "Failed to Saved the product with ID "+product.getId());
+            throw new NullServiceException(super.getClass());
         }
-        return null;
     }
     public void saveProductInventory(Product product){
         // it will save the product in inventory when creating a product

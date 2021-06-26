@@ -1,5 +1,6 @@
 package com.project.inventory.store.product.model;
 
+import com.project.inventory.store.information.model.StoreInformation;
 import com.project.inventory.store.inventory.model.Inventory;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -8,6 +9,7 @@ import javax.persistence.*;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -43,6 +45,9 @@ public class Product implements Serializable {
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Inventory inventory;
 
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false, updatable = false)
+    private StoreInformation storeInformation;
 
     public Product() {
     }
@@ -53,7 +58,7 @@ public class Product implements Serializable {
         this.price = price;
     }
 
-    public Product(int id, String name, String description, double price, boolean isDeleted, Date created, Date updated) {
+    public Product(int id, String name, String description, double price, boolean isDeleted, Date created, Date updated, StoreInformation storeInformation) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -61,6 +66,7 @@ public class Product implements Serializable {
         this.isDeleted = isDeleted;
         this.created = created;
         this.updated = updated;
+        this.storeInformation = storeInformation;
     }
 
     public int getId() {
@@ -119,19 +125,25 @@ public class Product implements Serializable {
         isDeleted = deleted;
     }
 
+    public StoreInformation getStoreInformation() {
+        return storeInformation;
+    }
+
+    public void setStoreInformation(StoreInformation storeInformation) {
+        this.storeInformation = storeInformation;
+    }
 
     @Override
     public boolean equals(Object o) {
-
         if (this == o) return true;
         if (!(o instanceof Product)) return false;
         Product product = (Product) o;
-        return getId() == product.getId() && Double.compare(product.getPrice(), getPrice()) == 0 && isDeleted() == product.isDeleted() && Objects.equals(getName(), product.getName()) && Objects.equals(getDescription(), product.getDescription()) && Objects.equals(getCreated(), product.getCreated()) && Objects.equals(getUpdated(), product.getUpdated()) && Objects.equals(inventory, product.inventory);
+        return getId() == product.getId() && Double.compare(product.getPrice(), getPrice()) == 0 && isDeleted() == product.isDeleted() && Objects.equals(getName(), product.getName()) && Objects.equals(getDescription(), product.getDescription()) && Objects.equals(getCreated(), product.getCreated()) && Objects.equals(getUpdated(), product.getUpdated()) && Objects.equals(inventory, product.inventory) && Objects.equals(getStoreInformation(), product.getStoreInformation());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), getPrice(), getCreated(), getUpdated(), isDeleted(), inventory);
+        return Objects.hash(getId(), getName(), getDescription(), getPrice(), getCreated(), getUpdated(), isDeleted(), inventory, getStoreInformation());
     }
 
     @Override
@@ -144,6 +156,8 @@ public class Product implements Serializable {
                 ", created=" + created +
                 ", updated=" + updated +
                 ", isDeleted=" + isDeleted +
+                ", inventory=" + inventory +
+                ", storeInformation=" + storeInformation +
                 '}';
     }
 }
