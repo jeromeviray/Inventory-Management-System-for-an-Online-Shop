@@ -79,7 +79,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
             // Our public endpoints
             .antMatchers(HttpMethod.POST,"/api/v1/account/**").permitAll()
-            .antMatchers(HttpMethod.GET,"/api/v1/account/information/**").permitAll()
+                    .antMatchers(HttpMethod.POST,"/api/v1/products/**").permitAll()
+                    .antMatchers(HttpMethod.GET,"/api/v1/account/**").permitAll()
+                    .antMatchers(HttpMethod.POST,"/api/v1/store/**").permitAll()
+                    .antMatchers(HttpMethod.GET,"/api/v1/account/information/**").permitAll()
             // Our private endpoints
             .anyRequest().authenticated();
 

@@ -3,6 +3,7 @@ package com.project.inventory.permission.controller;
 import com.project.inventory.permission.model.Account;
 import com.project.inventory.permission.model.ChangePassword;
 import com.project.inventory.permission.service.AccountService;
+import com.project.inventory.permission.service.AuthenticatedUser;
 import com.project.inventory.webSecurity.impl.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,19 +20,22 @@ public class AccountController {
     private AccountService accountService;
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
+    @Autowired
+    private AuthenticatedUser authenticatedUser;
 
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity<?> saveAccount(@RequestBody Account account){
+        logger.info("{}", account.getUsername());
         accountService.saveUserAccount(account);
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    @ResponseBody
-    public ResponseEntity<?> loginAccount(@RequestBody Account account){
-        return new ResponseEntity(userDetailsService.loadUserByUsername(account.getUsername()), HttpStatus.OK);
-    }
+//    @RequestMapping(value = "/login", method = RequestMethod.POST)
+//    @ResponseBody
+//    public ResponseEntity<?> loginAccount(@RequestBody Account account){
+//        return new ResponseEntity(userDetailsService.loadUserByUsername(account.getUsername()), HttpStatus.OK);
+//    }
 
     @RequestMapping(value = "/change/password", method = RequestMethod.POST)
     @ResponseBody
@@ -56,5 +60,11 @@ public class AccountController {
     @ResponseBody
     public ResponseEntity<?> changeUsername(@RequestBody Account account){
         return new ResponseEntity(accountService.changeUsername(account.getId(), account.getUsername()), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/authenticated")
+    public ResponseEntity<?> getAuthenticatedUser(){
+        Account account = authenticatedUser.getUserDetails();
+        return new ResponseEntity(accountService.convertEntityToDto(account), HttpStatus.OK);
     }
 }

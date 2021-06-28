@@ -1,5 +1,6 @@
 package com.project.inventory.store.product.controller;
 
+import com.project.inventory.store.information.model.StoreInformation;
 import com.project.inventory.store.product.model.Product;
 import com.project.inventory.store.product.service.ProductService;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public class ProductRestController {
 
     @RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
     public ResponseEntity<?> updateProduct(@PathVariable int id,
-                                    @RequestBody Product product){
+                                           @RequestBody Product product){
         logger.info("{}", product);
         return ResponseEntity.ok(productService.updateProduct(id, product));
     }

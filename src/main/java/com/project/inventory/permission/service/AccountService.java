@@ -1,6 +1,7 @@
 package com.project.inventory.permission.service;
 
 import com.project.inventory.permission.model.Account;
+import com.project.inventory.permission.model.AccountDto;
 import com.project.inventory.permission.model.ChangePassword;
 
 public interface AccountService {
@@ -9,4 +10,6 @@ public interface AccountService {
     Account getAccountByUsername(String username);
     void changePassword(ChangePassword changePassword);
     String changeUsername(int id, String username);
+    AccountDto convertEntityToDto(Account account);
+    Account convertDtoToEntity(AccountDto accountDto);
 }

@@ -87,6 +87,15 @@ public class CustomGlobalException {
                 request.getDescription(false));
         return new ResponseEntity(errorDetails, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(InvalidException.class)
+    public ResponseEntity<?> handleInvalidException(InvalidException invalidException,
+                                                              WebRequest request){
+        ErrorDetails errorDetails = new ErrorDetails(HttpStatus.NOT_FOUND,
+                new Date(),
+                invalidException.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     // handle global exceptions
 
     @ExceptionHandler(Exception.class)

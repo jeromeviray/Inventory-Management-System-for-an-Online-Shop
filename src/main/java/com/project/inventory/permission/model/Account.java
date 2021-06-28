@@ -39,15 +39,17 @@ public class Account implements Serializable {
     @Column(name = "updated_at", nullable = false)
     private Date updated;
 
-    @Column(name = "is_deleted", columnDefinition = "TINYINT(1) default 0", nullable = false)
-    private boolean isDeleted;
+    @Column(name = "is_enabled", columnDefinition = "TINYINT(1) default 1", nullable = false)
+    private boolean isEnabled;
 
-    @ManyToMany
+    @Column(name = "is_locked", columnDefinition = "TINYINT(1) default 1", nullable = false)
+    private boolean isLocked;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = " user_privilege ",
                 joinColumns = { @JoinColumn ( name = "account_id")},
                 inverseJoinColumns = { @JoinColumn (name = "role_id")})
     private Set<Role> roles = new HashSet<>();
-
 
     public int getId() {
         return id;
@@ -97,12 +99,20 @@ public class Account implements Serializable {
         this.updated = updated;
     }
 
-    public boolean isDeleted() {
-        return isDeleted;
+    public boolean isEnabled() {
+        return isEnabled;
     }
 
-    public void setDeleted(boolean deleted) {
-        isDeleted = deleted;
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
     }
 
     public Set<Role> getRoles() {
@@ -118,16 +128,26 @@ public class Account implements Serializable {
         if (this == o) return true;
         if (!(o instanceof Account)) return false;
         Account account = (Account) o;
-        return getId() == account.getId() && isDeleted() == account.isDeleted() && Objects.equals(getUsername(), account.getUsername()) && Objects.equals(getPassword(), account.getPassword()) && Objects.equals(getEmail(), account.getEmail()) && Objects.equals(getCreated(), account.getCreated()) && Objects.equals(getUpdated(), account.getUpdated()) && Objects.equals(getRoles(), account.getRoles());
+        return getId() == account.getId() && isEnabled() == account.isEnabled() && isLocked() == account.isLocked() && Objects.equals(getUsername(), account.getUsername()) && Objects.equals(getPassword(), account.getPassword()) && Objects.equals(getEmail(), account.getEmail()) && Objects.equals(getCreated(), account.getCreated()) && Objects.equals(getUpdated(), account.getUpdated()) && Objects.equals(getRoles(), account.getRoles());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getUsername(), getPassword(), getEmail(), getCreated(), getUpdated(), isDeleted(), getRoles());
+        return Objects.hash(getId(), getUsername(), getPassword(), getEmail(), getCreated(), getUpdated(), isEnabled(), isLocked(), getRoles());
     }
 
     @Override
     public String toString() {
-        return super.toString();
+        return "Account{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", created=" + created +
+                ", updated=" + updated +
+                ", isEnabled=" + isEnabled +
+                ", isLocked=" + isLocked +
+                ", roles=" + roles +
+                '}';
     }
 }

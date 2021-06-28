@@ -3,6 +3,7 @@ package com.project.inventory.permission.service.impl;
 import com.project.inventory.exception.account.AccountNotFoundException;
 import com.project.inventory.exception.account.PasswordException;
 import com.project.inventory.permission.model.Account;
+import com.project.inventory.permission.model.AccountDto;
 import com.project.inventory.permission.model.ChangePassword;
 import com.project.inventory.permission.repository.AccountRepository;
 import com.project.inventory.permission.role.model.Role;
@@ -11,6 +12,7 @@ import com.project.inventory.permission.role.service.RoleService;
 import com.project.inventory.permission.service.AccountService;
 import com.project.inventory.user.information.model.UserInformation;
 import com.project.inventory.user.information.service.UserInformationService;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,8 @@ public class AccountServiceImpl implements AccountService {
     private RoleService roleService;
     @Autowired
     private UserInformationService userInformationService;
+    @Autowired
+    private ModelMapper mapper;
 
 
     @Override
@@ -40,6 +44,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void saveUserAccount(Account account) {
+        logger.info("{}", account.getPassword());
         account.setPassword( passwordEncoder.encode(account.getPassword()) );
 
         Role role = roleService.getRoleByRoleName(RoleType.CUSTOMER);
@@ -79,6 +84,17 @@ public class AccountServiceImpl implements AccountService {
         Account updatedUsernameAccount = accountRepository.save(account);
 
         return updatedUsernameAccount.getUsername();
+    }
+
+    @Override
+    public AccountDto convertEntityToDto(Account account) {
+        return mapper.map(account, AccountDto.class);
+    }
+
+    @Override
+    public Account convertDtoToEntity(AccountDto accountDto) {
+        return mapper.map(accountDto, Account.class);
+
     }
 
     protected boolean comparePassword(Account account, String currentPassword){
