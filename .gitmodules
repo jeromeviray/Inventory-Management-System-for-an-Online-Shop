@@ -1,0 +1,3 @@
+[submodule "src/react-app-inventory-management-system"]
+	path = src/react-app-inventory-management-system
+	url = https://github.com/jeromeviray/react-app-inventory-management-system.git
