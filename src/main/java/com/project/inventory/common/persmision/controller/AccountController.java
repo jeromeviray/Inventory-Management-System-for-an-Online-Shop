@@ -4,7 +4,6 @@ import com.project.inventory.common.persmision.model.Account;
 import com.project.inventory.common.persmision.model.ChangePassword;
 import com.project.inventory.common.persmision.service.AccountService;
 import com.project.inventory.common.persmision.service.AuthenticatedUser;
-import com.project.inventory.webSecurity.impl.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +17,8 @@ public class AccountController {
     Logger logger = LoggerFactory.getLogger(AccountController.class);
     @Autowired
     private AccountService accountService;
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+//    @Autowired
+//    private UserDetailsServiceImpl userDetailsService;
     @Autowired
     private AuthenticatedUser authenticatedUser;
 

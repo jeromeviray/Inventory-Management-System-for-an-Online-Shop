@@ -24,9 +24,6 @@ public class AuthenticatedUserImpl implements AuthenticatedUser {
     @Override
     public Authentication getAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication == null){
-//            throw new UsernameNotFoundException(String.format("There is No Authenticated Account "));
-//        }
         return authentication;
     }
 
