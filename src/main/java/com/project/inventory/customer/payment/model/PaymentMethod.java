@@ -1,7 +1,7 @@
 package com.project.inventory.customer.payment.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.inventory.store.order.shoppingOrder.model.ShoppingOrder;
+import com.project.inventory.store.order.orderManagement.model.Order;
 
 import javax.persistence.*;
 import javax.transaction.Transactional;
@@ -14,7 +14,6 @@ public class PaymentMethod {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "payment_id", columnDefinition = "int(7)")
     private int id;
 
     @Column(name = "payment_method", length = 30, nullable = false)
@@ -22,7 +21,7 @@ public class PaymentMethod {
 
     @OneToOne(mappedBy = "paymentMethod", fetch = FetchType.LAZY)
     @JsonIgnore
-    private ShoppingOrder shoppingOrder;
+    private Order order;
 
     public int getId() {
         return id;

@@ -12,7 +12,6 @@ public class Inventory implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "inventory_id", columnDefinition = "int(7)")
     private int id;
 
     @Column(name = "stock", nullable = false, columnDefinition = "INT default 1")

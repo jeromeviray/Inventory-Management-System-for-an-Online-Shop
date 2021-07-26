@@ -2,7 +2,7 @@ package com.project.inventory.store.cart.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.inventory.store.cart.cartItem.model.CartItem;
-import com.project.inventory.user.permission.model.Account;
+import com.project.inventory.common.persmision.model.Account;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,7 +14,6 @@ public class Cart implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cart_id", columnDefinition = "int(7)")
     private int id;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

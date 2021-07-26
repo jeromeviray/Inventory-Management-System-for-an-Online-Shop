@@ -7,12 +7,11 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@Table(name = " store_information")
+@Table(name = "store")
 public class StoreInformation implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "store_id", columnDefinition = "int(7)")
     private int id;
 
     @Column(name = "store_name", columnDefinition = "varchar(100)", nullable = false)

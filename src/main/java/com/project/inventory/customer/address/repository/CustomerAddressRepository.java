@@ -2,7 +2,6 @@ package com.project.inventory.customer.address.repository;
 
 import com.project.inventory.customer.address.model.CustomerAddress;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;

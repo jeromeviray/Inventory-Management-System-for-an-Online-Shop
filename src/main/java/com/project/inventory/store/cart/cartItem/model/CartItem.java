@@ -15,7 +15,6 @@ public class CartItem implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cart_item_id", columnDefinition = "int(7)")
     private int id;
 
     @Column( name = "quantity", columnDefinition = "int default 1")

@@ -1,7 +1,7 @@
 package com.project.inventory.customer.address.model;
 
-import com.project.inventory.user.permission.model.Account;
-import com.project.inventory.user.information.model.UserInformation;
+import com.project.inventory.common.persmision.model.Account;
+import com.project.inventory.common.user.model.User;
 
 import javax.persistence.*;
 import javax.transaction.Transactional;
@@ -14,7 +14,6 @@ public class CustomerAddress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "address_id", columnDefinition = "int(7)")
     private int id;
 
     @Column(name = "firstName", nullable = false, length = 20)
@@ -52,8 +51,8 @@ public class CustomerAddress {
     private Account account;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "userInformation_id", nullable = false)
-    private UserInformation userInformation;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     public int getId() {
         return id;
@@ -151,12 +150,12 @@ public class CustomerAddress {
         this.account = account;
     }
 
-    public UserInformation getUserInformation() {
-        return userInformation;
+    public User getUserInformation() {
+        return user;
     }
 
-    public void setUserInformation(UserInformation userInformation) {
-        this.userInformation = userInformation;
+    public void setUserInformation(User user) {
+        this.user = user;
     }
 
     @Override
@@ -187,7 +186,7 @@ public class CustomerAddress {
                 ", street='" + street + '\'' +
                 ", isDefault=" + isDefault +
                 ", account=" + account +
-                ", userInformation=" + userInformation +
+                ", userInformation=" + user +
                 '}';
     }
 }
