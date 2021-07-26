@@ -8,7 +8,7 @@ import com.project.inventory.store.cart.model.Cart;
 import com.project.inventory.store.cart.service.CartService;
 import com.project.inventory.exception.cartItem.CartItemNotFoundException;
 import com.project.inventory.exception.cartItem.CartItemNotValidException;
-import com.project.inventory.permission.service.AuthenticatedUser;
+import com.project.inventory.user.permission.service.AuthenticatedUser;
 import com.project.inventory.store.product.model.Product;
 import com.project.inventory.store.product.service.ProductService;
 import org.modelmapper.ModelMapper;

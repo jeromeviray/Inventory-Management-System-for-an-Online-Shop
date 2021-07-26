@@ -2,7 +2,7 @@ package com.project.inventory.user.information.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.inventory.customer.address.model.CustomerAddress;
-import com.project.inventory.permission.model.Account;
+import com.project.inventory.user.permission.model.Account;
 
 import javax.persistence.*;
 import java.util.Collection;

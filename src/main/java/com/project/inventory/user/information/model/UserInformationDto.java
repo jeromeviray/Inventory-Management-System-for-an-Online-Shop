@@ -1,7 +1,7 @@
 package com.project.inventory.user.information.model;
 
 import com.project.inventory.customer.address.model.CustomerAddressDto;
-import com.project.inventory.permission.model.AccountInfoDto;
+import com.project.inventory.user.permission.model.AccountInfoDto;
 
 import java.util.Collection;
 import java.util.Date;

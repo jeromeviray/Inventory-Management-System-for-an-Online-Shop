@@ -1,6 +1,6 @@
 package com.project.inventory.customer.address.model;
 
-import com.project.inventory.permission.model.Account;
+import com.project.inventory.user.permission.model.Account;
 import com.project.inventory.user.information.model.UserInformation;
 
 import javax.persistence.*;

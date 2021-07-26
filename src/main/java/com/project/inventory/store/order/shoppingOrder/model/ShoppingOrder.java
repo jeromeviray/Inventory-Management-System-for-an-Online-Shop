@@ -3,7 +3,7 @@ package com.project.inventory.store.order.shoppingOrder.model;
 import com.project.inventory.customer.address.model.CustomerAddress;
 import com.project.inventory.customer.payment.model.PaymentMethod;
 import com.project.inventory.store.order.orderItems.model.OrderItem;
-import com.project.inventory.permission.model.Account;
+import com.project.inventory.user.permission.model.Account;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
