@@ -44,13 +44,11 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void saveUserAccount(Account account) {
-        logger.info("{}", account.getPassword());
         account.setPassword( passwordEncoder.encode(account.getPassword()) );
 
         Role role = roleService.getRoleByRoleName(RoleType.CUSTOMER);
         Set<Role> authority = new HashSet<>();
         authority.add(role);
-        logger.info("{}", role.getRoleName());
 
         account.setRoles(authority);
 

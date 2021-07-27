@@ -5,19 +5,27 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.inventory.common.persmision.model.Account;
+import com.project.inventory.common.persmision.role.model.Role;
+import com.project.inventory.common.persmision.service.AccountService;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
+import com.project.inventory.jwtUtil.response.JwtResponse;
+import com.project.inventory.webSecurity.filter.CustomAuthenticationFilter;
+import com.project.inventory.webSecurity.filter.CustomAuthorizationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.util.Base64;
-import java.util.Date;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Service
 public class JwtProviderImpl implements JwtProvider {
@@ -29,33 +37,35 @@ public class JwtProviderImpl implements JwtProvider {
 
     private String SECRET_KEY = Base64.getEncoder().encodeToString("osqda#x!@jkd!@hda2".getBytes());
 
+    @Autowired
+    private AccountService accountService;
     public Algorithm getClaimSecretToken(){
         Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY.getBytes());
         return algorithm;
     }
 
     @Override
-    public String accessToken(User user) {
+    public String accessToken(Account account) {
 
         return JWT.create()
-                .withSubject(user.getUsername())
+                .withSubject(account.getUsername())
                 .withExpiresAt(accessTokenExpiresAt)
                 .withIssuedAt(new Date())
-                .withClaim("roles", user.getAuthorities()
-                        .stream().map(GrantedAuthority::getAuthority)
+                .withClaim("roles", account.getRoles()
+                        .stream().map(Role::getRoleName)
                         .collect(Collectors.toList()))
                 .sign(getClaimSecretToken());
 
     }
 
     @Override
-    public String refreshToken(User user) {
+    public String refreshToken(Account account) {
         return JWT.create()
-                .withSubject(user.getUsername())
+                .withSubject(account.getUsername())
                 .withExpiresAt(refreshTokenExpiresAt)
                 .withIssuedAt(new Date())
-                .withClaim("roles", user.getAuthorities()
-                        .stream().map(GrantedAuthority::getAuthority)
+                .withClaim("roles", account.getRoles()
+                        .stream().map(Role::getRoleName)
                         .collect(Collectors.toList()))
                 .sign(getClaimSecretToken());
     }
@@ -74,5 +84,31 @@ public class JwtProviderImpl implements JwtProvider {
     @Override
     public String[] getRoles(String token) {
         return verifier(token).getClaim("roles").asArray(String.class);
+    }
+
+    @Override
+    public void verifierRefreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        CustomAuthorizationFilter customAuthorizationFilter = new CustomAuthorizationFilter();
+        String refreshToken = customAuthorizationFilter.resolveToken(request);
+        if(refreshToken != null){
+            try{
+                String username = getSubjectClaim(refreshToken);
+                logger.info("Get refresh token", username);
+                Account account = accountService.getAccountByUsername(username);
+                String accessToken = accessToken(account);
+                response.setContentType(APPLICATION_JSON_VALUE);
+                new ObjectMapper().writeValue(response.getOutputStream(), new JwtResponse (username, accessToken, refreshToken) );
+
+            }catch (Exception exception){
+                logger.info("Error Logging in: {}", exception.getMessage());
+
+                response.setStatus(FORBIDDEN.value());
+                Map<String, String> error = new HashMap<>();
+                error.put("error_message", exception.getMessage());
+                response.setContentType(APPLICATION_JSON_VALUE);
+                new ObjectMapper().writeValue(response.getOutputStream(), error);
+            }
+        }
+
     }
 }

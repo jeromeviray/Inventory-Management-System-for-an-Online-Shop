@@ -3,7 +3,6 @@ package com.project.inventory.webSecurity.impl;
 import com.project.inventory.common.persmision.model.Account;
 import com.project.inventory.common.persmision.role.model.Role;
 import com.project.inventory.common.persmision.service.AccountService;
-import com.project.inventory.exception.account.AccountException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.security.auth.login.AccountLockedException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +29,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Account account = accountService.getAccountByUsername(username);
         if(account == null ){
             logger.info( "Account {} not found!", username );
-            throw new UsernameNotFoundException(String.format("Username Not Found" + username));
+            throw new UsernameNotFoundException("Account Not Found");
         }
 
         return new User(
@@ -42,7 +40,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                         true,
                         account.isLocked(),
                         getGrantedAuthorities(account) );
-
     }
 
     private List<GrantedAuthority> getGrantedAuthorities(Account account ){

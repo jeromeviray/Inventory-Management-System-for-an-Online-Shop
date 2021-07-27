@@ -1,15 +1,33 @@
 package com.project.inventory.common.persmision.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.inventory.common.persmision.model.Account;
 import com.project.inventory.common.persmision.model.ChangePassword;
 import com.project.inventory.common.persmision.service.AccountService;
 import com.project.inventory.common.persmision.service.AuthenticatedUser;
+import com.project.inventory.jwtUtil.provider.JwtProvider;
+import com.project.inventory.jwtUtil.provider.impl.JwtProviderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.util.Arrays.stream;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping(value = "api/v1/account")
@@ -17,24 +35,19 @@ public class AccountController {
     Logger logger = LoggerFactory.getLogger(AccountController.class);
     @Autowired
     private AccountService accountService;
-//    @Autowired
-//    private UserDetailsServiceImpl userDetailsService;
+
     @Autowired
     private AuthenticatedUser authenticatedUser;
+
+    @Autowired
+    private JwtProvider jwtProvider;
 
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity<?> saveAccount(@RequestBody Account account){
-        logger.info("{}", account.getUsername());
         accountService.saveUserAccount(account);
         return new ResponseEntity(HttpStatus.OK);
     }
-
-//    @RequestMapping(value = "/login", method = RequestMethod.POST)
-//    @ResponseBody
-//    public ResponseEntity<?> loginAccount(@RequestBody Account account){
-//        return new ResponseEntity(userDetailsService.loadUserByUsername(account.getUsername()), HttpStatus.OK);
-//    }
 
     @RequestMapping(value = "/change/password", method = RequestMethod.POST)
     @ResponseBody
@@ -43,13 +56,12 @@ public class AccountController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    @ResponseBody
+    @RequestMapping(value = "/id/{id}", method = RequestMethod.POST)
     public ResponseEntity<?> getAccountById(@PathVariable int id){
         return new ResponseEntity(accountService.getAccountById(id), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{username}", method = RequestMethod.POST)
+    @RequestMapping(value = "/username/{username}", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<?> getAccountById(@PathVariable String username){
         return new ResponseEntity(accountService.getAccountByUsername(username), HttpStatus.OK);
@@ -59,6 +71,12 @@ public class AccountController {
     @ResponseBody
     public ResponseEntity<?> changeUsername(@RequestBody Account account){
         return new ResponseEntity(accountService.changeUsername(account.getId(), account.getUsername()), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/token/refresh", method = RequestMethod.GET)
+    public ResponseEntity<?> tokenRefresh(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        jwtProvider.verifierRefreshToken(request, response);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/authenticated")
