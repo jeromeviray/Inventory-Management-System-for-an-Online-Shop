@@ -9,7 +9,6 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = " role_id ", length = 7)
     private int id;
 
     @Column(name = " role_name ", nullable = false, length = 20)

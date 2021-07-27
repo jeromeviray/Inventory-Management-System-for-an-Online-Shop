@@ -33,8 +33,6 @@ public class User {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Collection<CustomerAddress> customerAddresses;
 
     public Integer getId() {
         return id;
@@ -84,14 +82,6 @@ public class User {
         this.account = account;
     }
 
-    public Collection<CustomerAddress> getCustomerAddresses() {
-        return customerAddresses;
-    }
-
-    public void setCustomerAddresses(Collection<CustomerAddress> customerAddresses) {
-        this.customerAddresses = customerAddresses;
-    }
-
     @Override
     public String toString() {
         return "UserInformation{" +
@@ -101,7 +91,6 @@ public class User {
                 ", phoneNumber=" + phoneNumber +
                 ", birthDay=" + birthDay +
                 ", account=" + account +
-//                ", customerAddresses=" + customerAddresses +
                 '}';
     }
 }

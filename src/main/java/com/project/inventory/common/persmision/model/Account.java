@@ -38,11 +38,11 @@ public class Account implements Serializable {
     @Column(name = "updated_at", nullable = false)
     private Date updated;
 
-    @Column(name = "is_enabled", columnDefinition = "TINYINT(1) default 1", nullable = false)
-    private boolean isEnabled;
+    @Column(name = "is_enabled", columnDefinition = "TINYINT(1) ", nullable = false)
+    private boolean isEnabled = true;
 
-    @Column(name = "is_locked", columnDefinition = "TINYINT(1) default 1", nullable = false)
-    private boolean isLocked;
+    @Column(name = "is_locked", columnDefinition = "TINYINT(1)", nullable = false)
+    private boolean isLocked = true;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = " user_privilege ",

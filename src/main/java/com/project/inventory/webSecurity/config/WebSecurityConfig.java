@@ -68,7 +68,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                             response.sendError( HttpServletResponse.SC_UNAUTHORIZED,
                                     ex.getMessage() );
                 });
-        http.authorizeRequests().antMatchers("/api/user/login").permitAll();
+        //public endpoint
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/user/login").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/account/register").permitAll();
+        //private endpoint
         http.authorizeRequests().anyRequest().authenticated();
         //add filter to filter the user trying to login
         http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));

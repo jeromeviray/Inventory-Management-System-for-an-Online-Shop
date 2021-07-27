@@ -24,10 +24,6 @@ public class OrderItem {
     @Column(name = "amount", nullable = false)
     private double amount;
 
-    @CreationTimestamp
-    @Column(name = "purchased_at", columnDefinition = "DATETIME default current_timestamp", nullable = false)
-    private Date purchasedAt;
-
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
@@ -70,14 +66,6 @@ public class OrderItem {
         this.amount = amount;
     }
 
-    public Date getPurchasedAt() {
-        return purchasedAt;
-    }
-
-    public void setPurchasedAt(Date purchasedAt) {
-        this.purchasedAt = purchasedAt;
-    }
-
     public Product getProduct() {
         return product;
     }
@@ -91,12 +79,12 @@ public class OrderItem {
         if (this == o) return true;
         if (!(o instanceof OrderItem)) return false;
         OrderItem orderItem = (OrderItem) o;
-        return getId() == orderItem.getId() && getQuantity() == orderItem.getQuantity() && Double.compare(orderItem.getAmount(), getAmount()) == 0 && Objects.equals(getPurchasedAt(), orderItem.getPurchasedAt()) && Objects.equals(getProduct(), orderItem.getProduct()) && Objects.equals(order, orderItem.order);
+        return getId() == orderItem.getId() && getQuantity() == orderItem.getQuantity() && Double.compare(orderItem.getAmount(), getAmount()) == 0 && Objects.equals(getProduct(), orderItem.getProduct()) && Objects.equals(order, orderItem.order);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getQuantity(), getAmount(), getPurchasedAt(), getProduct(), order);
+        return Objects.hash(getId(), getQuantity(), getAmount(), getProduct(), order);
     }
 
     @Override
@@ -105,7 +93,6 @@ public class OrderItem {
                 "id=" + id +
                 ", quantity=" + quantity +
                 ", amount=" + amount +
-                ", purchasedAt=" + purchasedAt +
                 ", product=" + product +
                 ", shoppingOrder=" + order +
                 '}';
