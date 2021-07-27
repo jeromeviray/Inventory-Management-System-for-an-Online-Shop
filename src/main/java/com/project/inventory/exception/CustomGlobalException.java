@@ -1,5 +1,6 @@
 package com.project.inventory.exception;
 
+import com.project.inventory.exception.account.AccountException;
 import com.project.inventory.exception.account.AccountNotFoundException;
 import com.project.inventory.exception.cart.CartNotFound;
 import com.project.inventory.exception.cartItem.CartItemNotFoundException;
@@ -28,6 +29,12 @@ public class CustomGlobalException {
                                                             WebRequest request){
         ErrorDetails errorDetails = new ErrorDetails(HttpStatus.NOT_FOUND, new Date(), accountNotFoundException.getMessage(), request.getDescription(false));
         return new ResponseEntity(errorDetails, HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(AccountException.class)
+    public ResponseEntity<?> handleAccountException(AccountException AccountException,
+                                                            WebRequest request){
+        ErrorDetails errorDetails = new ErrorDetails(HttpStatus.BAD_REQUEST, new Date(), AccountException.getMessage(), request.getDescription(false));
+        return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(CartNotFound.class)

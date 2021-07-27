@@ -1,6 +1,7 @@
 package com.project.inventory.webSecurity.config;
 
 import com.project.inventory.webSecurity.filter.CustomAuthenticationFilter;
+import com.project.inventory.webSecurity.filter.CustomAuthorizationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -69,12 +71,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                                     ex.getMessage() );
                 });
         //public endpoint
-        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/user/login").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/v1/account/register").permitAll();
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/account/login", "/api/v1/account/register").permitAll();
         //private endpoint
         http.authorizeRequests().anyRequest().authenticated();
-        //add filter to filter the user trying to login
+        //add filter
         http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
+        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
             // Set permissions on endpoints
 //        http.authorizeRequests()
             // Our public endpoints

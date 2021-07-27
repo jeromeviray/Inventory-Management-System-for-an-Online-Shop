@@ -43,7 +43,7 @@ public class ProductRestController {
         return productService.getAllAvailableProducts();
     }
 
-    @RequestMapping(value = "/all", method = RequestMethod.GET)
+    @RequestMapping(value = "/", method = RequestMethod.GET)
     public List<Product> getAllProducts(){
         return productService.getProducts();
     }

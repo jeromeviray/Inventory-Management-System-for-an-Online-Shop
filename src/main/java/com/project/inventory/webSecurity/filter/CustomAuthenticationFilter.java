@@ -26,35 +26,23 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter  {
     Logger logger = LoggerFactory.getLogger(CustomAuthenticationFilter.class);
-
-    private JwtProviderImpl jwtProviderImpl;
 
     @Autowired
     private AuthenticatedUser authenticatedUser;
 
     private AuthenticationManager authenticationManager;
 
-    private static final Date accessTokenExpiresAt = new Date(System.currentTimeMillis() + 10 * 60 * 1000); // 1hr 3600000 or 10*60*1000 10 minutes duration
-
-    private static final Date refreshTokenExpiresAt = new Date(System.currentTimeMillis() + 604800000);
-    private String SECRET_KEY = "oqda#x!@jkd!@hda2";
-
-    @PostConstruct
-    protected void init() {
-        SECRET_KEY = Base64.getEncoder().encodeToString(SECRET_KEY.getBytes());
-    }
-
-//    public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
-//        this.authenticationManager = authenticationManager;
-//    }
-
     public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
-        setFilterProcessesUrl("/api/user/login");
+        setFilterProcessesUrl("/api/v1/account/login");
     }
 
     @Override
@@ -71,30 +59,14 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
-        logger.info("succeff");
+        JwtProvider jwtProvider = new JwtProviderImpl();
         User user = (User) authentication.getPrincipal();
-//        String accessToken = jwtProviderImpl.accessToken(user);
-//        String refreshToken = jwtProviderImpl.refreshToken(user);
-        Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
+        // tokens
+        Map<String, String> tokens = new HashMap<>();
 
-        String access = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(accessTokenExpiresAt)
-                .withIssuedAt(new Date())
-                .withClaim("roles", user.getAuthorities()
-                        .stream().map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.toList()))
-                .sign(algorithm);
-
-        String refresh = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(refreshTokenExpiresAt)
-                .withIssuedAt(new Date())
-                .withClaim("roles", user.getAuthorities()
-                        .stream().map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.toList()))
-                .sign(algorithm);
-        response.setHeader("access_token", access);
-        response.setHeader("refresh_token", refresh);
+        tokens.put("access_token", jwtProvider.accessToken(user));
+        tokens.put("refresh_token", jwtProvider.refreshToken(user));
+        response.setContentType(APPLICATION_JSON_VALUE);
+        new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }
 }
