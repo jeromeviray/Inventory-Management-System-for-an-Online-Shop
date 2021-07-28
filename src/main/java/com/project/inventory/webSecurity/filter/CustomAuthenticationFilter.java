@@ -5,6 +5,8 @@ import com.project.inventory.BeanUtils;
 import com.project.inventory.common.persmision.model.Account;
 import com.project.inventory.common.persmision.service.AccountService;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
+import com.project.inventory.jwtUtil.refreshToken.model.RefreshToken;
+import com.project.inventory.jwtUtil.refreshToken.service.RefreshTokenService;
 import com.project.inventory.jwtUtil.response.JwtResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,50 +23,55 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    Logger logger = LoggerFactory.getLogger ( CustomAuthenticationFilter.class );
+    Logger logger = LoggerFactory.getLogger( CustomAuthenticationFilter.class );
 
     @Autowired
-    private AccountService accountService = BeanUtils.getBean ( AccountService.class );
+    private AccountService accountService = BeanUtils.getBean( AccountService.class );
     @Autowired
-    private JwtProvider jwtProvider = BeanUtils.getBean ( JwtProvider.class );
+    private JwtProvider jwtProvider = BeanUtils.getBean( JwtProvider.class );
+    @Autowired
+    private RefreshTokenService refreshTokenService = BeanUtils.getBean( RefreshTokenService.class );
 
     private AuthenticationManager authenticationManager;
 
-    public CustomAuthenticationFilter () {
+    public CustomAuthenticationFilter() {
     }
 
-    public CustomAuthenticationFilter ( AuthenticationManager authenticationManager ) {
+    public CustomAuthenticationFilter( AuthenticationManager authenticationManager ) {
         this.authenticationManager = authenticationManager;
-        setFilterProcessesUrl ( "/api/v1/account/login" );
+        setFilterProcessesUrl( "/api/v1/account/login" );
     }
 
     @Override
-    public Authentication attemptAuthentication ( HttpServletRequest request, HttpServletResponse response ) throws AuthenticationException {
+    public Authentication attemptAuthentication( HttpServletRequest request, HttpServletResponse response ) throws AuthenticationException {
         try {
-            Account account = new ObjectMapper ().readValue ( request.getInputStream (), Account.class );
-            logger.info ( "Filtering user with username: {}", account.getUsername () );
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken ( account.getUsername (), account.getPassword () );
-            return authenticationManager.authenticate ( authenticationToken );
-        } catch ( IOException e ) {
-            throw new RuntimeException ( e );
+            Account account = new ObjectMapper().readValue( request.getInputStream(), Account.class );
+            logger.info( "Filtering user with username: {}", account.getUsername() );
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken( account.getUsername(), account.getPassword() );
+            return authenticationManager.authenticate( authenticationToken );
+        } catch( IOException e ) {
+            throw new RuntimeException( e );
         }
     }
 
     @Override
-    protected void successfulAuthentication ( HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication ) throws IOException, ServletException {
-        User user = ( User ) authentication.getPrincipal ();
-        Account account = accountService.getAccountByUsername ( user.getUsername () );
+    protected void successfulAuthentication( HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication ) throws IOException, ServletException {
+        User user = ( User ) authentication.getPrincipal();
+        Account account = accountService.getAccountByUsername( user.getUsername() );
+        response.setContentType( APPLICATION_JSON_VALUE );
         // tokens
-        String access_token = jwtProvider.accessToken (account);
-        String refresh_token = jwtProvider.refreshToken (account);
+        String access_token = jwtProvider.accessToken( account );
 
-        JwtResponse jwtResponse = new JwtResponse (user.getUsername (), access_token, refresh_token);
-        new ObjectMapper ().writeValue ( response.getOutputStream (), jwtResponse );
+        //save refresh token to database
+        RefreshToken refreshToken = refreshTokenService.saveRefreshToken( jwtProvider.accessToken( account ), account );
+        String refresh_token = refreshToken.getId().toString();
+
+
+        JwtResponse jwtResponse = new JwtResponse( user.getUsername(), access_token, refresh_token );
+        new ObjectMapper().writeValue( response.getOutputStream(), jwtResponse );
     }
 }

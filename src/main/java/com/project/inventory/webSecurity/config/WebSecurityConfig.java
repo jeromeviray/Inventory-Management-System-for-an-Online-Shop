@@ -61,8 +61,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests ()
                 .antMatchers ( HttpMethod.POST,
                         "/api/v1/account/login",
-                        "/api/v1/account/register" ).permitAll ()
-                .antMatchers ( HttpMethod.GET, "/api/v1/account/token/refresh" ).permitAll ();
+                        "/api/v1/account/register",
+                        "/api/v1/account/token/refresh" ).permitAll ();
         //private endpoint
         http.authorizeRequests ().anyRequest ().authenticated ();
         //add filter

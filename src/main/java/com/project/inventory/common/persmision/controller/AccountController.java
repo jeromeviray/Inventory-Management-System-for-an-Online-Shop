@@ -7,6 +7,7 @@ import com.project.inventory.common.persmision.service.AccountService;
 import com.project.inventory.common.persmision.service.AuthenticatedUser;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
 import com.project.inventory.jwtUtil.provider.impl.JwtProviderImpl;
+import com.project.inventory.jwtUtil.refreshToken.model.RefreshToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,10 +74,9 @@ public class AccountController {
         return new ResponseEntity(accountService.changeUsername(account.getId(), account.getUsername()), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/token/refresh", method = RequestMethod.GET)
-    public ResponseEntity<?> tokenRefresh(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        jwtProvider.verifierRefreshToken(request, response);
-        return new ResponseEntity(HttpStatus.OK);
+    @RequestMapping(value = "/token/refresh", method = RequestMethod.POST)
+    public ResponseEntity<?> tokenRefresh( @RequestBody RefreshToken refreshToken ) throws IOException {
+        return new ResponseEntity(jwtProvider.refreshToken(refreshToken), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/authenticated")
