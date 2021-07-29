@@ -1,7 +1,5 @@
 package com.project.inventory.common.persmision.service.impl;
 
-import com.project.inventory.exception.account.AccountNotFoundException;
-import com.project.inventory.exception.account.PasswordException;
 import com.project.inventory.common.persmision.model.Account;
 import com.project.inventory.common.persmision.model.AccountDto;
 import com.project.inventory.common.persmision.model.ChangePassword;
@@ -12,6 +10,8 @@ import com.project.inventory.common.persmision.role.service.RoleService;
 import com.project.inventory.common.persmision.service.AccountService;
 import com.project.inventory.common.user.model.User;
 import com.project.inventory.common.user.service.UserService;
+import com.project.inventory.exception.invalid.InvalidException;
+import com.project.inventory.exception.notFound.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import javax.security.auth.login.AccountLockedException;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service(value = "accountServiceImpl")
 public class AccountServiceImpl implements AccountService {
@@ -37,7 +39,7 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public Account getAccountById(int accountId) throws AccountNotFoundException {
+    public Account getAccountById(int accountId) throws NotFoundException {
         return accountRepository.findById(accountId);
     }
 
@@ -66,9 +68,9 @@ public class AccountServiceImpl implements AccountService {
     public void changePassword(ChangePassword changePassword) {
         Account account = getAccountById(changePassword.getId());
         if(!comparePassword(account, changePassword.getCurrentPassword())){
-            throw new PasswordException("Mismatch Current Password. Please Try Again!");
+            throw new InvalidException("Mismatch Current Password. Please Try Again!");
         }else if(!changePassword.getPassword().equals(changePassword.getConfirmPassword())){
-            throw new PasswordException("Not match New Password. Please Try Again!");
+            throw new InvalidException("Not match New Password. Please Try Again!");
         }
         account.setPassword(passwordEncoder.encode(changePassword.getPassword()));
         accountRepository.save(account);
@@ -93,6 +95,30 @@ public class AccountServiceImpl implements AccountService {
     public Account convertDtoToEntity(AccountDto accountDto) {
         return mapper.map(accountDto, Account.class);
 
+    }
+
+    @Override
+    public Boolean isEnabled(Account account) throws AccountLockedException {
+        if(!account.isEnabled()){
+            throw new AccountLockedException();
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean isLocked(Account account) throws AccountLockedException {
+        if(!account.isLocked()){
+            throw new AccountLockedException();
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean isEnabledAndLocked(Account account) throws AccountLockedException {
+        if(!account.isLocked() && !account.isEnabled()){
+            throw new AccountLockedException();
+        }
+        return true;
     }
 
     protected boolean comparePassword(Account account, String currentPassword){

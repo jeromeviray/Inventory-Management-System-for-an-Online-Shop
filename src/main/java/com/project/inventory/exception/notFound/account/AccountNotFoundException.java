@@ -1,4 +1,4 @@
-package com.project.inventory.exception.account;
+package com.project.inventory.exception.notFound.account;
 
 public class AccountNotFoundException extends RuntimeException{
     public AccountNotFoundException() {

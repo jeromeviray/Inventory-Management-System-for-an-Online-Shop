@@ -3,7 +3,7 @@ package com.project.inventory.customer.payment.service.impl;
 import com.project.inventory.customer.payment.model.PaymentMethod;
 import com.project.inventory.customer.payment.repository.PaymentMethodRepository;
 import com.project.inventory.customer.payment.service.PaymentMethodService;
-import com.project.inventory.exception.paymentMethod.PaymentMethodNotFoundException;
+import com.project.inventory.exception.notFound.paymentMethod.PaymentMethodNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

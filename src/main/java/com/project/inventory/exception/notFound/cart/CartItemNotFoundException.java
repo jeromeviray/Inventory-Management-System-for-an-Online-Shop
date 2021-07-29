@@ -1,4 +1,4 @@
-package com.project.inventory.exception.cartItem;
+package com.project.inventory.exception.notFound.cart;
 
 public class CartItemNotFoundException extends RuntimeException{
     public CartItemNotFoundException() {
