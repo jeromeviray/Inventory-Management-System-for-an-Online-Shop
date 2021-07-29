@@ -89,11 +89,7 @@ public class JwtProviderImpl implements JwtProvider {
 
     @Override
     public RefreshTokenResponse refreshToken( RefreshToken requestRefreshToken ) throws IOException {
-<<<<<<< HEAD
         try{ // verify the refresh token
-=======
-        try{
->>>>>>> c80dbc4b91407a22ec56c38eb0a8c13ddebcaaf9
             RefreshToken savedRefreshToken = refreshTokenService.getRefreshToken( requestRefreshToken.getId() );
             String refreshToken = savedRefreshToken.getRefreshToken();
             String username = getSubjectClaim( refreshToken );
