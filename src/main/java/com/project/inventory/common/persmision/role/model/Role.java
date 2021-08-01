@@ -1,10 +1,12 @@
 package com.project.inventory.common.persmision.role.model;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.Objects;
 
 @Entity
 @Table(name = "user_role")
+@Transactional
 public class Role {
 
     @Id

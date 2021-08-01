@@ -1,6 +1,7 @@
 package com.project.inventory.common.persmision.model;
 
 import com.project.inventory.common.persmision.role.model.Role;
+import com.project.inventory.webSecurity.oauth2.AuthProvider;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -24,7 +25,7 @@ public class Account implements Serializable {
     @Column( name = "username", unique = true, nullable = false, length = 30 )
     private String username;
 
-    @Column(name = "password", nullable = false, length = 200)
+    @Column(name = "password", length = 200)
     private String password;
 
     @Column( name = "email", unique = true, nullable = false, length = 100 )
@@ -44,7 +45,11 @@ public class Account implements Serializable {
     @Column(name = "is_locked", columnDefinition = "TINYINT(1)", nullable = false)
     private boolean isLocked = true;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    @Column(name ="auth_provider", nullable = false)
+    private AuthProvider authProvider;
+
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinTable(name = " user_privilege ",
                 joinColumns = { @JoinColumn ( name = "account_id")},
                 inverseJoinColumns = { @JoinColumn (name = "role_id")})
@@ -112,6 +117,14 @@ public class Account implements Serializable {
 
     public void setLocked(boolean locked) {
         isLocked = locked;
+    }
+
+    public AuthProvider getAuthProvider() {
+        return authProvider;
+    }
+
+    public void setAuthProvider( AuthProvider authProvider ) {
+        this.authProvider = authProvider;
     }
 
     public Set<Role> getRoles() {

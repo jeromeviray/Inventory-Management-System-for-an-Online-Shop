@@ -1,0 +1,45 @@
+#spring.datasource.url= jdbc:mysql://localhost:3306/inventory_system
+#spring.datasource.username= root
+#spring.datasource.password= user@root123
+#
+#
+#spring.jpa.hibernate.ddl-auto=update
+##spring.jpa.properties.hibernate.show_sql=true
+#spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL8Dialect
+#
+#
+### port
+#server.port = 4480
+#
+#
+#spring.security.oauth2.client.registration.google.client-id = 431784312354-qpof1fqpipodccdr7pi4amitoisr2h49.apps.googleusercontent.com
+#spring.security.oauth2.client.registration.google.client-secret=gPVHuGBgH5JtoCM4S62Fqsty
+#
+server:
+  port: 4480
+
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/inventory_system
+    username: root
+    password: user@root123
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 431784312354-qpof1fqpipodccdr7pi4amitoisr2h49.apps.googleusercontent.com
+            clientSecret: gPVHuGBgH5JtoCM4S62Fqsty
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - email
+              - profile
+

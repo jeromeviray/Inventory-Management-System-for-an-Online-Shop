@@ -10,7 +10,8 @@ public enum RoleType implements Serializable{
 
     CUSTOMER ( "CUSTOMER" ),
     STAFF ( "STAFF" ),
-    OWNER ( "OWNER" );
+    OWNER ( "OWNER" ),
+    USER ( "USER" );
 
     String accountRoleType;
 

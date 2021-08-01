@@ -35,7 +35,7 @@ public class JwtProviderImpl implements JwtProvider {
 
     private static final Date refreshTokenExpiresAt = new Date(System.currentTimeMillis() + 604800000);
 
-    private String SECRET_KEY = Base64.getEncoder().encodeToString("osqda#x!@jkd!@hda2".getBytes());
+    private String SECRET_KEY = Base64.getEncoder().encodeToString("926D96C90030DD58429D2751AC1BDBBC".getBytes());
 
     @Autowired
     private AccountService accountService;
