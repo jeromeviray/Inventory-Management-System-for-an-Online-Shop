@@ -2,7 +2,9 @@ package com.project.inventory.webSecurity.config;
 
 import com.project.inventory.webSecurity.filter.CustomAuthenticationFilter;
 import com.project.inventory.webSecurity.filter.CustomAuthorizationFilter;
+import com.project.inventory.webSecurity.oauth2.cookie.HttpCookieOAuth2RequestRepository;
 import com.project.inventory.webSecurity.oauth2.service.CustomOAuth2UserService;
+import com.project.inventory.webSecurity.oauth2.successHandler.OAuth2AuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -18,17 +20,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Configuration
@@ -46,6 +38,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
     @Autowired
     private CustomOAuth2UserService customOAuth2UserService;
+    @Autowired
+    private HttpCookieOAuth2RequestRepository httpCookieOAuth2RequestRepository;
+    @Autowired
+    private OAuth2AuthenticationSuccessHandler auth2AuthenticationSuccessHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -84,12 +80,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .disable();
         http.oauth2Login()
                 .authorizationEndpoint()
-                .baseUri("/oauth2/authorize").and()
+                .baseUri( "/oauth2/authorize" )
+                .authorizationRequestRepository( httpCookieOAuth2RequestRepository )
+                .and()
                 .redirectionEndpoint()
                 .baseUri( "/oauth2/callback/*" )
                 .and()
                 .userInfoEndpoint()
-                .userService( customOAuth2UserService );
+                .userService( customOAuth2UserService )
+                .and()
+                .successHandler( auth2AuthenticationSuccessHandler );
     }
 
 //
