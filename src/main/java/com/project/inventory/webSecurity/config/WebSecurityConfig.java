@@ -63,10 +63,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers( HttpMethod.POST,
                         "/api/v1/account/login",
-                        "/api/v1/account/register" ).permitAll()
-                .antMatchers( "/oauth2/**" ).permitAll()
-                .antMatchers( HttpMethod.GET, "/api/v1/account/token/refresh" ).permitAll();
-        //private endpoint
+                        "/api/v1/account/register",
+                        "/api/v1/account/token/refresh").permitAll()
+                .antMatchers( "/oauth2/**" ).permitAll();
+
         http.authorizeRequests().anyRequest().authenticated();
         //add filter
         http.addFilter( new CustomAuthenticationFilter( authenticationManagerBean() ) );

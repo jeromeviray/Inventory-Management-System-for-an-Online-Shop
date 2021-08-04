@@ -5,27 +5,25 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.inventory.common.persmision.model.Account;
 import com.project.inventory.common.persmision.role.model.Role;
 import com.project.inventory.common.persmision.service.AccountService;
+import com.project.inventory.exception.NotFoundException;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
-import com.project.inventory.jwtUtil.response.JwtResponse;
-import com.project.inventory.webSecurity.filter.CustomAuthenticationFilter;
-import com.project.inventory.webSecurity.filter.CustomAuthorizationFilter;
+import com.project.inventory.jwtUtil.refreshToken.model.RefreshToken;
+import com.project.inventory.jwtUtil.refreshToken.model.RefreshTokenResponse;
+import com.project.inventory.jwtUtil.refreshToken.service.RefreshTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.io.InvalidClassException;
+import java.util.Base64;
+import java.util.Date;
 import java.util.stream.Collectors;
-
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Service
 public class JwtProviderImpl implements JwtProvider {
@@ -39,6 +37,10 @@ public class JwtProviderImpl implements JwtProvider {
 
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
+
     public Algorithm getClaimSecretToken(){
         Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY.getBytes());
         return algorithm;
@@ -60,14 +62,17 @@ public class JwtProviderImpl implements JwtProvider {
 
     @Override
     public String refreshToken(Account account) {
-        return JWT.create()
+        String refreshToken = JWT.create()
                 .withSubject(account.getUsername())
                 .withExpiresAt(refreshTokenExpiresAt)
                 .withIssuedAt(new Date())
                 .withClaim("roles", account.getRoles()
-                        .stream().map(Role::getRoleName)
+                        .stream().map(Role::toString)
                         .collect(Collectors.toList()))
                 .sign(getClaimSecretToken());
+        return refreshTokenService.saveRefreshToken( refreshToken, account )
+                .getId();
+
     }
 
     @Override
@@ -87,28 +92,24 @@ public class JwtProviderImpl implements JwtProvider {
     }
 
     @Override
-    public void verifierRefreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        CustomAuthorizationFilter customAuthorizationFilter = new CustomAuthorizationFilter();
-        String refreshToken = customAuthorizationFilter.resolveToken(request);
-        if(refreshToken != null){
-            try{
-                String username = getSubjectClaim(refreshToken);
-                logger.info("Get refresh token", username);
-                Account account = accountService.getAccountByUsername(username);
-                String accessToken = accessToken(account);
-                response.setContentType(APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), new JwtResponse (username, accessToken, refreshToken) );
-
-            }catch (Exception exception){
-                logger.info("Error Logging in: {}", exception.getMessage());
-
-                response.setStatus(FORBIDDEN.value());
-                Map<String, String> error = new HashMap<>();
-                error.put("error_message", exception.getMessage());
-                response.setContentType(APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), error);
+    public RefreshTokenResponse refreshToken( RefreshToken requestRefreshToken ) throws IOException {
+        try{
+            RefreshToken savedRefreshToken = refreshTokenService.getRefreshToken( requestRefreshToken.getId() );
+            String refreshToken = savedRefreshToken.getRefreshToken();
+            String username = getSubjectClaim( refreshToken );
+            if(username != null && savedRefreshToken.getAccount().getUsername().equals( username )){
+                RefreshTokenResponse response = new RefreshTokenResponse();
+                response.setRefreshTokenId( savedRefreshToken.getId() );
+                response.setAccessToken( accessToken( savedRefreshToken.getAccount() ) );
+                return response;
             }
+        }catch( Exception exception ){
+            // if the refresh token is expired
+            // remove the refresh token in the database
+            refreshTokenService.removeRefreshToken( requestRefreshToken.getId() );
+            logger.info("Error Logging in: {}", exception.getMessage());
+            throw exception;
         }
-
+        throw new NotFoundException("Refresh Token Not Found");
     }
 }
