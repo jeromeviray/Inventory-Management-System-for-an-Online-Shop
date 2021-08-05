@@ -42,4 +42,10 @@ spring:
             scope:
               - email
               - profile
-
+#logging:
+#  level:
+#    root: ERROR
+#    org.springframework.web: DEBUG
+#    com.project.inventory.webSecurity.aoth2.successHandler: DEBUG
+#    org.hibernate: DEBUG
+#    org: INFO
