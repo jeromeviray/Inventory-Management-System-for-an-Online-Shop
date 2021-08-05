@@ -1,5 +1,7 @@
 package com.project.inventory.webSecurity.config;
 
+import com.project.inventory.exception.impl.AccessDeniedExceptionImpl;
+import com.project.inventory.exception.impl.AuthenticationEntryPointImpl;
 import com.project.inventory.webSecurity.filter.CustomAuthenticationFilter;
 import com.project.inventory.webSecurity.filter.CustomAuthorizationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,7 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity (
+@EnableGlobalMethodSecurity(
 //        securedEnabled = true,
 //        jsr250Enabled = true,
         prePostEnabled = true
@@ -34,41 +36,48 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     static final String API = "api/v1/";
     @Autowired
-    @Qualifier ( value = "userDetailsServiceImpl" )
+    @Qualifier(value = "userDetailsServiceImpl")
     private UserDetailsService userDetailsService;
+    @Autowired
+    private AuthenticationEntryPointImpl authenticationEntryPoint;
+    @Autowired
+    private AccessDeniedExceptionImpl accessDeniedExceptionImpl;
 
     @Bean
-    public PasswordEncoder passwordEncoder () {
-        return new BCryptPasswordEncoder ();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Override
-    protected void configure ( AuthenticationManagerBuilder auth ) throws Exception {
-        auth.userDetailsService ( userDetailsService );
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService);
     }
 
 
     @Override
-    protected void configure ( HttpSecurity http ) throws Exception {
+    protected void configure(HttpSecurity http) throws Exception {
 
         // Enable CORS and disable CSRF
-        http.cors ().and ().csrf ().disable ();
-
+        http.cors().and().csrf().disable();
         // Set session management to stateless
-        http.sessionManagement ().sessionCreationPolicy ( SessionCreationPolicy.STATELESS );
-
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         //public endpoint
-        http.authorizeRequests ()
-                .antMatchers ( HttpMethod.POST,
+        http.authorizeRequests()
+                .antMatchers(HttpMethod.POST,
                         "/api/v1/account/login",
                         "/api/v1/account/register",
-                        "/api/v1/account/token/refresh" ).permitAll ();
+                        "/api/v1/account/token/refresh").permitAll();
         //private endpoint
-        http.authorizeRequests ().anyRequest ().authenticated ();
-        //add filter
-        http.addFilter ( new CustomAuthenticationFilter ( authenticationManagerBean () ) );
-        http.addFilterBefore ( new CustomAuthorizationFilter (), UsernamePasswordAuthenticationFilter.class );
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/products").hasAnyRole("ROLE_OWNER");
 
+        http.authorizeRequests().anyRequest().authenticated();
+        //add filter
+        http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
+        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        // Set unauthorized and access denied requests exception handler
+        http.exceptionHandling()
+                .accessDeniedHandler(accessDeniedExceptionImpl)
+                .authenticationEntryPoint(authenticationEntryPoint);
 
         // Set permissions on endpoints
 //        http.authorizeRequests()
@@ -86,23 +95,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     // Used by spring security if CORS is enabled.
     @Bean
-    public CorsFilter corsFilter () {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource ();
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-        CorsConfiguration config = new CorsConfiguration ();
+        CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowCredentials ( true );
-        config.addAllowedOrigin ( "*" );
-        config.addAllowedHeader ( "*" );
-        config.addAllowedMethod ( "*" );
-        source.registerCorsConfiguration ( "/**", config );
-        return new CorsFilter ( source );
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 
     @Bean
     @Override
-    public AuthenticationManager authenticationManagerBean () throws Exception {
-        return super.authenticationManagerBean ();
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 
+//    @Bean
+//    public AuthenticationEntryPointHandler authenticationEntryPointHandler(){
+//        return new AuthenticationEntryPointHandler();
+//    }
 }

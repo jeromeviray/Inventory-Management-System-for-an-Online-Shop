@@ -1,4 +1,4 @@
-package com.project.inventory.exception.cartItem;
+package com.project.inventory.exception.invalid.cart;
 
 public class CartItemNotValidException extends RuntimeException{
     public CartItemNotValidException(String message) {

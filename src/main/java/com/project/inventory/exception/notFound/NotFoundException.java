@@ -1,4 +1,4 @@
-package com.project.inventory.exception;
+package com.project.inventory.exception.notFound;
 
 public class NotFoundException extends RuntimeException{
     public NotFoundException() {

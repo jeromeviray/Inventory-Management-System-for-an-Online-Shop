@@ -1,10 +1,10 @@
 package com.project.inventory.common.persmision.role.service.impl;
 
-import com.project.inventory.exception.account.RoleNotFoundException;
 import com.project.inventory.common.persmision.role.model.Role;
 import com.project.inventory.common.persmision.role.model.RoleType;
 import com.project.inventory.common.persmision.role.repository.RoleRepository;
 import com.project.inventory.common.persmision.role.service.RoleService;
+import com.project.inventory.exception.notFound.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role getRoleById(Integer id) {
-        return roleRepository.findById(id).orElseThrow(() -> new RoleNotFoundException("Role Not Found"));
+        return roleRepository.findById(id).orElseThrow(() -> new NotFoundException("Role Not Found"));
     }
 
     @Override
@@ -51,7 +51,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Role getRoleByRoleName(RoleType role) {
         return roleRepository.findByRoleName(role.toString())
-                .orElseThrow(() -> new RoleNotFoundException("Role Not Found!" +
+                .orElseThrow(() -> new NotFoundException("Role Not Found!" +
                 "PLease Check if there is a data in Database."));
     }
 }

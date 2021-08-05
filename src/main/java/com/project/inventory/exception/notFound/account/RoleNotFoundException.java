@@ -1,4 +1,4 @@
-package com.project.inventory.exception.account;
+package com.project.inventory.exception.notFound.account;
 
 public class RoleNotFoundException extends RuntimeException{
     public RoleNotFoundException() {

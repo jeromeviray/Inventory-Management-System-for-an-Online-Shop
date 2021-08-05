@@ -1,5 +1,9 @@
 package com.project.inventory.store.cart.service.impl;
 
+import com.project.inventory.common.persmision.model.Account;
+import com.project.inventory.common.persmision.service.AccountService;
+import com.project.inventory.exception.notFound.NotFoundException;
+import com.project.inventory.exception.notFound.cart.CartNotFound;
 import com.project.inventory.store.cart.cartItem.model.CartItem;
 import com.project.inventory.store.cart.cartItem.model.CartItemDto;
 import com.project.inventory.store.cart.cartItem.service.impl.CartItemServiceImpl;
@@ -7,10 +11,6 @@ import com.project.inventory.store.cart.model.Cart;
 import com.project.inventory.store.cart.model.CartDto;
 import com.project.inventory.store.cart.repository.CartRepository;
 import com.project.inventory.store.cart.service.CartService;
-import com.project.inventory.exception.account.AccountNotFoundException;
-import com.project.inventory.exception.cart.CartNotFound;
-import com.project.inventory.common.persmision.model.Account;
-import com.project.inventory.common.persmision.service.AccountService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,7 @@ public class CartServiceImpl implements CartService {
         Account account = accountService.getAccountById(accountId);
         Cart cart = new Cart();
 
-        if(account == null) throw new AccountNotFoundException(String.format("Account Not Found! " + accountId));
+        if(account == null) throw new NotFoundException(String.format("Account Not Found! " + accountId));
 
         cart.setAccount(account);
         logger.info("{}", cart +" created successfully");

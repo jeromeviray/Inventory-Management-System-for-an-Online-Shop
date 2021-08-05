@@ -1,10 +1,9 @@
 package com.project.inventory.store.product.service.impl;
 
-import com.project.inventory.exception.InvalidException;
-import com.project.inventory.exception.product.ProductNotFound;
-import com.project.inventory.exception.product.ProductNotUpdatedException;
+import com.project.inventory.exception.invalid.InvalidException;
+import com.project.inventory.exception.notFound.product.ProductNotFound;
+import com.project.inventory.exception.serverError.product.ProductNotUpdatedException;
 import com.project.inventory.store.information.model.StoreInformation;
-import com.project.inventory.store.information.repository.StoreInformationRepository;
 import com.project.inventory.store.information.service.StoreInformationService;
 import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.inventory.repository.InventoryRepository;
