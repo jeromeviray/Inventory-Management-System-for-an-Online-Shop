@@ -75,8 +75,8 @@ public class AccountController {
     }
 
     @RequestMapping(value = "/token/refresh", method = RequestMethod.POST)
-    public ResponseEntity<?> tokenRefresh( @RequestBody RefreshToken refreshToken, HttpServletResponse response ) throws IOException {
-        return new ResponseEntity(jwtProvider.refreshToken(refreshToken, response), HttpStatus.OK);
+    public ResponseEntity<?> tokenRefresh( @RequestBody RefreshToken refreshToken ) throws IOException {
+        return new ResponseEntity(jwtProvider.refreshToken(refreshToken), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/authenticated")

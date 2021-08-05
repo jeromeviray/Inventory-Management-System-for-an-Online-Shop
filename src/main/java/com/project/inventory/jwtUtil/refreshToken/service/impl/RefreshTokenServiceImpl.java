@@ -1,6 +1,7 @@
 package com.project.inventory.jwtUtil.refreshToken.service.impl;
 
 import com.project.inventory.common.persmision.model.Account;
+import com.project.inventory.exception.ForbiddenException;
 import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshToken;
 import com.project.inventory.jwtUtil.refreshToken.repository.RefreshTokenRepository;
@@ -34,7 +35,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public RefreshToken getRefreshToken( String id ) {
-        return refreshTokenRepository.findById( id ).orElseThrow(() -> new NotFoundException("Refresh Token not Found.") );
+        return refreshTokenRepository.findById( id ).orElseThrow(() -> new ForbiddenException("Refresh Token not Found.") );
     }
 
     @Override

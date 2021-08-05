@@ -8,6 +8,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.project.inventory.common.persmision.model.Account;
 import com.project.inventory.common.persmision.role.model.Role;
 import com.project.inventory.common.persmision.service.AccountService;
+import com.project.inventory.exception.ForbiddenException;
 import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshToken;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Date;
@@ -59,7 +61,7 @@ public class JwtProviderImpl implements JwtProvider {
 
     @Override
     public String refreshToken(Account account) {
-        return JWT.create()
+        String refreshToken =  JWT.create()
                 .withSubject(account.getUsername())
                 .withExpiresAt(refreshTokenExpiresAt)
                 .withIssuedAt(new Date())
@@ -67,6 +69,9 @@ public class JwtProviderImpl implements JwtProvider {
                         .stream().map(Role::toString)
                         .collect(Collectors.toList()))
                 .sign(getClaimSecretToken());
+
+        return refreshTokenService.saveRefreshToken( refreshToken, account )
+                .getId();
     }
 
     @Override
@@ -85,6 +90,7 @@ public class JwtProviderImpl implements JwtProvider {
         return verifier(token).getClaim("roles").asArray(String.class);
     }
 
+
     @Override
     public RefreshTokenResponse refreshToken( RefreshToken requestRefreshToken ) throws IOException {
         try{ // verify the refresh token
@@ -102,7 +108,7 @@ public class JwtProviderImpl implements JwtProvider {
             // remove the refresh token in the database
             refreshTokenService.removeRefreshToken( requestRefreshToken.getId() );
             logger.info("Error Logging in: {}", exception.getMessage());
-            throw exception;
+            throw new ForbiddenException(exception.getMessage());
         }
         throw new NotFoundException("Refresh Token Not Found");
     }
