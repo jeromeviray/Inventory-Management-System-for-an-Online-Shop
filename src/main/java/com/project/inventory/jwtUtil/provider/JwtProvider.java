@@ -18,5 +18,5 @@ public interface JwtProvider {
     DecodedJWT verifier(String token);
     String getSubjectClaim(String token);
     String[] getRoles(String token);
-    RefreshTokenResponse refreshToken( RefreshToken refreshToken ) throws IOException;
+    RefreshTokenResponse refreshToken( RefreshToken refreshToken, HttpServletResponse response ) throws IOException;
 }

@@ -8,6 +8,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.project.inventory.common.persmision.model.Account;
 import com.project.inventory.common.persmision.role.model.Role;
 import com.project.inventory.common.persmision.service.AccountService;
+import com.project.inventory.exception.ForbiddenException;
 import com.project.inventory.exception.NotFoundException;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshToken;
@@ -19,11 +20,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InvalidClassException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.stream.Collectors;
+
+import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @Service
 public class JwtProviderImpl implements JwtProvider {
@@ -33,13 +37,12 @@ public class JwtProviderImpl implements JwtProvider {
 
     private static final Date refreshTokenExpiresAt = new Date(System.currentTimeMillis() + 604800000);
 
-    private String SECRET_KEY = Base64.getEncoder().encodeToString("926D96C90030DD58429D2751AC1BDBBC".getBytes());
+    private String SECRET_KEY = Base64.getEncoder().encodeToString("osqda#x!@jkd!@hda2".getBytes());
 
     @Autowired
     private AccountService accountService;
     @Autowired
     private RefreshTokenService refreshTokenService;
-
 
     public Algorithm getClaimSecretToken(){
         Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY.getBytes());
@@ -62,17 +65,18 @@ public class JwtProviderImpl implements JwtProvider {
 
     @Override
     public String refreshToken(Account account) {
+
         String refreshToken = JWT.create()
                 .withSubject(account.getUsername())
-                .withExpiresAt(refreshTokenExpiresAt)
+                .withExpiresAt(accessTokenExpiresAt)
                 .withIssuedAt(new Date())
                 .withClaim("roles", account.getRoles()
                         .stream().map(Role::toString)
                         .collect(Collectors.toList()))
                 .sign(getClaimSecretToken());
+
         return refreshTokenService.saveRefreshToken( refreshToken, account )
                 .getId();
-
     }
 
     @Override
@@ -92,23 +96,24 @@ public class JwtProviderImpl implements JwtProvider {
     }
 
     @Override
-    public RefreshTokenResponse refreshToken( RefreshToken requestRefreshToken ) throws IOException {
+    public RefreshTokenResponse refreshToken( RefreshToken requestRefreshToken, HttpServletResponse response ) throws IOException {
         try{
             RefreshToken savedRefreshToken = refreshTokenService.getRefreshToken( requestRefreshToken.getId() );
             String refreshToken = savedRefreshToken.getRefreshToken();
             String username = getSubjectClaim( refreshToken );
             if(username != null && savedRefreshToken.getAccount().getUsername().equals( username )){
-                RefreshTokenResponse response = new RefreshTokenResponse();
-                response.setRefreshTokenId( savedRefreshToken.getId() );
-                response.setAccessToken( accessToken( savedRefreshToken.getAccount() ) );
-                return response;
+                RefreshTokenResponse jwtResponse = new RefreshTokenResponse();
+                jwtResponse.setRefreshTokenId( savedRefreshToken.getId() );
+                jwtResponse.setAccessToken( accessToken( savedRefreshToken.getAccount() ) );
+                return jwtResponse;
             }
         }catch( Exception exception ){
+
             // if the refresh token is expired
             // remove the refresh token in the database
-            refreshTokenService.removeRefreshToken( requestRefreshToken.getId() );
+//            refreshTokenService.removeRefreshToken( requestRefreshToken.getId() );
             logger.info("Error Logging in: {}", exception.getMessage());
-            throw exception;
+            throw new ForbiddenException(exception.getMessage());
         }
         throw new NotFoundException("Refresh Token Not Found");
     }
