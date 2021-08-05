@@ -64,14 +64,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         Account account = accountService.getAccountByUsername( user.getUsername() );
         response.setContentType( APPLICATION_JSON_VALUE );
         // tokens
-        String access_token = jwtProvider.accessToken( account );
+        String accessToken = jwtProvider.accessToken( account );
+        String refreshToken = jwtProvider.refreshToken( account );
 
-        //save refresh token to database
-        RefreshToken refreshToken = refreshTokenService.saveRefreshToken( jwtProvider.accessToken( account ), account );
-        String refresh_token = refreshToken.getId().toString();
-
-
-        JwtResponse jwtResponse = new JwtResponse( user.getUsername(), access_token, refresh_token );
+        JwtResponse jwtResponse = new JwtResponse( user.getUsername(), accessToken, refreshToken );
         new ObjectMapper().writeValue( response.getOutputStream(), jwtResponse );
     }
 }

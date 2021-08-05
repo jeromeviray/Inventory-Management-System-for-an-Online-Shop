@@ -121,23 +121,15 @@ public class CustomGlobalException extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<?> handleNotFoundException(NotFoundException notFoundException,
                                                     WebRequest request){
-        ErrorDetails errorDetails = new ErrorDetails(HttpStatus.FORBIDDEN, new Date(), notFoundException.getMessage(), request.getDescription(false));
+        ErrorDetails errorDetails = new ErrorDetails(HttpStatus.NOT_FOUND, new Date(), notFoundException.getMessage(), request.getDescription(false));
+        return new ResponseEntity(errorDetails, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<?> handleForbiddenException(ForbiddenException forbiddenException,
+                                                     WebRequest request){
+        ErrorDetails errorDetails = new ErrorDetails(HttpStatus.FORBIDDEN, new Date(), forbiddenException.getMessage(), request.getDescription(false));
         return new ResponseEntity(errorDetails, HttpStatus.FORBIDDEN);
     }
 
-//    @Override
-//    protected ResponseEntity<Object> handleMethodArgumentNotValid( MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request ) {
-//        List<String> errors = new ArrayList<String>();
-//        for ( FieldError error : ex.getBindingResult().getFieldErrors()) {
-//            errors.add(error.getField() + ": " + error.getDefaultMessage());
-//        }
-//        for ( ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-//            errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
-//        }
-//
-//        ApiError apiError =
-//                new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
-//        return handleExceptionInternal(
-//                ex, apiError, headers, apiError.getStatus(), request);
-//    }
 }
