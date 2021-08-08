@@ -42,8 +42,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     @Override
     public void onAuthenticationSuccess( HttpServletRequest request, HttpServletResponse response, Authentication authentication ) throws IOException, ServletException {
         String url = determineTargetUrl( request, response, authentication );
-        logger.info("{}", url );
-        if( response.isCommitted() ) {
+        if ( response.isCommitted() ) {
             logger.debug( "Response has already been committed. Unable to redirect to " + url );
             return;
         }
@@ -54,8 +53,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     @Override
     protected String determineTargetUrl( HttpServletRequest request, HttpServletResponse response, Authentication authentication ) {
         Optional<String> redirectUri = CookieUtils.getCookie( request, REDIRECT_URI_PARAM_COOKIE_NAME )
-                .map( Cookie :: getValue );
-        if( redirectUri.isPresent() && isAuthorizedRedirectUri( redirectUri.get() ) ) {
+                .map( Cookie::getValue );
+        if ( redirectUri.isPresent() && isAuthorizedRedirectUri( redirectUri.get() ) ) {
             throw new BadRequestException( "Sorry! We've got an Unauthorized Redirect URI and can't proceed with the authentication" );
         }
 
@@ -63,15 +62,14 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String username = authentication.getName().substring( 0, authentication.getName().indexOf( "@" ) );
         Account account = accountService.getAccountByUsername( username );
 
-        logger.info( "{}", account );
-            String accessToken = jwtProvider.accessToken( account );
-            String refreshToken = jwtProvider.refreshToken( account );
-            JwtResponse jwtResponse = new JwtResponse(account.getUsername(), accessToken, refreshToken);
+        String accessToken = jwtProvider.accessToken( account );
+        String refreshToken = jwtProvider.refreshToken( account );
+        JwtResponse jwtResponse = new JwtResponse( account.getUsername(), accessToken, refreshToken );
 
 
-            return UriComponentsBuilder.fromUriString( targetUrl )
-                    .queryParam( "token", jwtResponse.getAccessToken() )
-                    .build().toUriString();
+        return UriComponentsBuilder.fromUriString( targetUrl )
+                .queryParam( jwtResponse.toString() )
+                .build().toUriString();
 
     }
 
@@ -88,7 +86,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                     URI authorizedURI = URI.create( authorizedRedirectUri );
                     logger.info( "{}", authorizedURI.getHost() );
 
-                    if( authorizedURI.getHost().equals( redirectUri.getHost() ) && authorizedURI.getPort() == redirectUri.getPort() ) {
+                    if ( authorizedURI.getHost().equals( redirectUri.getHost() ) && authorizedURI.getPort() == redirectUri.getPort() ) {
                         return true;
                     }
                     return false;

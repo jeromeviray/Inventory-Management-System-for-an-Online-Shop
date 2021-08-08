@@ -3,6 +3,7 @@ package com.project.inventory.webSecurity.config;
 import com.project.inventory.webSecurity.filter.CustomAuthenticationFilter;
 import com.project.inventory.webSecurity.filter.CustomAuthorizationFilter;
 import com.project.inventory.webSecurity.oauth2.cookie.HttpCookieOAuth2RequestRepository;
+import com.project.inventory.webSecurity.oauth2.failureHandler.OAuth2AuthenticationFailureHandler;
 import com.project.inventory.webSecurity.oauth2.service.CustomOAuth2UserService;
 import com.project.inventory.webSecurity.oauth2.successHandler.OAuth2AuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private HttpCookieOAuth2RequestRepository httpCookieOAuth2RequestRepository;
     @Autowired
     private OAuth2AuthenticationSuccessHandler auth2AuthenticationSuccessHandler;
+    @Autowired
+    private OAuth2AuthenticationFailureHandler auth2AuthenticationFailureHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -64,7 +67,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers( HttpMethod.POST,
                         "/api/v1/account/login",
                         "/api/v1/account/register",
-                        "/api/v1/account/token/refresh").permitAll()
+                        "/api/v1/account/token/refresh" ).permitAll()
                 .antMatchers( "/oauth2/**" ).permitAll();
 
         http.authorizeRequests().anyRequest().authenticated();
@@ -89,7 +92,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .userInfoEndpoint()
                 .userService( customOAuth2UserService )
                 .and()
-                .successHandler( auth2AuthenticationSuccessHandler );
+                .successHandler( auth2AuthenticationSuccessHandler )
+                .failureHandler( auth2AuthenticationFailureHandler );
     }
 
 //

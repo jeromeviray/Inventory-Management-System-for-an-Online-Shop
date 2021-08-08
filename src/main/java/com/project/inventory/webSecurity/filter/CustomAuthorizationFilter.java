@@ -33,7 +33,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal( HttpServletRequest request, HttpServletResponse response, FilterChain filterChain ) throws ServletException, IOException {
 
-        if( request.getServletPath().equals( "/api/v1/account/login" ) || request.getServletPath().equals( "/api/v1/account/token/refresh" ) ) {
+        if( request.getServletPath().equals( "/api/v1/account/login" )
+                || request.getServletPath().equals( "/api/v1/account/token/refresh" )
+                || request.getServletPath().equals("/oauth2/authorize/google")) {
             filterChain.doFilter( request, response );
         } else {
             String token = resolveToken( request );
@@ -51,7 +53,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     filterChain.doFilter( request, response );
                 } catch( Exception exception ) {
                     response.setStatus( FORBIDDEN.value() );
-                    logger.info( "Error Logging in: {}", exception.getMessage() );
+                    logger.info( "Error Logging in line 56: {}", exception.getMessage() );
                     Map<String, String> error = new HashMap<>();
                     error.put( "error_message", exception.getMessage() );
                     response.setContentType( APPLICATION_JSON_VALUE );

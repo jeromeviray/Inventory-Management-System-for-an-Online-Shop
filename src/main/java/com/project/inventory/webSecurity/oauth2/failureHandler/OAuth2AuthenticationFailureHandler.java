@@ -1,10 +1,11 @@
-package com.project.inventory.webSecurity.oauth2.failHandler;
+package com.project.inventory.webSecurity.oauth2.failureHandler;
 
 import com.project.inventory.webSecurity.oauth2.cookie.HttpCookieOAuth2RequestRepository;
 import com.project.inventory.webSecurity.oauth2.cookie.utils.CookieUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.ServletException;
@@ -12,11 +13,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URI;
-import java.util.Optional;
 
 import static com.project.inventory.webSecurity.oauth2.cookie.HttpCookieOAuth2RequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 
+@Component
 public class OAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
     @Autowired
     private HttpCookieOAuth2RequestRepository cookieOAuth2RequestRepository;
