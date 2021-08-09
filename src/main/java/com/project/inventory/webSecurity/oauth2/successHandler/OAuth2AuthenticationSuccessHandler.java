@@ -64,8 +64,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         String accessToken = jwtProvider.accessToken( account );
         String refreshToken = jwtProvider.refreshToken( account );
-        // Mali ya ini kaya
-        JwtResponse jwtResponse = new JwtResponse( account.getUsername(), accessToken, refreshToken );
 
         String queryParams = String.format(
           "username=%s&accessToken=%s&refreshToken=%s", account.getUsername(), accessToken, refreshToken
