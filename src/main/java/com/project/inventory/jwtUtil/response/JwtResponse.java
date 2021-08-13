@@ -1,9 +1,5 @@
 package com.project.inventory.jwtUtil.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import java.util.Date;
-
 public class JwtResponse {
     private final String type = "Bearer ";
     private String username;

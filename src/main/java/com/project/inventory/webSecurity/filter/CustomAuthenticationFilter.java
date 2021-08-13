@@ -43,7 +43,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     public CustomAuthenticationFilter( AuthenticationManager authenticationManager ) {
         this.authenticationManager = authenticationManager;
-        setFilterProcessesUrl( "/api/v1/account/login" );
+        setFilterProcessesUrl( "/api/v1/account/authenticate" );
     }
 
     @Override
@@ -51,7 +51,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         try {
             Account account = new ObjectMapper().readValue( request.getInputStream(), Account.class );
             logger.info( "Filtering user with username: {}", account.getUsername() );
+
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken( account.getUsername(), account.getPassword() );
+            logger.info(  "{}", authenticationToken);
             return authenticationManager.authenticate( authenticationToken );
         } catch( IOException e ) {
             throw new RuntimeException( e );

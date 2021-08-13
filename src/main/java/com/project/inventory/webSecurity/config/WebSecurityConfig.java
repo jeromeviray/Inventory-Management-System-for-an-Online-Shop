@@ -71,9 +71,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers( "/oauth2/**" ).permitAll();
 
         http.authorizeRequests().anyRequest().authenticated();
-        //add filter
-        http.addFilter( new CustomAuthenticationFilter( authenticationManagerBean() ) );
-        http.addFilterBefore( new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class );
+        // Set unauthorized and access denied requests exception handler
+//        http.exceptionHandling()
+//                .accessDeniedHandler(accessDeniedExceptionImpl)
+//                .authenticationEntryPoint(authenticationEntryPoint);
+
         // Set session management to stateless
         http.sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS );
         // disable the default
@@ -94,23 +96,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .successHandler( auth2AuthenticationSuccessHandler )
                 .failureHandler( auth2AuthenticationFailureHandler );
+        //add filter
+        http.addFilter( new CustomAuthenticationFilter( authenticationManagerBean() ) );
+        http.addFilterBefore( new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class );
     }
-
-//
-//    // Used by spring security if CORS is enabled.
-//    @Bean
-//    public CorsFilter corsFilter() {
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//
-//        CorsConfiguration config = new CorsConfiguration();
-//
-//        config.setAllowCredentials( true );
-//        config.addAllowedOrigin( "*" );
-//        config.addAllowedHeader( "*" );
-//        config.addAllowedMethod( "*" );
-//        source.registerCorsConfiguration( "/**", config );
-//        return new CorsFilter( source );
-//    }
 
     @Bean
     @Override

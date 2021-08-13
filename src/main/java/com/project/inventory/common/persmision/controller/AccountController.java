@@ -1,34 +1,24 @@
 package com.project.inventory.common.persmision.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.inventory.common.persmision.model.Account;
 import com.project.inventory.common.persmision.model.ChangePassword;
 import com.project.inventory.common.persmision.service.AccountService;
 import com.project.inventory.common.persmision.service.AuthenticatedUser;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
-import com.project.inventory.jwtUtil.provider.impl.JwtProviderImpl;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import static java.util.Arrays.stream;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping(value = "api/v1/account")
@@ -39,10 +29,29 @@ public class AccountController {
 
     @Autowired
     private AuthenticatedUser authenticatedUser;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @Autowired
     private JwtProvider jwtProvider;
 
+    @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
+    public ResponseEntity<?> authentication(@RequestBody Account account){
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        account.getUsername(),
+                        account.getPassword()
+                )
+        );
+        logger.info( "{}",authentication );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String token = jwtProvider
+                .accessToken(accountService.getAccountByUsername( authentication.getName() ));
+
+        return new ResponseEntity( HttpStatus.OK);
+    }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity<?> saveAccount(@RequestBody Account account){
