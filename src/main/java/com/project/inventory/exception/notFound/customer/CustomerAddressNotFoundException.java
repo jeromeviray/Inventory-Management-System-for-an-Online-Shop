@@ -1,4 +1,4 @@
-package com.project.inventory.exception.customer;
+package com.project.inventory.exception.notFound.customer;
 
 public class CustomerAddressNotFoundException extends RuntimeException{
     public CustomerAddressNotFoundException() {

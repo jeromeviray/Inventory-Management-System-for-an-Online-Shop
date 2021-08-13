@@ -1,7 +1,7 @@
 package com.project.inventory.store.order.orderItem.service.impl;
 
 import com.project.inventory.store.cart.service.CartService;
-import com.project.inventory.exception.order.OrderItemNotFoundException;
+import com.project.inventory.exception.notFound.order.OrderItemNotFoundException;
 import com.project.inventory.store.order.orderItem.model.OrderItem;
 import com.project.inventory.store.order.orderItem.model.OrderItemDto;
 import com.project.inventory.store.order.orderItem.repository.OrderItemRepository;

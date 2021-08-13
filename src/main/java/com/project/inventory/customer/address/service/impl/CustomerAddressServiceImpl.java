@@ -4,7 +4,7 @@ import com.project.inventory.customer.address.model.CustomerAddress;
 import com.project.inventory.customer.address.model.CustomerAddressDto;
 import com.project.inventory.customer.address.repository.CustomerAddressRepository;
 import com.project.inventory.customer.address.service.CustomerAddressService;
-import com.project.inventory.exception.customer.CustomerAddressNotFoundException;
+import com.project.inventory.exception.notFound.customer.CustomerAddressNotFoundException;
 import com.project.inventory.common.persmision.model.Account;
 import com.project.inventory.common.persmision.service.AccountService;
 import org.modelmapper.ModelMapper;

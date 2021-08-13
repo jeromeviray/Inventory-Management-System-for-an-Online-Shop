@@ -11,11 +11,11 @@ import com.project.inventory.jwtUtil.response.JwtResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -43,20 +43,30 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     public CustomAuthenticationFilter( AuthenticationManager authenticationManager ) {
         this.authenticationManager = authenticationManager;
-        setFilterProcessesUrl( "/api/v1/account/authenticate" );
+        setFilterProcessesUrl( "/api/v1/account/login" );
     }
 
     @Override
     public Authentication attemptAuthentication( HttpServletRequest request, HttpServletResponse response ) throws AuthenticationException {
         try {
             Account account = new ObjectMapper().readValue( request.getInputStream(), Account.class );
-            logger.info( "Filtering user with username: {}", account.getUsername() );
-
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken( account.getUsername(), account.getPassword() );
-            logger.info(  "{}", authenticationToken);
             return authenticationManager.authenticate( authenticationToken );
-        } catch( IOException e ) {
+        } catch( IOException e) {
+            logger.info("Error log in : {}", e.getMessage());
             throw new RuntimeException( e );
+        } catch (LockedException e){
+            logger.info("Error log in : {}", e.getMessage());
+            throw e;
+        } catch (DisabledException e){
+            logger.info("Error log in : {}", e.getMessage());
+            throw e;
+        } catch (BadCredentialsException e){
+            logger.info("Error log in : {}", e.getMessage());
+            throw e;
+        } catch (AccountExpiredException e){
+            logger.info("Error log in : {}", e.getMessage());
+            throw e;
         }
     }
 
@@ -66,10 +76,15 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         Account account = accountService.getAccountByUsername( user.getUsername() );
         response.setContentType( APPLICATION_JSON_VALUE );
         // tokens
-        String accessToken = jwtProvider.accessToken( account );
-        String refreshToken = jwtProvider.refreshToken( account );
+        String access_token = jwtProvider.accessToken( account );
+        String[] roles = jwtProvider.getRoles(access_token);
 
-        JwtResponse jwtResponse = new JwtResponse( user.getUsername(), accessToken, refreshToken );
+        //save refresh token to database
+        RefreshToken refreshToken = refreshTokenService.saveRefreshToken( jwtProvider.accessToken( account ), account );
+        String refresh_token = refreshToken.getId().toString();
+
+        JwtResponse jwtResponse = new JwtResponse( user.getUsername(), access_token, refresh_token, roles );
         new ObjectMapper().writeValue( response.getOutputStream(), jwtResponse );
     }
+
 }

@@ -1,6 +1,6 @@
 package com.project.inventory.store.inventory.service.impl;
 
-import com.project.inventory.exception.product.ProductNotFound;
+import com.project.inventory.exception.notFound.product.ProductNotFound;
 import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.inventory.repository.InventoryRepository;
 import com.project.inventory.store.inventory.service.InventoryService;

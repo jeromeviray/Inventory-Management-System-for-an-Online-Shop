@@ -1,4 +1,4 @@
-package com.project.inventory.exception.paymentMethod;
+package com.project.inventory.exception.notFound.paymentMethod;
 
 public class PaymentMethodNotFoundException extends RuntimeException{
     public PaymentMethodNotFoundException() {

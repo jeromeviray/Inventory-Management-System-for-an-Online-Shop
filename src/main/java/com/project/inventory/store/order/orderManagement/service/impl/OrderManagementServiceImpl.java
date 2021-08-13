@@ -8,7 +8,7 @@ import com.project.inventory.customer.address.service.CustomerAddressService;
 import com.project.inventory.customer.payment.model.PaymentMethod;
 import com.project.inventory.customer.payment.model.PaymentMethodDto;
 import com.project.inventory.customer.payment.service.PaymentMethodService;
-import com.project.inventory.exception.order.ShoppingOrderInvalidException;
+import com.project.inventory.exception.invalid.order.OrderInvalidException;
 import com.project.inventory.store.order.orderItem.model.OrderItem;
 import com.project.inventory.store.order.orderItem.service.OrderItemService;
 import com.project.inventory.store.order.orderManagement.model.OrderStatus;
@@ -84,7 +84,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
             orderItemService.saveOrderItem(orderItems);
             emptyCart(cartItems);
         }else {
-            throw new ShoppingOrderInvalidException("Placing orders Unsuccessfully. Please Try Again");
+            throw new OrderInvalidException("Placing orders Unsuccessfully. Please Try Again");
         }
     }
 

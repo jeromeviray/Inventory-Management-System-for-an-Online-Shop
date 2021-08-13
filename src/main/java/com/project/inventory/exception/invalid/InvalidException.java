@@ -1,4 +1,4 @@
-package com.project.inventory.exception;
+package com.project.inventory.exception.invalid;
 
 public class InvalidException extends RuntimeException{
     public InvalidException() {

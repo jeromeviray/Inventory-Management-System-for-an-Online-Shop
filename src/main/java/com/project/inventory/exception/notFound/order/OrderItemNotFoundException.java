@@ -1,4 +1,4 @@
-package com.project.inventory.exception.order;
+package com.project.inventory.exception.notFound.order;
 
 public class OrderItemNotFoundException extends RuntimeException{
     public OrderItemNotFoundException() {
