@@ -8,7 +8,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.project.inventory.common.persmision.model.Account;
 import com.project.inventory.common.persmision.role.model.Role;
 import com.project.inventory.common.persmision.service.AccountService;
-import com.project.inventory.exception.NotFoundException;
+import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshToken;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshTokenResponse;
@@ -16,11 +16,9 @@ import com.project.inventory.jwtUtil.refreshToken.service.RefreshTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.InvalidClassException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -33,7 +31,7 @@ public class JwtProviderImpl implements JwtProvider {
 
     private static final Date refreshTokenExpiresAt = new Date(System.currentTimeMillis() + 604800000);
 
-    private String SECRET_KEY = Base64.getEncoder().encodeToString("osqda#x!@jkd!@hda2".getBytes());
+    private String SECRET_KEY = Base64.getEncoder().encodeToString("926D96C90030DD58429D2751AC1BDBBC".getBytes());
 
     @Autowired
     private AccountService accountService;
@@ -61,7 +59,7 @@ public class JwtProviderImpl implements JwtProvider {
 
     @Override
     public String refreshToken(Account account) {
-        return JWT.create()
+        String refreshToken =  JWT.create()
                 .withSubject(account.getUsername())
                 .withExpiresAt(refreshTokenExpiresAt)
                 .withIssuedAt(new Date())
@@ -69,6 +67,9 @@ public class JwtProviderImpl implements JwtProvider {
                         .stream().map(Role::toString)
                         .collect(Collectors.toList()))
                 .sign(getClaimSecretToken());
+
+        return refreshTokenService.saveRefreshToken( refreshToken, account )
+                .getId();
     }
 
     @Override

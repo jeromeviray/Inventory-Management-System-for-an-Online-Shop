@@ -54,7 +54,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             return authenticationManager.authenticate( authenticationToken );
         } catch( IOException e) {
             logger.info("Error log in : {}", e.getMessage());
-            throw new RuntimeException( e );
+            throw new BadCredentialsException( e.getMessage() );
         } catch (LockedException e){
             logger.info("Error log in : {}", e.getMessage());
             throw e;
@@ -63,7 +63,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             throw e;
         } catch (BadCredentialsException e){
             logger.info("Error log in : {}", e.getMessage());
-            throw e;
+            throw new BadCredentialsException( e.getMessage() );
         } catch (AccountExpiredException e){
             logger.info("Error log in : {}", e.getMessage());
             throw e;
@@ -76,14 +76,11 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         Account account = accountService.getAccountByUsername( user.getUsername() );
         response.setContentType( APPLICATION_JSON_VALUE );
         // tokens
-        String access_token = jwtProvider.accessToken( account );
-        String[] roles = jwtProvider.getRoles(access_token);
+        String accessToken = jwtProvider.accessToken( account );
+        String refreshToken = jwtProvider.refreshToken( account );
+//        String[] roles = jwtProvider.getRoles(accessToken);
 
-        //save refresh token to database
-        RefreshToken refreshToken = refreshTokenService.saveRefreshToken( jwtProvider.accessToken( account ), account );
-        String refresh_token = refreshToken.getId().toString();
-
-        JwtResponse jwtResponse = new JwtResponse( user.getUsername(), access_token, refresh_token, roles );
+        JwtResponse jwtResponse = new JwtResponse( user.getUsername(), accessToken, refreshToken );
         new ObjectMapper().writeValue( response.getOutputStream(), jwtResponse );
     }
 

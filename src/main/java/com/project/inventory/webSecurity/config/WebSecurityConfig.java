@@ -1,5 +1,7 @@
 package com.project.inventory.webSecurity.config;
 
+import com.project.inventory.exception.impl.AccessDeniedExceptionImpl;
+import com.project.inventory.exception.impl.AuthenticationEntryPointImpl;
 import com.project.inventory.webSecurity.filter.CustomAuthenticationFilter;
 import com.project.inventory.webSecurity.filter.CustomAuthorizationFilter;
 import com.project.inventory.webSecurity.oauth2.cookie.HttpCookieOAuth2RequestRepository;
@@ -45,6 +47,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private OAuth2AuthenticationSuccessHandler auth2AuthenticationSuccessHandler;
     @Autowired
     private OAuth2AuthenticationFailureHandler auth2AuthenticationFailureHandler;
+    @Autowired
+    private AccessDeniedExceptionImpl accessDeniedException;
+    @Autowired
+    private AuthenticationEntryPointImpl authenticationEntryPoint;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -72,9 +78,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests().anyRequest().authenticated();
         // Set unauthorized and access denied requests exception handler
-//        http.exceptionHandling()
-//                .accessDeniedHandler(accessDeniedExceptionImpl)
-//                .authenticationEntryPoint(authenticationEntryPoint);
+        http.exceptionHandling()
+                .accessDeniedHandler( accessDeniedException )
+                .authenticationEntryPoint( authenticationEntryPoint );
 
         // Set session management to stateless
         http.sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS );

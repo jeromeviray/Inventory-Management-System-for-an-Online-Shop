@@ -12,6 +12,7 @@ import com.project.inventory.common.user.model.User;
 import com.project.inventory.common.user.service.UserService;
 import com.project.inventory.exception.invalid.InvalidException;
 import com.project.inventory.exception.notFound.NotFoundException;
+import com.project.inventory.webSecurity.oauth2.AuthProvider;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +47,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void saveUserAccount(Account account) {
+        account.setAuthProvider( AuthProvider.local );
+
         account.setPassword( passwordEncoder.encode(account.getPassword()) );
 
         Role role = roleService.getRoleByRoleName(RoleType.CUSTOMER);
