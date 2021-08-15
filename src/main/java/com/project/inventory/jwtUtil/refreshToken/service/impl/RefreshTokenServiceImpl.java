@@ -11,35 +11,42 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class RefreshTokenServiceImpl implements RefreshTokenService {
-    Logger logger = LoggerFactory.getLogger(RefreshTokenServiceImpl.class);
+    Logger logger = LoggerFactory.getLogger( RefreshTokenServiceImpl.class );
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public RefreshToken saveRefreshToken( String token, Account account ) {
-      try{
-          RefreshToken refreshToken = new RefreshToken();
+        try {
+            RefreshToken refreshToken = new RefreshToken();
 
-          refreshToken.setRefreshToken( token );
-          refreshToken.setAccount( account );
+            refreshToken.setRefreshToken( token );
+            refreshToken.setAccount( account );
 
-          return refreshTokenRepository.save( refreshToken );
-      }catch (DataIntegrityViolationException e){
-          logger.info("Error log in : {}", e.getMessage());
-          throw e;
-      }
+            return refreshTokenRepository.save( refreshToken );
+        } catch ( DataIntegrityViolationException e ) {
+            logger.info( "Error log in : {}", e.getMessage() );
+            throw e;
+        }
     }
 
     @Override
     public RefreshToken getRefreshToken( String id ) {
-        return refreshTokenRepository.findById( id ).orElseThrow(() -> new NotFoundException("Refresh Token not Found.") );
+        return refreshTokenRepository.findById( id ).orElseThrow( () -> new NotFoundException( "Refresh Token not Found." ) );
     }
 
     @Override
     public void removeRefreshToken( String id ) {
         RefreshToken refreshToken = getRefreshToken( id );
         refreshTokenRepository.delete( refreshToken );
+    }
+
+    @Override
+    public Optional<RefreshToken> getFreshTokenByAccountId( int id ) {
+        return refreshTokenRepository.findByAccountId( id );
     }
 }

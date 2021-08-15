@@ -3,6 +3,7 @@ package com.project.inventory.webSecurity.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.inventory.BeanUtils;
 import com.project.inventory.common.persmision.model.Account;
+import com.project.inventory.common.persmision.role.model.Role;
 import com.project.inventory.common.persmision.service.AccountService;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshToken;
@@ -23,6 +24,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
@@ -77,10 +82,13 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         response.setContentType( APPLICATION_JSON_VALUE );
         // tokens
         String accessToken = jwtProvider.accessToken( account );
-        String refreshToken = jwtProvider.refreshToken( account );
-//        String[] roles = jwtProvider.getRoles(accessToken);
+        String refreshToken = ( String ) jwtProvider.refreshToken( account );
+        Map<String, String> roles = new HashMap<>();
+        for(Role role : account.getRoles()){
+            roles.put( "roleName", role.getRoleName() );
+        }
 
-        JwtResponse jwtResponse = new JwtResponse( user.getUsername(), accessToken, refreshToken );
+        JwtResponse jwtResponse = new JwtResponse( user.getUsername(), accessToken, refreshToken, roles );
         new ObjectMapper().writeValue( response.getOutputStream(), jwtResponse );
     }
 
