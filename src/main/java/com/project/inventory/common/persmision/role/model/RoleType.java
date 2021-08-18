@@ -8,9 +8,9 @@ public enum RoleType implements Serializable{
     // staff is the employee of the business owner
     // customer is the buyer or consumer
 
+    SUPER_ADMIN ("SUPER_ADMIN"),
+    ADMIN ("ADMIN"),
     CUSTOMER ( "CUSTOMER" ),
-    STAFF ( "STAFF" ),
-    OWNER ( "OWNER" ),
     USER ( "USER" );
 
     String accountRoleType;

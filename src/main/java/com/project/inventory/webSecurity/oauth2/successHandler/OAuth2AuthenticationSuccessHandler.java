@@ -1,6 +1,7 @@
 package com.project.inventory.webSecurity.oauth2.successHandler;
 
 import com.project.inventory.common.persmision.model.Account;
+import com.project.inventory.common.persmision.role.model.Role;
 import com.project.inventory.common.persmision.service.AccountService;
 import com.project.inventory.exception.BadRequestException;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
@@ -22,7 +23,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.project.inventory.webSecurity.oauth2.cookie.HttpCookieOAuth2RequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 
@@ -64,8 +68,14 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         String accessToken = jwtProvider.accessToken( account );
         String refreshToken = ( String ) jwtProvider.refreshToken( account );
+        List<String> roles = getRoles( account.getRoles() );
+
         String queryParams = String.format(
-          "username=%s&accessToken=%s&refreshToken=%s", account.getUsername(), accessToken, refreshToken
+                "username=%s&accessToken=%s&refreshToken=%s&roles=%s",
+                account.getUsername(),
+                accessToken,
+                refreshToken,
+                roles
         );
         return UriComponentsBuilder.fromUriString( targetUrl )
                 .queryParam( queryParams )
@@ -76,6 +86,14 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     protected void clearAuthenticationAttributes( HttpServletRequest request, HttpServletResponse response ) {
         super.clearAuthenticationAttributes( request );
         httpCookieOAuth2RequestRepository.removeAuthorizationRequest( request, response );
+    }
+
+    private List<String> getRoles( Set<Role> roles ) {
+        List<String> getRolesName = new ArrayList<>();
+        for ( Role role : roles ) {
+            getRolesName.add( role.getRoleName() );
+        }
+        return getRolesName;
     }
 
     private Boolean isAuthorizedRedirectUri( String uri ) {

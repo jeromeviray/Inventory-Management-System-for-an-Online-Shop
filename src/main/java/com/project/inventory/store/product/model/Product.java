@@ -45,7 +45,7 @@ public class Product implements Serializable {
     private Inventory inventory;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id", nullable = false, updatable = false)
+    @JoinColumn(name = "store_id", updatable = false)
     private StoreInformation storeInformation;
 
     public Product() {
