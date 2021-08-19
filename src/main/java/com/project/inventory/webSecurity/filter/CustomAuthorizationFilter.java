@@ -3,10 +3,12 @@ package com.project.inventory.webSecurity.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.inventory.BeanUtils;
 import com.project.inventory.common.persmision.role.model.Role;
+import com.project.inventory.exception.apiError.ApiError;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -54,9 +56,13 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 } catch( Exception exception ) {
                     response.setStatus( FORBIDDEN.value() );
                     logger.info( "Error Logging in line 56: {}", exception.getMessage() );
-                    Map<String, String> error = new HashMap<>();
-                    error.put( "error_message", exception.getMessage() );
+
                     response.setContentType( APPLICATION_JSON_VALUE );
+                    ApiError error = new ApiError(new Date(),
+                            HttpStatus.FORBIDDEN.value(),
+                            FORBIDDEN,
+                            exception.getMessage(),
+                            request.getServletPath());
                     new ObjectMapper().writeValue( response.getOutputStream(), error );
 
                 }

@@ -7,9 +7,11 @@ import com.project.inventory.store.information.model.StoreInformation;
 import com.project.inventory.store.information.service.StoreInformationService;
 import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.inventory.repository.InventoryRepository;
+import com.project.inventory.store.product.model.FileImage;
 import com.project.inventory.store.product.model.Product;
 import com.project.inventory.store.product.model.ProductDto;
 import com.project.inventory.store.product.repository.ProductRepository;
+import com.project.inventory.store.product.service.FileImageService;
 import com.project.inventory.store.product.service.ProductService;
 import org.hibernate.service.NullServiceException;
 import org.modelmapper.ModelMapper;
@@ -17,13 +19,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
-@Service(value = "productServiceImpl")
+@Service( value = "productServiceImpl" )
 public class ProductServiceImpl implements ProductService {
-    Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
-
+    Logger logger = LoggerFactory.getLogger( ProductServiceImpl.class );
+    private final String rootFile = System.getProperty( "user.dir" ) + "/src/main/webapp/static/images";
 
     @Autowired
     private ProductRepository productRepository;
@@ -33,56 +42,70 @@ public class ProductServiceImpl implements ProductService {
     private ModelMapper mapper;
     @Autowired
     private StoreInformationService storeInformationService;
+    @Autowired
+    private FileImageService fileImageService;
 
     @Override
-    public Product saveProduct(Product product) {
-        if(product != null){
+    public Product saveProduct( MultipartFile[] files,
+                                Product product,
+                                String branch ) {
+        if ( product != null ) {
             try {
-                StoreInformation storeInformation = storeInformationService.getStoreInformationByLocation(product.getStoreInformation().getLocation());
+                StoreInformation storeInformation = storeInformationService.getStoreInformationByBranch( branch );
+                List<FileImage> fileImages = new ArrayList<>();
 
-                product.setStoreInformation(storeInformation);
-                Product savedProduct = productRepository.save(product);
-
-                saveProductInventory(savedProduct);
+                product.setStoreInformation( storeInformation );
+                Product savedProduct = productRepository.save( product );
+                saveProductInventory( savedProduct );
+                for ( FileImage fileImage : getFileImages( files ) ){
+                    if ( savedProduct != null ) {
+                        logger.info( "image saving..." );
+                        fileImage.setProduct( savedProduct );
+                        fileImages.add( fileImage );
+                    }
+                }
+                fileImageService.saveFileImages( fileImages );
                 return savedProduct;
 
-            } catch (InvalidException e) {
-                throw new InvalidException("Unsuccessfully saved. Please Try Again!");
+            } catch ( InvalidException e ) {
+                throw new InvalidException( "Unsuccessfully saved. Please Try Again!" );
             }
-        }else {
-            throw new NullServiceException(super.getClass());
+        } else {
+            throw new NullServiceException( super.getClass() );
         }
     }
-    public void saveProductInventory(Product product){
+
+    public void saveProductInventory( Product product ) {
         // it will save the product in inventory when creating a product
         Inventory inventory = new Inventory();
-        inventory.setProduct(product);
-        inventoryRepository.save(inventory);
+        inventory.setProduct( product );
+        inventoryRepository.save( inventory );
     }
+
     @Override
-    public Product updateProduct(int id, Product updateProduct) {
-        Product product = getProductById(id); // existing product in database
+    public Product updateProduct( int id, Product updateProduct ) {
+        Product product = getProductById( id ); // existing product in database
 
-        product.setName(updateProduct.getName());
-        product.setDescription(updateProduct.getDescription());
-        product.setPrice(updateProduct.getPrice());
-        product.setDeleted(updateProduct.isDeleted());
+        product.setName( updateProduct.getName() );
+        product.setDescription( updateProduct.getDescription() );
+        product.setPrice( updateProduct.getPrice() );
+        product.setDeleted( updateProduct.isDeleted() );
 
-        try{
-            return productRepository.save(product);
-        }catch (ProductNotUpdatedException productNotUpdatedException){
-            throw new ProductNotUpdatedException(String.format("Product with Id " + updateProduct.getId() + " Failed to Update") );
+        try {
+            return productRepository.save( product );
+        } catch ( ProductNotUpdatedException productNotUpdatedException ) {
+            throw new ProductNotUpdatedException( String.format( "Product with Id " + updateProduct.getId() + " Failed to Update" ) );
         }
 
     }
 
     @Override
-    public void deleteProduct(int id) {
-        Product product = getProductById(id);
+    public void deleteProduct( int id ) {
+        Product product = getProductById( id );
 
-        product.setDeleted(true);
-        productRepository.save(product);
-        logger.info(String.format("Product with ID "+product.getId()+" Deleted Successfully"));
+        product.setDeleted( true );
+        productRepository.save( product );
+        logger.info( String.format( "Product with ID " + product.getId() + " Deleted Successfully" ) );
     }
 
     @Override
@@ -96,24 +119,59 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product getProductById(int id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFound(String.format("Product Not Found with ID: "+ id)));
+    public Product getProductById( int id ) {
+        return productRepository.findById( id )
+                .orElseThrow( () -> new ProductNotFound( String.format( "Product Not Found with ID: " + id ) ) );
     }
 
     @Override
-    public Product getAvailableProductById(int id) {
-        logger.info("{}", "product ID: "+id);
-        return productRepository.findAvailableProductById(id)
-                .orElseThrow(() -> new ProductNotFound(String.format("Product Not Found with ID: "+ id)));
+    public Product getAvailableProductById( int id ) {
+        logger.info( "{}", "product ID: " + id );
+        return productRepository.findAvailableProductById( id )
+                .orElseThrow( () -> new ProductNotFound( String.format( "Product Not Found with ID: " + id ) ) );
     }
 
     // converting entity to dto
-    public ProductDto convertEntityToDto(Product product){
-        return mapper.map(product, ProductDto.class);
+    public ProductDto convertEntityToDto( Product product ) {
+        return mapper.map( product, ProductDto.class );
     }
+
     // converting dto to entity
-    public Product convertDtoToEntity(ProductDto productDto){
-        return mapper.map(productDto, Product.class);
+    public Product convertDtoToEntity( ProductDto productDto ) {
+        return mapper.map( productDto, Product.class );
+    }
+
+    public List<FileImage> getFileImages( MultipartFile[] files ) {
+
+        List<FileImage> fileImageList = new ArrayList<>();
+        // reading all the image file and getting the details of the image
+        for ( MultipartFile file : files ) {
+            Path path = Paths.get( rootFile, file.getOriginalFilename() );
+            String filename = file.getOriginalFilename();
+            logger.info( file.getOriginalFilename() );
+
+            try {
+                Files.write( path, file.getBytes() );
+            } catch ( IOException e ) {
+                e.printStackTrace();
+                throw new MultipartException( "You got an Error men" );
+            }
+            FileImage fileImage = new FileImage();
+            fileImage.setFileName( filename );
+            fileImage.setSize( file.getSize() );
+
+            fileImageList.add( fileImage );
+            // checking when product is available on database
+            // if not the saving of image for specific product will not save on database
+//            if(product != null){
+//                logger.info("image saving...");
+//                fileImage.setProduct(product);
+//                fileImageService.save(fileImage);
+//
+//                fileImageList.add(fileImage);
+//            }
+
+        }
+        return fileImageList;
     }
 }

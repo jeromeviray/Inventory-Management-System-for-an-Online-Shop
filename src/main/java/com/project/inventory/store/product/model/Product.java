@@ -1,5 +1,6 @@
 package com.project.inventory.store.product.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.inventory.store.information.model.StoreInformation;
 import com.project.inventory.store.inventory.model.Inventory;
 import org.hibernate.annotations.CreationTimestamp;
@@ -46,7 +47,11 @@ public class Product implements Serializable {
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", updatable = false)
+    @JsonIgnore
     private StoreInformation storeInformation;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
+    private List<FileImage> fileImages;
 
     public Product() {
     }
@@ -132,17 +137,25 @@ public class Product implements Serializable {
         this.storeInformation = storeInformation;
     }
 
+    public List<FileImage> getFileImages() {
+        return fileImages;
+    }
+
+    public void setFileImages( List<FileImage> fileImages ) {
+        this.fileImages = fileImages;
+    }
+
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Product)) return false;
-        Product product = (Product) o;
-        return getId() == product.getId() && Double.compare(product.getPrice(), getPrice()) == 0 && isDeleted() == product.isDeleted() && Objects.equals(getName(), product.getName()) && Objects.equals(getDescription(), product.getDescription()) && Objects.equals(getCreated(), product.getCreated()) && Objects.equals(getUpdated(), product.getUpdated()) && Objects.equals(inventory, product.inventory) && Objects.equals(getStoreInformation(), product.getStoreInformation());
+    public boolean equals( Object o ) {
+        if ( this == o ) return true;
+        if ( !( o instanceof Product ) ) return false;
+        Product product = ( Product ) o;
+        return getId() == product.getId() && Double.compare( product.getPrice(), getPrice() ) == 0 && isDeleted() == product.isDeleted() && Objects.equals( getName(), product.getName() ) && Objects.equals( getDescription(), product.getDescription() ) && Objects.equals( getCreated(), product.getCreated() ) && Objects.equals( getUpdated(), product.getUpdated() ) && Objects.equals( inventory, product.inventory ) && Objects.equals( getStoreInformation(), product.getStoreInformation() ) && Objects.equals( getFileImages(), product.getFileImages() );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), getPrice(), getCreated(), getUpdated(), isDeleted(), inventory, getStoreInformation());
+        return Objects.hash( getId(), getName(), getDescription(), getPrice(), getCreated(), getUpdated(), isDeleted(), inventory, getStoreInformation(), getFileImages() );
     }
 
     @Override
@@ -157,6 +170,7 @@ public class Product implements Serializable {
                 ", isDeleted=" + isDeleted +
                 ", inventory=" + inventory +
                 ", storeInformation=" + storeInformation +
+                ", fileImages=" + fileImages +
                 '}';
     }
 }

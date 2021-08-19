@@ -14,11 +14,11 @@ public class StoreInformation implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "store_name", columnDefinition = "varchar(100)", nullable = false)
+    @Column(name = "store_name", columnDefinition = "varchar(100)")
     private String storeName;
 
-    @Column(name = "address_location", columnDefinition = "varchar(100)", nullable = false, unique = true)
-    private String location;
+    @Column(name = "branch", columnDefinition = "varchar(100)", nullable = false)
+    private String branch;
 
     @OneToMany(mappedBy = "storeInformation", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Product> products;
@@ -27,7 +27,7 @@ public class StoreInformation implements Serializable {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId( int id ) {
         this.id = id;
     }
 
@@ -35,16 +35,24 @@ public class StoreInformation implements Serializable {
         return storeName;
     }
 
-    public void setStoreName(String storeName) {
+    public void setStoreName( String storeName ) {
         this.storeName = storeName;
     }
 
-    public String getLocation() {
-        return location;
+    public String getBranch() {
+        return branch;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setBranch( String branch ) {
+        this.branch = branch;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts( List<Product> products ) {
+        this.products = products;
     }
 
     @Override
@@ -52,7 +60,8 @@ public class StoreInformation implements Serializable {
         return "StoreInformation{" +
                 "id=" + id +
                 ", storeName='" + storeName + '\'' +
-                ", location='" + location + '\'' +
+                ", branch='" + branch + '\'' +
+                ", products=" + products +
                 '}';
     }
 }

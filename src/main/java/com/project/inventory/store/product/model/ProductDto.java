@@ -1,17 +1,20 @@
 package com.project.inventory.store.product.model;
 
+import java.util.List;
+
 public class ProductDto {
 
     private int id;
     private String productName;
     private String productDescription;
-    private double price;
+    private double productPrice;
+    private List<FileImageDto> fileImages;
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId( int id ) {
         this.id = id;
     }
 
@@ -19,7 +22,7 @@ public class ProductDto {
         return productName;
     }
 
-    public void setProductName(String productName) {
+    public void setProductName( String productName ) {
         this.productName = productName;
     }
 
@@ -27,25 +30,34 @@ public class ProductDto {
         return productDescription;
     }
 
-    public void setProductDescription(String productDescription) {
+    public void setProductDescription( String productDescription ) {
         this.productDescription = productDescription;
     }
 
-    public double getPrice() {
-        return price;
+    public double getProductPrice() {
+        return productPrice;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setProductPrice( double productPrice ) {
+        this.productPrice = productPrice;
+    }
+
+    public List<FileImageDto> getFileImages() {
+        return fileImages;
+    }
+
+    public void setFileImages( List<FileImageDto> fileImages ) {
+        this.fileImages = fileImages;
     }
 
     @Override
     public String toString() {
-        return "ProductToDto{" +
+        return "ProductDto{" +
                 "id=" + id +
                 ", productName='" + productName + '\'' +
                 ", productDescription='" + productDescription + '\'' +
-                ", price=" + price +
+                ", productPrice=" + productPrice +
+                ", fileImages=" + fileImages +
                 '}';
     }
 }
