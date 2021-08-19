@@ -1,6 +1,7 @@
 package com.project.inventory.store.product.controller;
 
 import com.project.inventory.store.product.model.Product;
+import com.project.inventory.store.product.model.ProductDto;
 import com.project.inventory.store.product.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -53,8 +55,12 @@ public class ProductController {
     }
 
     @RequestMapping( value = "", method = RequestMethod.GET )
-    public List<Product> getAllAvailableProducts() {
-        return productService.getAllAvailableProducts();
+    public ResponseEntity<?> getAllAvailableProducts() {
+        List<ProductDto> products = new ArrayList<>();
+        for(Product product : productService.getAllAvailableProducts()){
+            products.add(productService.convertEntityToDto( product ));
+        }
+        return new ResponseEntity(products, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")

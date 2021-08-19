@@ -32,7 +32,8 @@ import java.util.List;
 @Service( value = "productServiceImpl" )
 public class ProductServiceImpl implements ProductService {
     Logger logger = LoggerFactory.getLogger( ProductServiceImpl.class );
-    private final String rootFile = System.getProperty( "user.dir" ) + "/src/main/webapp/static/images";
+    private final String rootFile = System.getProperty( "user.dir" ) +
+            "/src/main/webapp/WEB-INF/inventory-management-system-reactjs/public/images/products";
 
     @Autowired
     private ProductRepository productRepository;
@@ -59,7 +60,6 @@ public class ProductServiceImpl implements ProductService {
                 saveProductInventory( savedProduct );
                 for ( FileImage fileImage : getFileImages( files ) ){
                     if ( savedProduct != null ) {
-                        logger.info( "image saving..." );
                         fileImage.setProduct( savedProduct );
                         fileImages.add( fileImage );
                     }

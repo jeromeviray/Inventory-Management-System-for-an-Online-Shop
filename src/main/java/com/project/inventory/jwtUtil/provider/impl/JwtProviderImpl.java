@@ -97,7 +97,7 @@ public class JwtProviderImpl implements JwtProvider {
                 .setClaims( claims )
                 .setSubject( username )
                 .setIssuedAt( new Date( System.currentTimeMillis() ) )
-                .setExpiration( accessTokenExpiresAt )
+                .setExpiration( new Date( System.currentTimeMillis() + 10 * 60 * 1000 ) )
                 .signWith( SignatureAlgorithm.HS512, SECRET_KEY ).compact();
     }
 
@@ -111,7 +111,7 @@ public class JwtProviderImpl implements JwtProvider {
                     .setClaims( claims )
                     .setSubject( username )
                     .setIssuedAt( new Date( System.currentTimeMillis() ) )
-                    .setExpiration( refreshTokenExpiresAt )
+                    .setExpiration( new Date( System.currentTimeMillis() + 604800000 ) )
                     .signWith( SignatureAlgorithm.HS512, SECRET_KEY ).compact();
             // save and get the saved token
             Optional<RefreshToken> existingRefreshToken = refreshTokenService.getFreshTokenByAccountId( account.getId() );
