@@ -132,11 +132,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     // converting entity to dto
+    @Override
     public ProductDto convertEntityToDto( Product product ) {
         return mapper.map( product, ProductDto.class );
     }
 
     // converting dto to entity
+    @Override
     public Product convertDtoToEntity( ProductDto productDto ) {
         return mapper.map( productDto, Product.class );
     }

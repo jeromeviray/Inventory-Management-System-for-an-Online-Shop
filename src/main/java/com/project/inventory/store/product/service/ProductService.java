@@ -1,6 +1,7 @@
 package com.project.inventory.store.product.service;
 
 import com.project.inventory.store.product.model.Product;
+import com.project.inventory.store.product.model.ProductDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -19,4 +20,7 @@ public interface ProductService {
     Product getProductById( int id );
 
     Product getAvailableProductById( int id );
+
+    ProductDto convertEntityToDto(Product product);
+    Product convertDtoToEntity(ProductDto productDto);
 }

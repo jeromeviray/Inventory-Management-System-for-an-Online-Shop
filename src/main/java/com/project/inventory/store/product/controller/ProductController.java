@@ -64,8 +64,8 @@ public class ProductController {
     }
 
     @RequestMapping( value = "/{id}", method = RequestMethod.GET )
-    public ResponseEntity<Product> getAvailableProduct( @PathVariable int id ) {
-        return ResponseEntity.ok( productService.getAvailableProductById( id ) );
+    public ResponseEntity<?> getAvailableProduct( @PathVariable int id ) {
+        return ResponseEntity.ok( productService.convertEntityToDto(productService.getAvailableProductById( id )) );
     }
 
 }
