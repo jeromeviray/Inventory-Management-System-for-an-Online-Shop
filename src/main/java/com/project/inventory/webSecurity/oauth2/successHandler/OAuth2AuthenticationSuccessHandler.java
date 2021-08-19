@@ -1,18 +1,19 @@
 package com.project.inventory.webSecurity.oauth2.successHandler;
 
-import com.project.inventory.common.persmision.model.Account;
+import com.project.inventory.BeanUtils;
 import com.project.inventory.common.persmision.role.model.Role;
 import com.project.inventory.common.persmision.service.AccountService;
 import com.project.inventory.exception.BadRequestException;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
-import com.project.inventory.jwtUtil.response.JwtResponse;
 import com.project.inventory.webSecurity.config.AppProperties;
+import com.project.inventory.webSecurity.impl.UserDetailsServiceImpl;
 import com.project.inventory.webSecurity.oauth2.cookie.HttpCookieOAuth2RequestRepository;
 import com.project.inventory.webSecurity.oauth2.cookie.utils.CookieUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -64,15 +65,14 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         String targetUrl = redirectUri.orElse( getDefaultTargetUrl() );
         String username = authentication.getName().substring( 0, authentication.getName().indexOf( "@" ) );
-        Account account = accountService.getAccountByUsername( username );
 
-        String accessToken = jwtProvider.accessToken( account );
-        String refreshToken = ( String ) jwtProvider.refreshToken( account );
-        List<String> roles = getRoles( account.getRoles() );
+        String accessToken = jwtProvider.generateOAuth2AccessToken( username );
+        String refreshToken = jwtProvider.generateOAuth2RefreshToken( username );
+        List<String> roles = getRoles( accountService.getAccountByUsername( username ).getRoles() );
 
         String queryParams = String.format(
                 "username=%s&accessToken=%s&refreshToken=%s&roles=%s",
-                account.getUsername(),
+                username,
                 accessToken,
                 refreshToken,
                 roles
@@ -102,8 +102,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 .stream()
                 .anyMatch( authorizedRedirectUri -> {
                     URI authorizedURI = URI.create( authorizedRedirectUri );
-                    logger.info( "{}", authorizedURI.getHost() );
-
                     if ( authorizedURI.getHost().equals( redirectUri.getHost() ) && authorizedURI.getPort() == redirectUri.getPort() ) {
                         return true;
                     }

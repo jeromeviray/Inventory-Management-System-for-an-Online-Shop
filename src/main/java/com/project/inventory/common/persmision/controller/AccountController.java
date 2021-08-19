@@ -12,9 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -35,23 +32,23 @@ public class AccountController {
     @Autowired
     private JwtProvider jwtProvider;
 
-    @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-    public ResponseEntity<?> authentication(@RequestBody Account account){
-
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        account.getUsername(),
-                        account.getPassword()
-                )
-        );
-        logger.info( "{}",authentication );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String token = jwtProvider
-                .accessToken(accountService.getAccountByUsername( authentication.getName() ));
-
-        return new ResponseEntity( HttpStatus.OK);
-    }
+//    @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
+//    public ResponseEntity<?> authentication(@RequestBody Account account){
+//
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                        account.getUsername(),
+//                        account.getPassword()
+//                )
+//        );
+//        logger.info( "{}",authentication );
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//        String token = jwtProvider
+//                .accessToken(accountService.getAccountByUsername( authentication.getName() ));
+//
+//        return new ResponseEntity( HttpStatus.OK);
+//    }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity<?> saveAccount(@RequestBody Account account){
@@ -84,8 +81,8 @@ public class AccountController {
     }
 
     @RequestMapping(value = "/token/refresh", method = RequestMethod.POST)
-    public ResponseEntity<?> tokenRefresh( @RequestBody RefreshToken refreshToken, HttpServletResponse response ) throws IOException {
-        return new ResponseEntity(jwtProvider.refreshToken(refreshToken), HttpStatus.OK);
+    public ResponseEntity<?> tokenRefresh( @RequestBody RefreshToken refreshToken ) throws IOException {
+        return new ResponseEntity(jwtProvider.validateAndGetAccessToken( refreshToken ), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/authenticated")
