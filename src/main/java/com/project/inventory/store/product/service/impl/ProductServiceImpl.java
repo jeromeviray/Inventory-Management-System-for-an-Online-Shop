@@ -13,6 +13,7 @@ import com.project.inventory.store.product.model.ProductDto;
 import com.project.inventory.store.product.repository.ProductRepository;
 import com.project.inventory.store.product.service.FileImageService;
 import com.project.inventory.store.product.service.ProductService;
+import org.apache.commons.io.IOUtils;
 import org.hibernate.service.NullServiceException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -22,7 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletContext;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,6 +48,8 @@ public class ProductServiceImpl implements ProductService {
     private StoreInformationService storeInformationService;
     @Autowired
     private FileImageService fileImageService;
+    @Autowired
+    private ServletContext servletContext;
 
     @Override
     public Product saveProduct( MultipartFile[] files,
@@ -58,7 +63,7 @@ public class ProductServiceImpl implements ProductService {
                 product.setStoreInformation( storeInformation );
                 Product savedProduct = productRepository.save( product );
                 saveProductInventory( savedProduct );
-                for ( FileImage fileImage : getFileImages( files ) ){
+                for ( FileImage fileImage : getFileImages( files ) ) {
                     if ( savedProduct != null ) {
                         fileImage.setProduct( savedProduct );
                         fileImages.add( fileImage );
@@ -127,8 +132,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getAvailableProductById( int id ) {
         logger.info( "{}", "product ID: " + id );
-        return productRepository.findAvailableProductById( id )
+        Product product = productRepository.findAvailableProductById( id )
                 .orElseThrow( () -> new ProductNotFound( String.format( "Product Not Found with ID: " + id ) ) );
+        logger.info( "{}", product.getStoreInformation().getBranch() );
+        return product;
     }
 
     // converting entity to dto
@@ -141,6 +148,16 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product convertDtoToEntity( ProductDto productDto ) {
         return mapper.map( productDto, Product.class );
+    }
+
+    @Override
+    public byte[] getImage( String image ) throws IOException {
+        try {
+            InputStream readImage = servletContext.getResourceAsStream( "WEB-INF/inventory-management-system-reactjs/public/images/products/" + image );
+            return IOUtils.toByteArray( readImage );
+        } catch ( Exception e ) {
+            throw e;
+        }
     }
 
     public List<FileImage> getFileImages( MultipartFile[] files ) {

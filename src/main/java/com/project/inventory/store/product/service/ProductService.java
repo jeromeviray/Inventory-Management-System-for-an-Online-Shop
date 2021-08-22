@@ -1,9 +1,11 @@
 package com.project.inventory.store.product.service;
 
+import com.project.inventory.store.product.model.FileImage;
 import com.project.inventory.store.product.model.Product;
 import com.project.inventory.store.product.model.ProductDto;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface ProductService {
@@ -21,6 +23,10 @@ public interface ProductService {
 
     Product getAvailableProductById( int id );
 
-    ProductDto convertEntityToDto(Product product);
-    Product convertDtoToEntity(ProductDto productDto);
+    ProductDto convertEntityToDto( Product product );
+
+    Product convertDtoToEntity( ProductDto productDto );
+
+
+    byte[] getImage(String image) throws IOException;
 }
