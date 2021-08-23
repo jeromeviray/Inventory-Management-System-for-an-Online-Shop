@@ -3,8 +3,8 @@ package com.project.inventory.store.product.service.impl;
 import com.project.inventory.exception.invalid.InvalidException;
 import com.project.inventory.exception.notFound.product.ProductNotFound;
 import com.project.inventory.exception.serverError.product.ProductNotUpdatedException;
-import com.project.inventory.store.information.model.StoreInformation;
-import com.project.inventory.store.information.service.StoreInformationService;
+import com.project.inventory.store.information.model.Branch;
+import com.project.inventory.store.information.service.BranchService;
 import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.inventory.repository.InventoryRepository;
 import com.project.inventory.store.product.model.FileImage;
@@ -45,7 +45,7 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ModelMapper mapper;
     @Autowired
-    private StoreInformationService storeInformationService;
+    private BranchService branchService;
     @Autowired
     private FileImageService fileImageService;
     @Autowired
@@ -57,10 +57,10 @@ public class ProductServiceImpl implements ProductService {
                                 String branch ) {
         if ( product != null ) {
             try {
-                StoreInformation storeInformation = storeInformationService.getStoreInformationByBranch( branch );
+                Branch saveBranch = branchService.getStoreInformationByBranch( branch );
                 List<FileImage> fileImages = new ArrayList<>();
 
-                product.setStoreInformation( storeInformation );
+                product.setBranch( saveBranch );
                 Product savedProduct = productRepository.save( product );
                 saveProductInventory( savedProduct );
                 for ( FileImage fileImage : getFileImages( files ) ) {
@@ -134,7 +134,7 @@ public class ProductServiceImpl implements ProductService {
         logger.info( "{}", "product ID: " + id );
         Product product = productRepository.findAvailableProductById( id )
                 .orElseThrow( () -> new ProductNotFound( String.format( "Product Not Found with ID: " + id ) ) );
-        logger.info( "{}", product.getStoreInformation().getBranch() );
+
         return product;
     }
 

@@ -7,20 +7,17 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@Table(name = "store")
-public class StoreInformation implements Serializable {
+@Table(name = "branch")
+public class Branch implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "store_name", columnDefinition = "varchar(100)")
-    private String storeName;
-
     @Column(name = "branch", columnDefinition = "varchar(100)", nullable = false)
     private String branch;
 
-    @OneToMany(mappedBy = "storeInformation", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Product> products;
 
     public int getId() {
@@ -29,14 +26,6 @@ public class StoreInformation implements Serializable {
 
     public void setId( int id ) {
         this.id = id;
-    }
-
-    public String getStoreName() {
-        return storeName;
-    }
-
-    public void setStoreName( String storeName ) {
-        this.storeName = storeName;
     }
 
     public String getBranch() {
@@ -57,11 +46,6 @@ public class StoreInformation implements Serializable {
 
     @Override
     public String toString() {
-        return "StoreInformation{" +
-                "id=" + id +
-                ", storeName='" + storeName + '\'' +
-                ", branch='" + branch + '\'' +
-                ", products=" + products +
-                '}';
+        return super.toString();
     }
 }

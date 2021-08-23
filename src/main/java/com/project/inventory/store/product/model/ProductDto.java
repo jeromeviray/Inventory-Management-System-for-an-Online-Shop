@@ -1,6 +1,6 @@
 package com.project.inventory.store.product.model;
 
-import com.project.inventory.store.information.model.GetStoreBranchDto;
+import com.project.inventory.store.information.model.GetBranchDto;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ public class ProductDto {
     private String productDescription;
     private double productPrice;
     private List<FileImageDto> fileImages;
-    private GetStoreBranchDto storeInformation;
+    private GetBranchDto branch;
 
     public int getId() {
         return id;
@@ -54,12 +54,12 @@ public class ProductDto {
     }
 
 
-    public GetStoreBranchDto getStoreInformation() {
-        return storeInformation;
+    public GetBranchDto getBranch() {
+        return branch;
     }
 
-    public void setStoreInformation( GetStoreBranchDto storeInformation ) {
-        this.storeInformation = storeInformation;
+    public void setBranch( GetBranchDto branch ) {
+        this.branch = branch;
     }
 
     @Override
@@ -70,7 +70,7 @@ public class ProductDto {
                 ", productDescription='" + productDescription + '\'' +
                 ", productPrice=" + productPrice +
                 ", fileImages=" + fileImages +
-                ", storeInformation=" + storeInformation +
+                ", branch=" + branch +
                 '}';
     }
 }

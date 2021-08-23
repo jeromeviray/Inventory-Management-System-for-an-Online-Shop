@@ -1,6 +1,6 @@
 package com.project.inventory.store.information.model;
 
-public class GetStoreBranchDto {
+public class GetBranchDto {
     private String branch;
 
     public String getBranch() {

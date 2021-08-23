@@ -19,7 +19,7 @@ import java.util.Date;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @Component
-public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint, Serializable {
+    public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint, Serializable {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationEntryPointImpl.class);
     private static final long serialVersionUID = -8970718410437077606L;
     @Override

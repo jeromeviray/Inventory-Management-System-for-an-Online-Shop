@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
@@ -60,19 +61,20 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         } catch ( IOException e ) {
             logger.info( "Error log in : {}", e.getMessage() );
             throw new BadCredentialsException( e.getMessage() );
-        } catch ( LockedException e ) {
-            logger.info( "Error log in : {}", e.getMessage() );
-            throw e;
-        } catch ( DisabledException e ) {
-            logger.info( "Error log in : {}", e.getMessage() );
-            throw e;
-        } catch ( BadCredentialsException e ) {
+        } catch ( AuthenticationException e ) {
             logger.info( "Error log in : {}", e.getMessage() );
             throw new BadCredentialsException( e.getMessage() );
-        } catch ( AccountExpiredException e ) {
-            logger.info( "Error log in : {}", e.getMessage() );
-            throw e;
         }
+//        catch ( DisabledException e ) {
+//            logger.info( "Error log in : {}", e.getMessage() );
+//            throw e;
+//        } catch ( BadCredentialsException e ) {
+//            logger.info( "Error log in : {}", e.getMessage() );
+//            throw new BadCredentialsException( e.getMessage() );
+//        } catch ( AccountExpiredException e ) {
+//            logger.info( "Error log in : {}", e.getMessage() );
+//            throw e;
+//        }
     }
 
     @Override
