@@ -3,8 +3,8 @@ package com.project.inventory.store.product.service.impl;
 import com.project.inventory.exception.invalid.InvalidException;
 import com.project.inventory.exception.notFound.product.ProductNotFound;
 import com.project.inventory.exception.serverError.product.ProductNotUpdatedException;
-import com.project.inventory.store.information.model.StoreInformation;
-import com.project.inventory.store.information.service.StoreInformationService;
+import com.project.inventory.store.information.model.Branch;
+import com.project.inventory.store.information.service.BranchService;
 import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.inventory.repository.InventoryRepository;
 import com.project.inventory.store.product.model.FileImage;
@@ -13,6 +13,7 @@ import com.project.inventory.store.product.model.ProductDto;
 import com.project.inventory.store.product.repository.ProductRepository;
 import com.project.inventory.store.product.service.FileImageService;
 import com.project.inventory.store.product.service.ProductService;
+import org.apache.commons.io.IOUtils;
 import org.hibernate.service.NullServiceException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -22,7 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletContext;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,7 +35,8 @@ import java.util.List;
 @Service( value = "productServiceImpl" )
 public class ProductServiceImpl implements ProductService {
     Logger logger = LoggerFactory.getLogger( ProductServiceImpl.class );
-    private final String rootFile = System.getProperty( "user.dir" ) + "/src/main/webapp/static/images";
+    private final String rootFile = System.getProperty( "user.dir" ) +
+            "/src/main/webapp/WEB-INF/inventory-management-system-reactjs/public/images/products";
 
     @Autowired
     private ProductRepository productRepository;
@@ -41,9 +45,11 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ModelMapper mapper;
     @Autowired
-    private StoreInformationService storeInformationService;
+    private BranchService branchService;
     @Autowired
     private FileImageService fileImageService;
+    @Autowired
+    private ServletContext servletContext;
 
     @Override
     public Product saveProduct( MultipartFile[] files,
@@ -51,15 +57,14 @@ public class ProductServiceImpl implements ProductService {
                                 String branch ) {
         if ( product != null ) {
             try {
-                StoreInformation storeInformation = storeInformationService.getStoreInformationByBranch( branch );
+                Branch saveBranch = branchService.getStoreInformationByBranch( branch );
                 List<FileImage> fileImages = new ArrayList<>();
 
-                product.setStoreInformation( storeInformation );
+                product.setBranch( saveBranch );
                 Product savedProduct = productRepository.save( product );
                 saveProductInventory( savedProduct );
-                for ( FileImage fileImage : getFileImages( files ) ){
+                for ( FileImage fileImage : getFileImages( files ) ) {
                     if ( savedProduct != null ) {
-                        logger.info( "image saving..." );
                         fileImage.setProduct( savedProduct );
                         fileImages.add( fileImage );
                     }
@@ -127,18 +132,32 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getAvailableProductById( int id ) {
         logger.info( "{}", "product ID: " + id );
-        return productRepository.findAvailableProductById( id )
+        Product product = productRepository.findAvailableProductById( id )
                 .orElseThrow( () -> new ProductNotFound( String.format( "Product Not Found with ID: " + id ) ) );
+
+        return product;
     }
 
     // converting entity to dto
+    @Override
     public ProductDto convertEntityToDto( Product product ) {
         return mapper.map( product, ProductDto.class );
     }
 
     // converting dto to entity
+    @Override
     public Product convertDtoToEntity( ProductDto productDto ) {
         return mapper.map( productDto, Product.class );
+    }
+
+    @Override
+    public byte[] getImage( String image ) throws IOException {
+        try {
+            InputStream readImage = servletContext.getResourceAsStream( "WEB-INF/inventory-management-system-reactjs/public/images/products/" + image );
+            return IOUtils.toByteArray( readImage );
+        } catch ( Exception e ) {
+            throw e;
+        }
     }
 
     public List<FileImage> getFileImages( MultipartFile[] files ) {

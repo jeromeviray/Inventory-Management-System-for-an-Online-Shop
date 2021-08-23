@@ -4,7 +4,7 @@ import com.project.inventory.store.product.model.ProductDto;
 
 import java.util.List;
 
-public class StoreInformationDto {
+public class BranchDto {
     private String branch;
     private List<ProductDto> products;
 
