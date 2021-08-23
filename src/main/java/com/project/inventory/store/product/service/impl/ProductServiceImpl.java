@@ -55,29 +55,27 @@ public class ProductServiceImpl implements ProductService {
     public Product saveProduct( MultipartFile[] files,
                                 Product product,
                                 String branch ) {
-        if ( product != null ) {
-            try {
-                StoreInformation storeInformation = storeInformationService.getStoreInformationByBranch( branch );
-                List<FileImage> fileImages = new ArrayList<>();
+        logger.info(product.toString());
+        try {
+            StoreInformation storeInformation = storeInformationService.getStoreInformationByBranch( branch );
+            List<FileImage> fileImages = new ArrayList<>();
 
-                product.setStoreInformation( storeInformation );
-                Product savedProduct = productRepository.save( product );
-                saveProductInventory( savedProduct );
-                for ( FileImage fileImage : getFileImages( files ) ) {
-                    if ( savedProduct != null ) {
-                        fileImage.setProduct( savedProduct );
-                        fileImages.add( fileImage );
-                    }
-                }
-                fileImageService.saveFileImages( fileImages );
-                return savedProduct;
-
-            } catch ( InvalidException e ) {
-                throw new InvalidException( "Unsuccessfully saved. Please Try Again!" );
+            product.setStoreInformation( storeInformation );
+            Product savedProduct = productRepository.save( product );
+            saveProductInventory( savedProduct );
+            for ( FileImage fileImage : getFileImages( files ) ) {
+                fileImage.setProduct( savedProduct );
+                fileImages.add( fileImage );
             }
-        } else {
-            throw new NullServiceException( super.getClass() );
+            fileImageService.saveFileImages( fileImages );
+            return savedProduct;
+        } catch ( InvalidException e ) {
+            throw new InvalidException( "Unsuccessfully saved. Please Try Again!" );
+        } catch( Exception e ) {
+            logger.info( "an exception was thrown", e);
+
         }
+        return null;
     }
 
     public void saveProductInventory( Product product ) {

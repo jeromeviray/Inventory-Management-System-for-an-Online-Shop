@@ -47,6 +47,7 @@ public class ProductController {
         product.setDescription( description );
         productService.saveProduct( productImages, product, branch );
         return new ResponseEntity( HttpStatus.OK );
+
     }
 
     @RequestMapping( value = "/getImages/bytesArrays/{image}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
@@ -54,6 +55,7 @@ public class ProductController {
         InputStream readImage = servletContext.getResourceAsStream("WEB-INF/inventory-management-system-reactjs/public/images/products/"+image);
         return new ResponseEntity( IOUtils.toByteArray( readImage ), HttpStatus.OK);
     }
+
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping( value = "/update/{id}", method = RequestMethod.PUT )
     public ResponseEntity<?> updateProduct( @PathVariable int id,
