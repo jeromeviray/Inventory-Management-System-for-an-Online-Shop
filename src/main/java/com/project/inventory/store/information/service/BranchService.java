@@ -7,17 +7,19 @@ import com.project.inventory.store.information.model.GetBranchWithTotalProduct;
 import java.util.List;
 
 public interface BranchService {
-    List<Branch> saveStoreInformation( Branch branch );
+    List<Branch> saveBranch( Branch branch );
 
-    void updateStoreInformation( int id, Branch branch );
+    void updateBranch( int id, Branch branch );
 
-    Branch getStoreInformation( int id );
+    Branch getBranchById( int id );
 
-    Branch getStoreInformationByBranch( String storeLocation );
+    Branch getBranchByBranch( String storeLocation );
 
     BranchDto getProductsByBranch( String branch );
 
-    List<String> getStores();
+    List<String> getBranch();
 
     List<GetBranchWithTotalProduct> getBranchWithTotalProduct();
+
+    void deleteBranch(int id);
 }
