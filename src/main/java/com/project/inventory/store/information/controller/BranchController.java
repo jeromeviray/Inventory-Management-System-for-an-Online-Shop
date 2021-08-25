@@ -17,13 +17,15 @@ public class BranchController {
     @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN') or hasRole('ROLE_ADMIN')" )
     @RequestMapping( value = "/save", method = RequestMethod.POST )
     public ResponseEntity<?> saveStoreInformation( @RequestBody Branch branch ) {
-        return new ResponseEntity( branchService.saveStoreInformation( branch ), HttpStatus.OK );
+        System.out.println( branch );
+        branchService.saveBranch( branch );
+        return new ResponseEntity( HttpStatus.OK );
     }
 
     @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN')" )
     @RequestMapping( value = "/options", method = RequestMethod.GET )
     public ResponseEntity<?> getStores() {
-        return new ResponseEntity( branchService.getStores(), HttpStatus.OK );
+        return new ResponseEntity( branchService.getBranch(), HttpStatus.OK );
     }
 
     @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN') or hasRole('ROLE_ADMIN')" )
@@ -35,6 +37,20 @@ public class BranchController {
     @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN') or hasRole('ROLE_ADMIN')" )
     @RequestMapping( value = "", method = RequestMethod.GET )
     public ResponseEntity<?> getBranchWithTotalProduct() {
-        return new ResponseEntity(branchService.getBranchWithTotalProduct(), HttpStatus.OK);
+        return new ResponseEntity( branchService.getBranchWithTotalProduct(), HttpStatus.OK );
+    }
+
+    @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN') or hasRole('ROLE_ADMIN')" )
+    @RequestMapping( value = "/update/{id}", method = RequestMethod.POST )
+    public ResponseEntity<?> updateBranch( @PathVariable int id, @RequestBody Branch branch ) {
+        branchService.updateBranch( id, branch );
+        return new ResponseEntity( HttpStatus.OK );
+    }
+
+    @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN')" )
+    @RequestMapping( value = "/delete/{id}", method = RequestMethod.DELETE )
+    public ResponseEntity<?> deleteBranch( @PathVariable int id ) {
+        branchService.deleteBranch( id );
+        return new ResponseEntity( HttpStatus.OK );
     }
 }

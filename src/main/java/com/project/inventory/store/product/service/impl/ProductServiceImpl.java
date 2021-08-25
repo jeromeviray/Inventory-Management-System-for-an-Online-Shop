@@ -57,7 +57,7 @@ public class ProductServiceImpl implements ProductService {
                                 String branch ) {
         if ( product != null ) {
             try {
-                Branch saveBranch = branchService.getStoreInformationByBranch( branch );
+                Branch saveBranch = branchService.getBranchByBranch( branch );
                 List<FileImage> fileImages = new ArrayList<>();
 
                 product.setBranch( saveBranch );
