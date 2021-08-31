@@ -3,12 +3,28 @@ package com.project.inventory.store.order.orderManagement.repository;
 import com.project.inventory.store.order.orderManagement.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface OrderManagementRepository extends JpaRepository<Order, Integer> {
 
-    @Query(value = "SELECT * FROM shopping_order WHERE order_status = 0", nativeQuery = true)
-    List<Order> findAllByStatusPending();
+//    @Query( value = "SELECT * FROM order_management WHERE order_status = 'PENDING'", nativeQuery = true )
+//    List<Order> findAllByStatusPending();
+//
+//    @Query( value = "SELECT * FROM order_management WHERE order_status = 'CONFIRMED'", nativeQuery = true )
+//    List<Order> findAllByStatusConfirmed();
+//
+//    @Query( value = "SELECT * FROM order_management WHERE order_status = 'COMPLETED'", nativeQuery = true )
+//    List<Order> findAllByStatusCompleted();
 
+    @Query( value = "SELECT * FROM order_management WHERE order_status =:status", nativeQuery = true )
+    List<Order> findAllByOrderStatus( @Param( "status" ) String status );
+
+    @Query( value = "SELECT * FROM order_management WHERE order_status =:status AND account_id =:id", nativeQuery = true )
+    List<Order> findAllByOrderStatusAndAccountId( @Param( "status" ) String status,
+                                                  @Param( "id" ) int id );
+
+    @Query( value = "SELECT * FROM order_management WHERE account_id =:id", nativeQuery = true )
+    List<Order> findAllByAccountId( @Param( "id" ) int id );
 }

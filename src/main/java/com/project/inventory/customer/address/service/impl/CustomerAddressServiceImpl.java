@@ -1,5 +1,6 @@
 package com.project.inventory.customer.address.service.impl;
 
+import com.project.inventory.common.persmision.service.AuthenticatedUser;
 import com.project.inventory.customer.address.model.CustomerAddress;
 import com.project.inventory.customer.address.model.CustomerAddressDto;
 import com.project.inventory.customer.address.repository.CustomerAddressRepository;
@@ -22,14 +23,15 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
 
     @Autowired
     private CustomerAddressRepository customerAddressRepository;
-    @Autowired
-    private AccountService accountService;
+
     @Autowired
     private ModelMapper mapper;
+    @Autowired
+    private AuthenticatedUser authenticatedUser;
 
     @Override
     public CustomerAddress saveCustomerAddress(CustomerAddress customerAddress) {
-        Account account = accountService.getAccountById(1);
+        Account account = authenticatedUser.getUserDetails();
         logger.info(String.format("{}",
                 customerAddress
                         .getFirstName().concat(" "+customerAddress

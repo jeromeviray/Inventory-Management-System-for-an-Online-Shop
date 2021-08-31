@@ -10,7 +10,7 @@ import java.util.List;
 
 public class OrderDto {
 
-    private int id;
+    private String orderId;
     private OrderStatus orderStatus;
     private double totalAmount;
     private Date orderedAt;
@@ -18,14 +18,14 @@ public class OrderDto {
     private AccountDto account;
     private PaymentMethodDto paymentMethod;
     private CustomerAddressDto customerAddress;
-    private List<OrderItemDto> orderItem;
+    private List<OrderItemDto> orderItems;
 
-    public int getId() {
-        return id;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setOrderId( String orderId ) {
+        this.orderId = orderId;
     }
 
     public OrderStatus getOrderStatus() {
@@ -84,26 +84,16 @@ public class OrderDto {
         this.customerAddress = customerAddress;
     }
 
-    public List<OrderItemDto> getOrderItem() {
-        return orderItem;
+    public List<OrderItemDto> getOrderItems() {
+        return orderItems;
     }
 
-    public void setOrderItem(List<OrderItemDto> orderItem) {
-        this.orderItem = orderItem;
+    public void setOrderItems( List<OrderItemDto> orderItems ) {
+        this.orderItems = orderItems;
     }
 
     @Override
     public String toString() {
-        return "ShoppingOrderDto{" +
-                "id=" + id +
-                ", orderStatus=" + orderStatus +
-                ", totalAmount=" + totalAmount +
-                ", orderedAt=" + orderedAt +
-                ", deliveredAt=" + deliveredAt +
-                ", account=" + account +
-                ", paymentMethod=" + paymentMethod +
-                ", customerAddress=" + customerAddress +
-                ", orderItem=" + orderItem +
-                '}';
+        return super.toString();
     }
 }

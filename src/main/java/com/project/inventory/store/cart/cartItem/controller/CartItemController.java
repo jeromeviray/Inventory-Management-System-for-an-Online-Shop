@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "api/v1/cart/item")
-public class CartItemRestController {
+public class CartItemController {
 
     @Autowired
     private CartItemService cartItemService;

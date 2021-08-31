@@ -24,9 +24,9 @@ import javax.security.auth.login.AccountLockedException;
 import java.util.HashSet;
 import java.util.Set;
 
-@Service(value = "accountServiceImpl")
+@Service( value = "accountServiceImpl" )
 public class AccountServiceImpl implements AccountService {
-    Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
+    Logger logger = LoggerFactory.getLogger( AccountServiceImpl.class );
     @Autowired
     private AccountRepository accountRepository;
     @Autowired
@@ -40,94 +40,94 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public Account getAccountById(int accountId) throws NotFoundException {
-        return accountRepository.findById(accountId);
+    public Account getAccountById( int accountId ) throws NotFoundException {
+        return accountRepository.findById( accountId );
     }
 
 
     @Override
-    public void saveUserAccount(Account account) {
+    public void saveUserAccount( Account account ) {
         account.setAuthProvider( AuthProvider.local );
 
-        account.setPassword( passwordEncoder.encode(account.getPassword()) );
+        account.setPassword( passwordEncoder.encode( account.getPassword() ) );
 
-            Role role = roleService.getRoleByRoleName(RoleType.CUSTOMER);
+        Role role = roleService.getRoleByRoleName( RoleType.CUSTOMER );
         Set<Role> authority = new HashSet<>();
-        authority.add(role);
+        authority.add( role );
 
-        account.setRoles(authority);
+        account.setRoles( authority );
 
-        Account savedAccount = accountRepository.save(account);
+        Account savedAccount = accountRepository.save( account );
 
-        userService.saveUserInformation(account, new User());
+        userService.saveUserInformation( savedAccount, new User() );
     }
 
     @Override
-    public Account getAccountByUsername(String username) {
-        return accountRepository.findByUsername(username);
+    public Account getAccountByUsername( String username ) {
+        return accountRepository.findByUsername( username );
     }
 
     @Override
-    public void changePassword(ChangePassword changePassword) {
-        Account account = getAccountById(changePassword.getId());
-        if(!comparePassword(account, changePassword.getCurrentPassword())){
-            throw new InvalidException("Mismatch Current Password. Please Try Again!");
-        }else if(!changePassword.getPassword().equals(changePassword.getConfirmPassword())){
-            throw new InvalidException("Not match New Password. Please Try Again!");
+    public void changePassword( ChangePassword changePassword ) {
+        Account account = getAccountById( changePassword.getId() );
+        if ( !comparePassword( account, changePassword.getCurrentPassword() ) ) {
+            throw new InvalidException( "Mismatch Current Password. Please Try Again!" );
+        } else if ( !changePassword.getPassword().equals( changePassword.getConfirmPassword() ) ) {
+            throw new InvalidException( "Not match New Password. Please Try Again!" );
         }
-        account.setPassword(passwordEncoder.encode(changePassword.getPassword()));
-        accountRepository.save(account);
+        account.setPassword( passwordEncoder.encode( changePassword.getPassword() ) );
+        accountRepository.save( account );
     }
 
     @Override
-    public String changeUsername(int id, String username) {
-        Account account = getAccountById(id);
-        account.setUsername(username);
+    public String changeUsername( int id, String username ) {
+        Account account = getAccountById( id );
+        account.setUsername( username );
 
-        Account updatedUsernameAccount = accountRepository.save(account);
+        Account updatedUsernameAccount = accountRepository.save( account );
 
         return updatedUsernameAccount.getUsername();
     }
 
     @Override
-    public AccountDto convertEntityToDto(Account account) {
-        return mapper.map(account, AccountDto.class);
+    public AccountDto convertEntityToDto( Account account ) {
+        return mapper.map( account, AccountDto.class );
     }
 
     @Override
-    public Account convertDtoToEntity(AccountDto accountDto) {
-        return mapper.map(accountDto, Account.class);
+    public Account convertDtoToEntity( AccountDto accountDto ) {
+        return mapper.map( accountDto, Account.class );
 
     }
 
     @Override
-    public Boolean isEnabled(Account account) throws AccountLockedException {
-        if(!account.isEnabled()){
+    public Boolean isEnabled( Account account ) throws AccountLockedException {
+        if ( !account.isEnabled() ) {
             throw new AccountLockedException();
         }
         return true;
     }
 
     @Override
-    public Boolean isLocked(Account account) throws AccountLockedException {
-        if(!account.isLocked()){
+    public Boolean isLocked( Account account ) throws AccountLockedException {
+        if ( !account.isLocked() ) {
             throw new AccountLockedException();
         }
         return true;
     }
 
     @Override
-    public Boolean isEnabledAndLocked(Account account) throws AccountLockedException {
-        if(!account.isLocked() && !account.isEnabled()){
+    public Boolean isEnabledAndLocked( Account account ) throws AccountLockedException {
+        if ( !account.isLocked() && !account.isEnabled() ) {
             throw new AccountLockedException();
         }
         return true;
     }
 
-    protected boolean comparePassword(Account account, String currentPassword){
-        logger.info("{}", "Compare Current Password: "
-                +passwordEncoder.matches(currentPassword, account.getPassword()));
+    protected boolean comparePassword( Account account, String currentPassword ) {
+        logger.info( "{}", "Compare Current Password: "
+                + passwordEncoder.matches( currentPassword, account.getPassword() ) );
 
-        return passwordEncoder.matches(currentPassword, account.getPassword());
+        return passwordEncoder.matches( currentPassword, account.getPassword() );
     }
 }

@@ -18,7 +18,7 @@ public class CartItem implements Serializable {
     private int id;
 
     @Column( name = "quantity", columnDefinition = "int default 1")
-    private int quantity;
+    private int quantity = 1;
 
     @Column(name = "amount")
     private double amount;

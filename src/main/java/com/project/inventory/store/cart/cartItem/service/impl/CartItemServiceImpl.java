@@ -42,25 +42,26 @@ public class CartItemServiceImpl implements CartItemService {
         Product product = productService.getAvailableProductById(productId);
 
         Cart cart = getCart(authenticatedUser.getUserDetails().getId());
-        logger.info("{}", cart.getId());
+//        logger.info("cart id {}", cart.getId());
 
         CartItem cartItem = new CartItem();
 
         if(cart == null){
             logger.info("Cart is null. Processing new cart");
+            // when the user/customer is new and don't have cart
             // will create new cart
             // save the cart item
             createCart(cartItem, product, authenticatedUser.getUserDetails().getId());
         }else {
+            // if the user/customer has already cart and item. the item will
+            // just increment
             // get the saved item
             CartItem savedCartItem = getCartItemByCartIdAndProductId(cart.getId(), product.getId());
             if(savedCartItem != null){
-
-                logger.info("{}", savedCartItem.getId());
-
                 int quantity = incrementQuantity(savedCartItem.getId());
                 logger.info("Updated Quantity", quantity);
             }else {
+                // save the new product in their cart
                 cartItem.setProduct(product);
                 cartItem.setAmount(product.getPrice());
                 cartItem.setQuantity(1);

@@ -83,7 +83,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         account.setUsername( username );
         account.setEmail( oAuth2UserInfo.getEmail() );
         account.setRoles( authority );
-        return accountRepository.save( account );
+        Account savedAccount = accountRepository.save( account );
+
+        return savedAccount;
     }
 
 

@@ -68,7 +68,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         String accessToken = jwtProvider.generateOAuth2AccessToken( username );
         String refreshToken = jwtProvider.generateOAuth2RefreshToken( username );
-        List<String> roles = getRoles( accountService.getAccountByUsername( username ).getRoles() );
+        String roles = getRoles( accountService.getAccountByUsername( username ).getRoles() );
 
         String queryParams = String.format(
                 "username=%s&accessToken=%s&refreshToken=%s&roles=%s",
@@ -88,12 +88,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         httpCookieOAuth2RequestRepository.removeAuthorizationRequest( request, response );
     }
 
-    private List<String> getRoles( Set<Role> roles ) {
+    private String getRoles( Set<Role> roles ) {
         List<String> getRolesName = new ArrayList<>();
         for ( Role role : roles ) {
             getRolesName.add( role.getRoleName() );
         }
-        return getRolesName;
+        return getRolesName.get( 0 );
     }
 
     private Boolean isAuthorizedRedirectUri( String uri ) {

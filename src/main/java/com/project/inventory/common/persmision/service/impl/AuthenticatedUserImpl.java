@@ -35,7 +35,6 @@ public class AuthenticatedUserImpl implements AuthenticatedUser {
 
             throw new UsernameNotFoundException(String.format("There is No Authenticated Account "));
         }
-        logger.info(String.format("Current user with username " +authentication.getName()));
         String username = authentication.getName();
         return accountService.getAccountByUsername(username);
     }
