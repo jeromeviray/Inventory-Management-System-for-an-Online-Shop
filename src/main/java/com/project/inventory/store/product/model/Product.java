@@ -1,8 +1,9 @@
 package com.project.inventory.store.product.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.inventory.store.information.model.StoreInformation;
+import com.project.inventory.store.information.model.Branch;
 import com.project.inventory.store.inventory.model.Inventory;
+import com.project.inventory.store.product.brand.model.Brand;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -46,12 +47,16 @@ public class Product implements Serializable {
     private Inventory inventory;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id", updatable = false)
+    @JoinColumn(name = "branch_id")
     @JsonIgnore
-    private StoreInformation storeInformation;
+    private Branch branch;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
     private List<FileImage> fileImages;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name= "brand_id")
+    private Brand brand;
 
     public Product() {
     }
@@ -62,7 +67,7 @@ public class Product implements Serializable {
         this.price = price;
     }
 
-    public Product(int id, String name, String description, double price, boolean isDeleted, Date created, Date updated, StoreInformation storeInformation) {
+    public Product(int id, String name, String description, double price, boolean isDeleted, Date created, Date updated, Branch branch ) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -70,7 +75,7 @@ public class Product implements Serializable {
         this.isDeleted = isDeleted;
         this.created = created;
         this.updated = updated;
-        this.storeInformation = storeInformation;
+        this.branch = branch;
     }
 
     public int getId() {
@@ -129,12 +134,20 @@ public class Product implements Serializable {
         isDeleted = deleted;
     }
 
-    public StoreInformation getStoreInformation() {
-        return storeInformation;
+    public Inventory getInventory() {
+        return inventory;
     }
 
-    public void setStoreInformation(StoreInformation storeInformation) {
-        this.storeInformation = storeInformation;
+    public void setInventory( Inventory inventory ) {
+        this.inventory = inventory;
+    }
+
+    public Branch getBranch() {
+        return branch;
+    }
+
+    public void setBranch( Branch branch ) {
+        this.branch = branch;
     }
 
     public List<FileImage> getFileImages() {
@@ -145,32 +158,29 @@ public class Product implements Serializable {
         this.fileImages = fileImages;
     }
 
+    public Brand getBrand() {
+        return brand;
+    }
+
+    public void setBrand( Brand brand ) {
+        this.brand = brand;
+    }
+
     @Override
     public boolean equals( Object o ) {
         if ( this == o ) return true;
         if ( !( o instanceof Product ) ) return false;
         Product product = ( Product ) o;
-        return getId() == product.getId() && Double.compare( product.getPrice(), getPrice() ) == 0 && isDeleted() == product.isDeleted() && Objects.equals( getName(), product.getName() ) && Objects.equals( getDescription(), product.getDescription() ) && Objects.equals( getCreated(), product.getCreated() ) && Objects.equals( getUpdated(), product.getUpdated() ) && Objects.equals( inventory, product.inventory ) && Objects.equals( getStoreInformation(), product.getStoreInformation() ) && Objects.equals( getFileImages(), product.getFileImages() );
+        return getId() == product.getId() && Double.compare( product.getPrice(), getPrice() ) == 0 && isDeleted() == product.isDeleted() && Objects.equals( getName(), product.getName() ) && Objects.equals( getDescription(), product.getDescription() ) && Objects.equals( getCreated(), product.getCreated() ) && Objects.equals( getUpdated(), product.getUpdated() ) && Objects.equals( getInventory(), product.getInventory() ) && Objects.equals( getBranch(), product.getBranch() ) && Objects.equals( getFileImages(), product.getFileImages() ) && Objects.equals( getBrand(), product.getBrand() );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash( getId(), getName(), getDescription(), getPrice(), getCreated(), getUpdated(), isDeleted(), inventory, getStoreInformation(), getFileImages() );
+        return Objects.hash( getId(), getName(), getDescription(), getPrice(), getCreated(), getUpdated(), isDeleted(), getInventory(), getBranch(), getFileImages(), getBrand() );
     }
 
     @Override
     public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", price=" + price +
-                ", created=" + created +
-                ", updated=" + updated +
-                ", isDeleted=" + isDeleted +
-                ", inventory=" + inventory +
-                ", storeInformation=" + storeInformation +
-                ", fileImages=" + fileImages +
-                '}';
+        return super.toString();
     }
 }

@@ -3,8 +3,8 @@ package com.project.inventory.store.product.service.impl;
 import com.project.inventory.exception.invalid.InvalidException;
 import com.project.inventory.exception.notFound.product.ProductNotFound;
 import com.project.inventory.exception.serverError.product.ProductNotUpdatedException;
-import com.project.inventory.store.information.model.StoreInformation;
-import com.project.inventory.store.information.service.StoreInformationService;
+import com.project.inventory.store.information.model.Branch;
+import com.project.inventory.store.information.service.BranchService;
 import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.inventory.repository.InventoryRepository;
 import com.project.inventory.store.product.model.FileImage;
@@ -45,7 +45,7 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ModelMapper mapper;
     @Autowired
-    private StoreInformationService storeInformationService;
+    private BranchService branchService;
     @Autowired
     private FileImageService fileImageService;
     @Autowired
@@ -55,6 +55,7 @@ public class ProductServiceImpl implements ProductService {
     public Product saveProduct( MultipartFile[] files,
                                 Product product,
                                 String branch ) {
+<<<<<<< HEAD
         logger.info(product.toString());
         try {
             StoreInformation storeInformation = storeInformationService.getStoreInformationByBranch( branch );
@@ -66,6 +67,27 @@ public class ProductServiceImpl implements ProductService {
             for ( FileImage fileImage : getFileImages( files ) ) {
                 fileImage.setProduct( savedProduct );
                 fileImages.add( fileImage );
+=======
+        if ( product != null ) {
+            try {
+                Branch saveBranch = branchService.getBranchByBranch( branch );
+                List<FileImage> fileImages = new ArrayList<>();
+
+                product.setBranch( saveBranch );
+                Product savedProduct = productRepository.save( product );
+                saveProductInventory( savedProduct );
+                for ( FileImage fileImage : getFileImages( files ) ) {
+                    if ( savedProduct != null ) {
+                        fileImage.setProduct( savedProduct );
+                        fileImages.add( fileImage );
+                    }
+                }
+                fileImageService.saveFileImages( fileImages );
+                return savedProduct;
+
+            } catch ( InvalidException e ) {
+                throw new InvalidException( "Unsuccessfully saved. Please Try Again!" );
+>>>>>>> main
             }
             fileImageService.saveFileImages( fileImages );
             return savedProduct;
@@ -132,7 +154,7 @@ public class ProductServiceImpl implements ProductService {
         logger.info( "{}", "product ID: " + id );
         Product product = productRepository.findAvailableProductById( id )
                 .orElseThrow( () -> new ProductNotFound( String.format( "Product Not Found with ID: " + id ) ) );
-        logger.info( "{}", product.getStoreInformation().getBranch() );
+
         return product;
     }
 

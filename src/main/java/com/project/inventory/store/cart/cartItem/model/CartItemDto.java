@@ -6,19 +6,19 @@ import java.util.Date;
 
 public class CartItemDto {
 
-    private int cartItemId;
+    private int id;
     private int quantity;
     private double amount;
     private Date addedAt;
     private ProductDto product;
 
 
-    public int getCartItemId() {
-        return cartItemId;
+    public int getId() {
+        return id;
     }
 
-    public void setCartItemId(int cartItemId) {
-        this.cartItemId = cartItemId;
+    public void setId( int id ) {
+        this.id = id;
     }
 
     public int getQuantity() {

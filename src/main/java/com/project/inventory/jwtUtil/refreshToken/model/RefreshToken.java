@@ -1,6 +1,6 @@
 package com.project.inventory.jwtUtil.refreshToken.model;
 
-import com.project.inventory.common.persmision.model.Account;
+import com.project.inventory.common.permission.model.Account;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;

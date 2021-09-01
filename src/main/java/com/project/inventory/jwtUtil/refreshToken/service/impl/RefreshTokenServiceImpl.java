@@ -1,6 +1,6 @@
 package com.project.inventory.jwtUtil.refreshToken.service.impl;
 
-import com.project.inventory.common.persmision.model.Account;
+import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshToken;
 import com.project.inventory.jwtUtil.refreshToken.repository.RefreshTokenRepository;

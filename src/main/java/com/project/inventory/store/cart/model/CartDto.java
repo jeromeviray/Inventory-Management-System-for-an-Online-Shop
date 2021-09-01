@@ -7,7 +7,7 @@ import java.util.List;
 public class CartDto {
     private int cartId;
     private int accountId;
-    private List<CartItemDto> cartItemsDto;
+    private List<CartItemDto> cartItems;
 
 
     public int getCartId() {
@@ -26,11 +26,11 @@ public class CartDto {
         this.accountId = accountId;
     }
 
-    public List<CartItemDto> getCartItemsDto() {
-        return cartItemsDto;
+    public List<CartItemDto> getCartItems() {
+        return cartItems;
     }
 
-    public void setCartItemsDto(List<CartItemDto> cartItemsDto) {
-        this.cartItemsDto = cartItemsDto;
+    public void setCartItems( List<CartItemDto> cartItems ) {
+        this.cartItems = cartItems;
     }
 }

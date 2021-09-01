@@ -10,7 +10,10 @@ public interface OrderManagementService {
     void placeOrder(int customerAddressId,
                              int paymentId,
                              List<CartItem> cartItems);
-    List<OrderDto> getOrders();
+    List<OrderDto> getPendingOrders();
+    List<OrderDto> getConfirmedOrders();
+    List<OrderDto> getCompletedOrders();
+    List<OrderDto> getOrdersByAccountId();
     OrderDto convertEntityToDto(Order order);
     Order convertDtoToEntity(OrderDto orderDto);
 }

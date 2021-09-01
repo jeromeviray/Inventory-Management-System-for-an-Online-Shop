@@ -2,9 +2,9 @@ package com.project.inventory.webSecurity.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.inventory.BeanUtils;
-import com.project.inventory.common.persmision.model.Account;
-import com.project.inventory.common.persmision.role.model.Role;
-import com.project.inventory.common.persmision.service.AccountService;
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.role.model.Role;
+import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
 import com.project.inventory.jwtUtil.refreshToken.service.RefreshTokenService;
 import com.project.inventory.jwtUtil.response.JwtResponse;
@@ -60,19 +60,20 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         } catch ( IOException e ) {
             logger.info( "Error log in : {}", e.getMessage() );
             throw new BadCredentialsException( e.getMessage() );
-        } catch ( LockedException e ) {
-            logger.info( "Error log in : {}", e.getMessage() );
-            throw e;
-        } catch ( DisabledException e ) {
-            logger.info( "Error log in : {}", e.getMessage() );
-            throw e;
-        } catch ( BadCredentialsException e ) {
+        } catch ( AuthenticationException e ) {
             logger.info( "Error log in : {}", e.getMessage() );
             throw new BadCredentialsException( e.getMessage() );
-        } catch ( AccountExpiredException e ) {
-            logger.info( "Error log in : {}", e.getMessage() );
-            throw e;
         }
+//        catch ( DisabledException e ) {
+//            logger.info( "Error log in : {}", e.getMessage() );
+//            throw e;
+//        } catch ( BadCredentialsException e ) {
+//            logger.info( "Error log in : {}", e.getMessage() );
+//            throw new BadCredentialsException( e.getMessage() );
+//        } catch ( AccountExpiredException e ) {
+//            logger.info( "Error log in : {}", e.getMessage() );
+//            throw e;
+//        }
     }
 
     @Override

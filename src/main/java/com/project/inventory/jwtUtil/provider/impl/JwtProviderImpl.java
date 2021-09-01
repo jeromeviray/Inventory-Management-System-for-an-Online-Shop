@@ -2,9 +2,9 @@ package com.project.inventory.jwtUtil.provider.impl;
 
 
 import com.project.inventory.BeanUtils;
-import com.project.inventory.common.persmision.model.Account;
-import com.project.inventory.common.persmision.role.model.Role;
-import com.project.inventory.common.persmision.service.AccountService;
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.role.model.Role;
+import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshToken;
@@ -22,7 +22,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 

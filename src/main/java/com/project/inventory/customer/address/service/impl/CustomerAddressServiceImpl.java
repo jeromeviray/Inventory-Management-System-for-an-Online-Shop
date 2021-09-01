@@ -1,12 +1,12 @@
 package com.project.inventory.customer.address.service.impl;
 
+import com.project.inventory.common.permission.service.AuthenticatedUser;
 import com.project.inventory.customer.address.model.CustomerAddress;
 import com.project.inventory.customer.address.model.CustomerAddressDto;
 import com.project.inventory.customer.address.repository.CustomerAddressRepository;
 import com.project.inventory.customer.address.service.CustomerAddressService;
 import com.project.inventory.exception.notFound.customer.CustomerAddressNotFoundException;
-import com.project.inventory.common.persmision.model.Account;
-import com.project.inventory.common.persmision.service.AccountService;
+import com.project.inventory.common.permission.model.Account;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +22,15 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
 
     @Autowired
     private CustomerAddressRepository customerAddressRepository;
-    @Autowired
-    private AccountService accountService;
+
     @Autowired
     private ModelMapper mapper;
+    @Autowired
+    private AuthenticatedUser authenticatedUser;
 
     @Override
     public CustomerAddress saveCustomerAddress(CustomerAddress customerAddress) {
-        Account account = accountService.getAccountById(1);
+        Account account = authenticatedUser.getUserDetails();
         logger.info(String.format("{}",
                 customerAddress
                         .getFirstName().concat(" "+customerAddress

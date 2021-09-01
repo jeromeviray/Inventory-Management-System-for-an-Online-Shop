@@ -2,16 +2,20 @@ package com.project.inventory.webSecurity.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.inventory.BeanUtils;
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.role.model.Role;
+import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.exception.apiError.ApiError;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
-import com.project.inventory.webSecurity.impl.UserDetailsServiceImpl;
+import com.project.inventory.webSecurity.oauth2.AuthProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -19,7 +23,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -30,7 +37,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Autowired
     private JwtProvider jwtProvider = BeanUtils.getBean( JwtProvider.class );
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private AccountService accountService = BeanUtils.getBean( AccountService.class );
 
     @Override
     protected void doFilterInternal( HttpServletRequest request, HttpServletResponse response, FilterChain filterChain ) throws ServletException, IOException {
@@ -47,11 +54,10 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 try {
                     username = jwtProvider.getUserNameFromToken( token );
                     if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
-                        UserDetails userDetails = jwtProvider.getUserDetails( username );
-
-                        if(token != null && jwtProvider.validateToken( token, userDetails.getUsername() )){
+                        Account account = getAccountDetails( username );
+                        if(token != null && jwtProvider.validateToken( token, account.getUsername() )){
                             SecurityContextHolder.getContext()
-                                    .setAuthentication(new UsernamePasswordAuthenticationToken( userDetails.getUsername(), null, userDetails.getAuthorities() ));
+                                    .setAuthentication(new UsernamePasswordAuthenticationToken( account.getUsername(), null, getGrantedAuthorities( account.getRoles() ) ));
                         }
                     }
                     filterChain.doFilter( request, response );
@@ -73,14 +79,26 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             }
         }
     }
-
-//    private List<GrantedAuthority> getGrantedAuthorities(List<GrantedAuthority> authorities) {
-//        List<GrantedAuthority> authorities = new ArrayList<>();
-//        for( String role : roles ) {
-//            authorities.add( new SimpleGrantedAuthority( "ROLE_" + role ) );
-//        }
-//        return authorities;
-//    }
+    private Account getAccountDetails(String username) {
+        Account account = accountService.getAccountByUsername( username );
+        // if the user is has local provider or basically has an account with password in database
+        // else the user if the provider is not local basically its third party account like google
+        // or facebook. Therefore the user with third party account
+        // will not validate in userDetailsServiceImpl loadUserByUsername.
+        if(account.getAuthProvider().equals( AuthProvider.local )){
+            String localUsername = jwtProvider.getUserDetails( account.getUsername() ).getUsername();
+            return accountService.getAccountByUsername( localUsername );
+        }else{
+            return account;
+        }
+    }
+    private List<GrantedAuthority> getGrantedAuthorities( Set<Role> roles ) {
+        List<GrantedAuthority> grandAuthorities = new ArrayList<>();
+        for( Role role : roles ) {
+            grandAuthorities.add( new SimpleGrantedAuthority( "ROLE_"+ role.getRoleName() ) );
+        }
+        return grandAuthorities;
+    }
 
 //    public Authentication getAuthentication( String username, List<GrantedAuthority> authorities ) {
 //        return new UsernamePasswordAuthenticationToken( username, null, authorities );

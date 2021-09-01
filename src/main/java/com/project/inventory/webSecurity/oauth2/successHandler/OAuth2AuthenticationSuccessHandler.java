@@ -1,19 +1,16 @@
 package com.project.inventory.webSecurity.oauth2.successHandler;
 
-import com.project.inventory.BeanUtils;
-import com.project.inventory.common.persmision.role.model.Role;
-import com.project.inventory.common.persmision.service.AccountService;
+import com.project.inventory.common.permission.role.model.Role;
+import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.exception.BadRequestException;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
 import com.project.inventory.webSecurity.config.AppProperties;
-import com.project.inventory.webSecurity.impl.UserDetailsServiceImpl;
 import com.project.inventory.webSecurity.oauth2.cookie.HttpCookieOAuth2RequestRepository;
 import com.project.inventory.webSecurity.oauth2.cookie.utils.CookieUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -68,7 +65,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         String accessToken = jwtProvider.generateOAuth2AccessToken( username );
         String refreshToken = jwtProvider.generateOAuth2RefreshToken( username );
-        List<String> roles = getRoles( accountService.getAccountByUsername( username ).getRoles() );
+        String roles = getRoles( accountService.getAccountByUsername( username ).getRoles() );
 
         String queryParams = String.format(
                 "username=%s&accessToken=%s&refreshToken=%s&roles=%s",
@@ -88,12 +85,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         httpCookieOAuth2RequestRepository.removeAuthorizationRequest( request, response );
     }
 
-    private List<String> getRoles( Set<Role> roles ) {
+    private String getRoles( Set<Role> roles ) {
         List<String> getRolesName = new ArrayList<>();
         for ( Role role : roles ) {
             getRolesName.add( role.getRoleName() );
         }
-        return getRolesName;
+        return getRolesName.get( 0 );
     }
 
     private Boolean isAuthorizedRedirectUri( String uri ) {
