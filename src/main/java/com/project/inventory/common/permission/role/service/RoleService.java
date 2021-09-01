@@ -1,7 +1,7 @@
-package com.project.inventory.common.persmision.role.service;
+package com.project.inventory.common.permission.role.service;
 
-import com.project.inventory.common.persmision.role.model.Role;
-import com.project.inventory.common.persmision.role.model.RoleType;
+import com.project.inventory.common.permission.role.model.Role;
+import com.project.inventory.common.permission.role.model.RoleType;
 
 import java.util.List;
 

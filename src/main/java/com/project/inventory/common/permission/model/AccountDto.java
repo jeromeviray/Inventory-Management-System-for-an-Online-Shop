@@ -1,4 +1,4 @@
-package com.project.inventory.common.persmision.model;
+package com.project.inventory.common.permission.model;
 
 public class AccountDto {
     private int accountId;

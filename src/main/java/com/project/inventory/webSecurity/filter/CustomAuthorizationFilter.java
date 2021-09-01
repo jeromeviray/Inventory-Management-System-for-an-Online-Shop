@@ -2,9 +2,9 @@ package com.project.inventory.webSecurity.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.inventory.BeanUtils;
-import com.project.inventory.common.persmision.model.Account;
-import com.project.inventory.common.persmision.role.model.Role;
-import com.project.inventory.common.persmision.service.AccountService;
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.role.model.Role;
+import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.exception.apiError.ApiError;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
 import com.project.inventory.webSecurity.oauth2.AuthProvider;

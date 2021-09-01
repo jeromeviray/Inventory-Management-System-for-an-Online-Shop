@@ -22,7 +22,7 @@ public class BranchController {
         return new ResponseEntity( HttpStatus.OK );
     }
 
-    @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN')" )
+    @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN') or hasRole('ROLE_ADMIN')" )
     @RequestMapping( value = "/options", method = RequestMethod.GET )
     public ResponseEntity<?> getStores() {
         return new ResponseEntity( branchService.getBranch(), HttpStatus.OK );
@@ -53,4 +53,5 @@ public class BranchController {
         branchService.deleteBranch( id );
         return new ResponseEntity( HttpStatus.OK );
     }
+
 }

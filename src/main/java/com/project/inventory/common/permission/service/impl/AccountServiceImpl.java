@@ -1,13 +1,13 @@
-package com.project.inventory.common.persmision.service.impl;
+package com.project.inventory.common.permission.service.impl;
 
-import com.project.inventory.common.persmision.model.Account;
-import com.project.inventory.common.persmision.model.AccountDto;
-import com.project.inventory.common.persmision.model.ChangePassword;
-import com.project.inventory.common.persmision.repository.AccountRepository;
-import com.project.inventory.common.persmision.role.model.Role;
-import com.project.inventory.common.persmision.role.model.RoleType;
-import com.project.inventory.common.persmision.role.service.RoleService;
-import com.project.inventory.common.persmision.service.AccountService;
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.model.AccountDto;
+import com.project.inventory.common.permission.model.ChangePassword;
+import com.project.inventory.common.permission.repository.AccountRepository;
+import com.project.inventory.common.permission.role.model.Role;
+import com.project.inventory.common.permission.role.model.RoleType;
+import com.project.inventory.common.permission.role.service.RoleService;
+import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.common.user.model.User;
 import com.project.inventory.common.user.service.UserService;
 import com.project.inventory.exception.invalid.InvalidException;
@@ -60,6 +60,23 @@ public class AccountServiceImpl implements AccountService {
         Account savedAccount = accountRepository.save( account );
 
         userService.saveUserInformation( savedAccount, new User() );
+    }
+
+    @Override
+    public Account saveEmployeeAccount( String username, String password, String email ) {
+        Account account = new Account();
+        account.setAuthProvider( AuthProvider.local );
+        account.setUsername( username );
+        account.setPassword( passwordEncoder.encode( password ) );
+        account.setEmail( email );
+
+        Role role = roleService.getRoleByRoleName( RoleType.ADMIN );
+        Set<Role> authority = new HashSet<>();
+        authority.add( role );
+
+        account.setRoles( authority );
+
+        return accountRepository.save( account );
     }
 
     @Override
@@ -122,6 +139,14 @@ public class AccountServiceImpl implements AccountService {
             throw new AccountLockedException();
         }
         return true;
+    }
+
+    @Override
+    public void deleteAccount( int id ) {
+        Account account = getAccountById( id );
+        account.setEnabled( false );
+        account.setLocked( false );
+        accountRepository.save( account );
     }
 
     protected boolean comparePassword( Account account, String currentPassword ) {

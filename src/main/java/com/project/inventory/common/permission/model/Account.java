@@ -1,6 +1,6 @@
-package com.project.inventory.common.persmision.model;
+package com.project.inventory.common.permission.model;
 
-import com.project.inventory.common.persmision.role.model.Role;
+import com.project.inventory.common.permission.role.model.Role;
 import com.project.inventory.webSecurity.oauth2.AuthProvider;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;

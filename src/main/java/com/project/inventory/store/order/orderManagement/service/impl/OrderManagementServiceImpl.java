@@ -1,14 +1,11 @@
 package com.project.inventory.store.order.orderManagement.service.impl;
 
-import com.project.inventory.common.persmision.role.model.Role;
-import com.project.inventory.exception.impl.AccessDeniedExceptionImpl;
+import com.project.inventory.common.permission.role.model.Role;
 import com.project.inventory.store.cart.cartItem.model.CartItem;
 import com.project.inventory.store.cart.cartItem.service.CartItemService;
 import com.project.inventory.customer.address.model.CustomerAddress;
-import com.project.inventory.customer.address.model.CustomerAddressDto;
 import com.project.inventory.customer.address.service.CustomerAddressService;
 import com.project.inventory.customer.payment.model.PaymentMethod;
-import com.project.inventory.customer.payment.model.PaymentMethodDto;
 import com.project.inventory.customer.payment.service.PaymentMethodService;
 import com.project.inventory.exception.invalid.order.OrderInvalidException;
 import com.project.inventory.store.order.orderItem.model.OrderItem;
@@ -18,17 +15,15 @@ import com.project.inventory.store.order.orderManagement.model.Order;
 import com.project.inventory.store.order.orderManagement.model.OrderDto;
 import com.project.inventory.store.order.orderManagement.repository.OrderManagementRepository;
 import com.project.inventory.store.order.orderManagement.service.OrderManagementService;
-import com.project.inventory.common.persmision.model.Account;
-import com.project.inventory.common.persmision.model.AccountDto;
-import com.project.inventory.common.persmision.service.AccountService;
-import com.project.inventory.common.persmision.service.AuthenticatedUser;
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.service.AccountService;
+import com.project.inventory.common.permission.service.AuthenticatedUser;
 import com.project.inventory.store.product.service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

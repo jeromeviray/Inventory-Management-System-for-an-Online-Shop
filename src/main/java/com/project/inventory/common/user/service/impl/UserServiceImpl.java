@@ -1,7 +1,7 @@
 package com.project.inventory.common.user.service.impl;
 
-import com.project.inventory.common.persmision.model.Account;
-import com.project.inventory.common.persmision.service.AccountService;
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.common.user.model.User;
 import com.project.inventory.common.user.model.UserDto;
 import com.project.inventory.common.user.repository.UserRepository;
@@ -11,6 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service(value = "userInformationServiceImpl")
 public class UserServiceImpl implements UserService {
@@ -46,6 +49,15 @@ public class UserServiceImpl implements UserService {
     public void deleteUserInformation(int id) {
         User user = getUserInformationById(id);
         userRepository.delete(user);
+    }
+
+    @Override
+    public List<UserDto> getUser() {
+        List<UserDto> users = new ArrayList<>();
+        for(User user : userRepository.findAll()){
+            users.add( convertEntityToDto( user ) );
+        }
+        return users;
     }
 
     @Override

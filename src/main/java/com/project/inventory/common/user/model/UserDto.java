@@ -1,9 +1,7 @@
 package com.project.inventory.common.user.model;
 
-import com.project.inventory.customer.address.model.CustomerAddressDto;
-import com.project.inventory.common.persmision.model.AccountInfoDto;
+import com.project.inventory.common.permission.model.AccountInfoDto;
 
-import java.util.Collection;
 import java.util.Date;
 
 public class UserDto {
@@ -14,7 +12,7 @@ public class UserDto {
     private int phoneNumber;
     private Date birthDay;
     private AccountInfoDto account;
-    private Collection<CustomerAddressDto> customerAddresses;
+//    private Collection<CustomerAddressDto> customerAddresses;
 
     public int getId() {
         return id;
@@ -64,13 +62,7 @@ public class UserDto {
         this.account = account;
     }
 
-    public Collection<CustomerAddressDto> getCustomerAddresses() {
-        return customerAddresses;
-    }
 
-    public void setCustomerAddresses(Collection<CustomerAddressDto> customerAddresses) {
-        this.customerAddresses = customerAddresses;
-    }
 
     @Override
     public String toString() {
@@ -81,7 +73,6 @@ public class UserDto {
                 ", phoneNumber=" + phoneNumber +
                 ", birthDay=" + birthDay +
                 ", account=" + account +
-                ", customerAddresses=" + customerAddresses +
                 '}';
     }
 }

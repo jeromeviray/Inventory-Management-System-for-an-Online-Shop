@@ -3,7 +3,7 @@ package com.project.inventory.store.order.orderManagement.model;
 import com.project.inventory.customer.address.model.CustomerAddressDto;
 import com.project.inventory.customer.payment.model.PaymentMethodDto;
 import com.project.inventory.store.order.orderItem.model.OrderItemDto;
-import com.project.inventory.common.persmision.model.AccountDto;
+import com.project.inventory.common.permission.model.AccountDto;
 
 import java.util.Date;
 import java.util.List;

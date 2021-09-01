@@ -1,6 +1,6 @@
-package com.project.inventory.common.persmision.role.repository;
+package com.project.inventory.common.permission.role.repository;
 
-import com.project.inventory.common.persmision.role.model.Role;
+import com.project.inventory.common.permission.role.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

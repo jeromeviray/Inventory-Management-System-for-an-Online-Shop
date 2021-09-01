@@ -1,6 +1,6 @@
 package com.project.inventory.jwtUtil.provider;
 
-import com.project.inventory.common.persmision.model.Account;
+import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshToken;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshTokenResponse;
 import io.jsonwebtoken.Claims;

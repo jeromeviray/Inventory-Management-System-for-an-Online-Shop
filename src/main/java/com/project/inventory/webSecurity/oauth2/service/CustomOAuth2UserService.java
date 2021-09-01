@@ -1,10 +1,12 @@
 package com.project.inventory.webSecurity.oauth2.service;
 
-import com.project.inventory.common.persmision.model.Account;
-import com.project.inventory.common.persmision.repository.AccountRepository;
-import com.project.inventory.common.persmision.role.model.Role;
-import com.project.inventory.common.persmision.role.model.RoleType;
-import com.project.inventory.common.persmision.role.service.RoleService;
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.repository.AccountRepository;
+import com.project.inventory.common.permission.role.model.Role;
+import com.project.inventory.common.permission.role.model.RoleType;
+import com.project.inventory.common.permission.role.service.RoleService;
+import com.project.inventory.common.user.model.User;
+import com.project.inventory.common.user.service.UserService;
 import com.project.inventory.webSecurity.oauth2.AccountPrinciple;
 import com.project.inventory.webSecurity.oauth2.AuthProvider;
 import org.slf4j.Logger;
@@ -30,7 +32,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private AccountRepository accountRepository;
     @Autowired
     private RoleService roleService;
-
+    @Autowired
+    private UserService userService;
 
     @Override
     public OAuth2User loadUser( OAuth2UserRequest userRequest ) throws OAuth2AuthenticationException {
@@ -74,18 +77,24 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private Account registerOAuth2Account( OAuth2UserRequest request, OAuth2UserInfo oAuth2UserInfo ) {
         String username = oAuth2UserInfo.getEmail().substring( 0, oAuth2UserInfo.getEmail().indexOf( "@" ) );
 
-        Role role = roleService.getRoleByRoleName( RoleType.USER );
-        Set<Role> authority = new HashSet<>();
-        authority.add( role );
 
-        Account account = new Account();
-        account.setAuthProvider( AuthProvider.valueOf( request.getClientRegistration().getRegistrationId() ) );
-        account.setUsername( username );
-        account.setEmail( oAuth2UserInfo.getEmail() );
-        account.setRoles( authority );
-        Account savedAccount = accountRepository.save( account );
+        try{
+            Role role = roleService.getRoleByRoleName( RoleType.USER );
+            Set<Role> authority = new HashSet<>();
+            authority.add( role );
 
-        return savedAccount;
+            Account account = new Account();
+            account.setAuthProvider( AuthProvider.valueOf( request.getClientRegistration().getRegistrationId() ) );
+            account.setUsername( username );
+            account.setEmail( oAuth2UserInfo.getEmail() );
+            account.setRoles( authority );
+            Account savedAccount = accountRepository.save( account );
+            userService.saveUserInformation( account, new User() );
+            return savedAccount;
+        }catch ( Exception e ){
+            throw e;
+        }
+
     }
 
 

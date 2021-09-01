@@ -1,6 +1,5 @@
 package com.project.inventory.jwtUtil.refreshToken.repository;
 
-import com.project.inventory.common.persmision.model.Account;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 

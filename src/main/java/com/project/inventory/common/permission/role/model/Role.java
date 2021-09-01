@@ -1,4 +1,4 @@
-package com.project.inventory.common.persmision.role.model;
+package com.project.inventory.common.permission.role.model;
 
 import javax.persistence.*;
 import javax.transaction.Transactional;

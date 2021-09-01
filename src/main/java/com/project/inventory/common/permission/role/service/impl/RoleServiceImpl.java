@@ -1,9 +1,9 @@
-package com.project.inventory.common.persmision.role.service.impl;
+package com.project.inventory.common.permission.role.service.impl;
 
-import com.project.inventory.common.persmision.role.model.Role;
-import com.project.inventory.common.persmision.role.model.RoleType;
-import com.project.inventory.common.persmision.role.repository.RoleRepository;
-import com.project.inventory.common.persmision.role.service.RoleService;
+import com.project.inventory.common.permission.role.model.Role;
+import com.project.inventory.common.permission.role.model.RoleType;
+import com.project.inventory.common.permission.role.repository.RoleRepository;
+import com.project.inventory.common.permission.role.service.RoleService;
 import com.project.inventory.exception.notFound.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

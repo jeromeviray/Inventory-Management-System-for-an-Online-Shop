@@ -1,6 +1,6 @@
-package com.project.inventory.common.persmision.service;
+package com.project.inventory.common.permission.service;
 
-import com.project.inventory.common.persmision.model.Account;
+import com.project.inventory.common.permission.model.Account;
 import org.springframework.security.core.Authentication;
 
 public interface AuthenticatedUser {

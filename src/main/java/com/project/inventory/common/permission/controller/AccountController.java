@@ -1,9 +1,9 @@
-package com.project.inventory.common.persmision.controller;
+package com.project.inventory.common.permission.controller;
 
-import com.project.inventory.common.persmision.model.Account;
-import com.project.inventory.common.persmision.model.ChangePassword;
-import com.project.inventory.common.persmision.service.AccountService;
-import com.project.inventory.common.persmision.service.AuthenticatedUser;
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.model.ChangePassword;
+import com.project.inventory.common.permission.service.AccountService;
+import com.project.inventory.common.permission.service.AuthenticatedUser;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshToken;
 import org.slf4j.Logger;
@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RestController

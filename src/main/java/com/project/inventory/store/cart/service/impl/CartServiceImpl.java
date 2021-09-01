@@ -1,11 +1,10 @@
 package com.project.inventory.store.cart.service.impl;
 
-import com.project.inventory.common.persmision.model.Account;
-import com.project.inventory.common.persmision.service.AccountService;
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.exception.notFound.cart.CartNotFound;
 import com.project.inventory.store.cart.cartItem.model.CartItem;
-import com.project.inventory.store.cart.cartItem.model.CartItemDto;
 import com.project.inventory.store.cart.cartItem.service.impl.CartItemServiceImpl;
 import com.project.inventory.store.cart.model.Cart;
 import com.project.inventory.store.cart.model.CartDto;
