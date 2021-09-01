@@ -55,19 +55,6 @@ public class ProductServiceImpl implements ProductService {
     public Product saveProduct( MultipartFile[] files,
                                 Product product,
                                 String branch ) {
-<<<<<<< HEAD
-        logger.info(product.toString());
-        try {
-            StoreInformation storeInformation = storeInformationService.getStoreInformationByBranch( branch );
-            List<FileImage> fileImages = new ArrayList<>();
-
-            product.setStoreInformation( storeInformation );
-            Product savedProduct = productRepository.save( product );
-            saveProductInventory( savedProduct );
-            for ( FileImage fileImage : getFileImages( files ) ) {
-                fileImage.setProduct( savedProduct );
-                fileImages.add( fileImage );
-=======
         if ( product != null ) {
             try {
                 Branch saveBranch = branchService.getBranchByBranch( branch );
@@ -87,17 +74,10 @@ public class ProductServiceImpl implements ProductService {
 
             } catch ( InvalidException e ) {
                 throw new InvalidException( "Unsuccessfully saved. Please Try Again!" );
->>>>>>> main
             }
-            fileImageService.saveFileImages( fileImages );
-            return savedProduct;
-        } catch ( InvalidException e ) {
-            throw new InvalidException( "Unsuccessfully saved. Please Try Again!" );
-        } catch( Exception e ) {
-            logger.info( "an exception was thrown", e);
-
+        } else {
+            throw new NullServiceException( super.getClass() );
         }
-        return null;
     }
 
     public void saveProductInventory( Product product ) {

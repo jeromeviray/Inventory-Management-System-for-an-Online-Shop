@@ -1,13 +1,14 @@
 package com.project.inventory.common.persmision.service.impl;
 
-import com.project.inventory.common.persmision.model.Account;
-import com.project.inventory.common.persmision.model.AccountDto;
-import com.project.inventory.common.persmision.model.ChangePassword;
-import com.project.inventory.common.persmision.repository.AccountRepository;
-import com.project.inventory.common.persmision.role.model.Role;
-import com.project.inventory.common.persmision.role.model.RoleType;
-import com.project.inventory.common.persmision.role.service.RoleService;
-import com.project.inventory.common.persmision.service.AccountService;
+
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.model.AccountDto;
+import com.project.inventory.common.permission.model.ChangePassword;
+import com.project.inventory.common.permission.repository.AccountRepository;
+import com.project.inventory.common.permission.role.model.Role;
+import com.project.inventory.common.permission.role.model.RoleType;
+import com.project.inventory.common.permission.role.service.RoleService;
+import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.common.user.model.User;
 import com.project.inventory.common.user.service.UserService;
 import com.project.inventory.exception.invalid.InvalidException;
@@ -40,7 +41,7 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public Account getAccountById(int accountId) throws NotFoundException {
+    public Account getAccountById( int accountId) throws NotFoundException {
         return accountRepository.findById(accountId);
     }
 
@@ -51,7 +52,7 @@ public class AccountServiceImpl implements AccountService {
 
         account.setPassword( passwordEncoder.encode(account.getPassword()) );
 
-        Role role = roleService.getRoleByRoleName(RoleType.SUPER_ADMIN);
+        Role role = roleService.getRoleByRoleName( RoleType.SUPER_ADMIN);
         Set<Role> authority = new HashSet<>();
         authority.add(role);
 
@@ -68,7 +69,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void changePassword(ChangePassword changePassword) {
+    public void changePassword( ChangePassword changePassword) {
         Account account = getAccountById(changePassword.getId());
         if(!comparePassword(account, changePassword.getCurrentPassword())){
             throw new InvalidException("Mismatch Current Password. Please Try Again!");
@@ -90,7 +91,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDto convertEntityToDto(Account account) {
+    public AccountDto convertEntityToDto( Account account) {
         return mapper.map(account, AccountDto.class);
     }
 
@@ -124,7 +125,17 @@ public class AccountServiceImpl implements AccountService {
         return true;
     }
 
-    protected boolean comparePassword(Account account, String currentPassword){
+    @Override
+    public Account saveEmployeeAccount( String username, String password, String email ) {
+        return null;
+    }
+
+    @Override
+    public void deleteAccount( int id ) {
+
+    }
+
+    protected boolean comparePassword( Account account, String currentPassword){
         logger.info("{}", "Compare Current Password: "
                 +passwordEncoder.matches(currentPassword, account.getPassword()));
 
