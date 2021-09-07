@@ -85,8 +85,15 @@ public class ProductController {
         return productService.getProducts();
     }
 
-    @RequestMapping( value = "/product/{id}", method = RequestMethod.GET )
+    @PreAuthorize( "hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')" )
+    @RequestMapping( value = "/{id}", method = RequestMethod.GET )
     public ResponseEntity<?> getProductById( @PathVariable int id ) throws IOException {
+        Product product = productService.getProductById( id );
+
+        return ResponseEntity.ok( productService.convertEntityToDto( product ) );
+    }
+    @RequestMapping( value = "/details/{id}", method = RequestMethod.GET )
+    public ResponseEntity<?> getProductSummaryDetails( @PathVariable int id ) throws IOException {
         Product product = productService.getProductById( id );
 
         return ResponseEntity.ok( productService.convertEntityToDto( product ) );

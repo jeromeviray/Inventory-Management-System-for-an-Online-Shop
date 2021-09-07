@@ -2,14 +2,13 @@ package com.project.inventory.store.cart.cartItem.model;
 
 import com.project.inventory.store.product.model.ProductDto;
 
-import java.util.Date;
-
 public class CartItemDto {
 
     private int id;
     private int quantity;
     private double amount;
-    private Date addedAt;
+//    @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss a")
+    private String addedAt;
     private ProductDto product;
 
 
@@ -37,11 +36,11 @@ public class CartItemDto {
         this.amount = amount;
     }
 
-    public Date getAddedAt() {
+    public String getAddedAt() {
         return addedAt;
     }
 
-    public void setAddedAt(Date addedAt) {
+    public void setAddedAt( String addedAt ) {
         this.addedAt = addedAt;
     }
 

@@ -3,14 +3,15 @@ package com.project.inventory.customer.address.repository;
 import com.project.inventory.customer.address.model.CustomerAddress;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface CustomerAddressRepository extends JpaRepository<CustomerAddress, Integer> {
 
-    @Query(value = "SELECT * FROM customer_address_info", nativeQuery = true)
-    List<CustomerAddress> findAllCustomerAddresses();
+    @Query(value = "SELECT * FROM address_detail WHERE account_id =:id", nativeQuery = true)
+    List<CustomerAddress> findAllCustomerAddresses( @Param ( "id" ) int id);
 
     Optional<CustomerAddress> findById(int id);
 

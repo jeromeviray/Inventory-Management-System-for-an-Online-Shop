@@ -36,7 +36,6 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart getCartByCartIdAndAccountId( int cartId, int accountId ) {
-        logger.info( "{}", cartId + " " + accountId );
         return cartRepository.findByIdAndAccountId( cartId, accountId )
                 .orElseThrow( () -> new CartNotFound( String.format( "Cart Not Found with ID: {}", cartId ) ) );
     }
@@ -59,19 +58,13 @@ public class CartServiceImpl implements CartService {
     @Override
     public Cart getCartByAccountId( int accountId ) {
         logger.info( "{}", "Account id" + accountId );
-
-//
-//        if(cart == null) throw new CartNotFound(String.format("Cart Not Found"));
-
         return cartRepository.findByAccountId( accountId );
     }
 
     @Override
     public CartDto getCartByAccountIdDto( int accountId ) {
         Cart cart = cartRepository.findByAccountId( accountId );
-
-        if ( cart == null ) throw new CartNotFound( String.format( "Cart Not Found" ) );
-
+//        if ( cart.equals( null )) throw new CartNotFound( String.format( "Cart Not Found" ) );
         return convertEntityToDto( cart );
     }
 
@@ -95,6 +88,7 @@ public class CartServiceImpl implements CartService {
     }
 
     // converting entity to dto
+    @Override
     public CartDto convertEntityToDto( Cart cart ) {
 //        System.out.println(cart);
 //        CartDto cartDto = new CartDto();
@@ -111,6 +105,7 @@ public class CartServiceImpl implements CartService {
     }
 
     // converting dto to entity
+    @Override
     public Cart convertDtoToEntity( CartDto cartDto ) {
         return mapper.map( cartDto, Cart.class );
     }

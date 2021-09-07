@@ -125,11 +125,10 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     public Cart getCart(int accountId){
-        logger.info("{}", accountId);
         Cart cart = cartService.getCartByAccountId(accountId);
 
         if(cart != null){
-            logger.info(String.format("Cart ID: " +cart.getId()));
+//            logger.info(String.format("Cart ID: " +cart.getId()));
             return cart;
         }
         return null;
@@ -147,17 +146,12 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     public void createCart(CartItem cartItem, Product product, int accountId){
-        logger.info("Product ID: "+product.getId());
-
         Cart savedCart = cartService.createCart(accountId);
-
         cartItem.setAmount(product.getPrice());
         cartItem.setProduct(product);
         cartItem.setCart(savedCart);
 
         cartItemRepository.save(cartItem);
-        logger.info("{}", cartItem.getId());
-
     }
 
     public int incrementQuantity(int cartItemId){

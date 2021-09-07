@@ -1,5 +1,6 @@
 package com.project.inventory.store.cart.cartItem.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.inventory.store.cart.model.Cart;
 import com.project.inventory.store.product.model.Product;
@@ -23,6 +24,7 @@ public class CartItem implements Serializable {
     @Column(name = "amount")
     private double amount;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @CreationTimestamp
     @Column(name = "added_at", nullable = false)
     private Date addedAt;

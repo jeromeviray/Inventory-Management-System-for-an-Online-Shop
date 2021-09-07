@@ -42,8 +42,9 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
 
     @Override
     public List<CustomerAddressDto> getCustomerAddresses() {
+        Account account = authenticatedUser.getUserDetails();
         List<CustomerAddressDto> customerAddressesDto = new ArrayList<>();
-        for (CustomerAddress customerAddress : customerAddressRepository.findAllCustomerAddresses()){
+        for (CustomerAddress customerAddress : customerAddressRepository.findAllCustomerAddresses(account.getId())){
             customerAddressesDto.add(convertEntityToDto(customerAddress));
         }
         return customerAddressesDto;
