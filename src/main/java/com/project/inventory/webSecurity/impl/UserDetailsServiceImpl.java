@@ -1,9 +1,8 @@
 package com.project.inventory.webSecurity.impl;
 
-import com.project.inventory.common.persmision.model.Account;
-import com.project.inventory.common.persmision.role.model.Role;
-import com.project.inventory.common.persmision.service.AccountService;
-import com.project.inventory.exception.notFound.account.AccountNotFoundException;
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.role.model.Role;
+import com.project.inventory.common.permission.service.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +13,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Service(value = "userDetailsServiceImpl")
@@ -28,6 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account = accountService.getAccountByUsername(username);
         if (account == null) {

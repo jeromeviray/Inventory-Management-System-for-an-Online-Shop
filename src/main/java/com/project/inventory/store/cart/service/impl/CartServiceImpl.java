@@ -1,11 +1,10 @@
 package com.project.inventory.store.cart.service.impl;
 
-import com.project.inventory.common.persmision.model.Account;
-import com.project.inventory.common.persmision.service.AccountService;
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.exception.notFound.cart.CartNotFound;
 import com.project.inventory.store.cart.cartItem.model.CartItem;
-import com.project.inventory.store.cart.cartItem.model.CartItemDto;
 import com.project.inventory.store.cart.cartItem.service.impl.CartItemServiceImpl;
 import com.project.inventory.store.cart.model.Cart;
 import com.project.inventory.store.cart.model.CartDto;
@@ -23,7 +22,7 @@ import java.util.List;
 @Service
 public class CartServiceImpl implements CartService {
 
-    Logger logger = LoggerFactory.getLogger(CartServiceImpl.class);
+    Logger logger = LoggerFactory.getLogger( CartServiceImpl.class );
 
     @Autowired
     private CartRepository cartRepository;
@@ -36,82 +35,78 @@ public class CartServiceImpl implements CartService {
     private ModelMapper mapper;
 
     @Override
-    public Cart getCartByCartIdAndAccountId(int cartId, int accountId) {
-        logger.info("{}", cartId +" " +accountId);
-        return cartRepository.findByIdAndAccountId(cartId, accountId)
-                .orElseThrow(() -> new CartNotFound(String.format("Cart Not Found with ID: "+cartId)));
+    public Cart getCartByCartIdAndAccountId( int cartId, int accountId ) {
+        return cartRepository.findByIdAndAccountId( cartId, accountId )
+                .orElseThrow( () -> new CartNotFound( String.format( "Cart Not Found with ID: {}", cartId ) ) );
     }
 
     @Override
-    public Cart createCart(int accountId) {
+    public Cart createCart( int accountId ) {
 
-        Account account = accountService.getAccountById(accountId);
+        Account account = accountService.getAccountById( accountId );
         Cart cart = new Cart();
 
-        if(account == null) throw new NotFoundException(String.format("Account Not Found! " + accountId));
+        if ( account == null ) throw new NotFoundException( String.format( "Account Not Found! " + accountId ) );
 
-        cart.setAccount(account);
-        logger.info("{}", cart +" created successfully");
+        cart.setAccount( account );
+        logger.info( "{}", cart + " created successfully" );
 
-        return cartRepository.save(cart);
+        return cartRepository.save( cart );
 
     }
 
     @Override
-    public Cart getCartByAccountId(int accountId) {
-        logger.info("{}", "Account id" + accountId);
-        Cart cart = cartRepository.findByAccountId(accountId);
-
-        if(cart == null) throw new CartNotFound(String.format("Cart Not Found"));
-
-        return cart;
+    public Cart getCartByAccountId( int accountId ) {
+        logger.info( "{}", "Account id" + accountId );
+        return cartRepository.findByAccountId( accountId );
     }
 
     @Override
-    public CartDto getCartByAccountIdDto(int accountId) {
-        Cart cart = cartRepository.findByAccountId(accountId);
-
-        if(cart == null) throw new CartNotFound(String.format("Cart Not Found"));
-
-        return convertEntityToDto(cart);
+    public CartDto getCartByAccountIdDto( int accountId ) {
+        Cart cart = cartRepository.findByAccountId( accountId );
+//        if ( cart.equals( null )) throw new CartNotFound( String.format( "Cart Not Found" ) );
+        return convertEntityToDto( cart );
     }
 
     @Override
-    public Cart getCartById(int id) {
-        return cartRepository.findById(id)
-                .orElseThrow(() -> new CartNotFound(String.format("Cart Not Found with ID: "+id)));
+    public Cart getCartById( int id ) {
+        return cartRepository.findById( id )
+                .orElseThrow( () -> new CartNotFound( String.format( "Cart Not Found with ID: " + id ) ) );
     }
 
     @Override
-    public List<CartItem> getCartProducts(int cartId){
+    public List<CartItem> getCartProducts( int cartId ) {
         List<CartItem> cartItems = new ArrayList<>();
 
-        Cart cart = getCartById(cartId);
+        Cart cart = getCartById( cartId );
 
-        for (CartItem cartItem : cart.getCartItems()){
-            cartItems.add(cartItem);
+        for ( CartItem cartItem : cart.getCartItems() ) {
+            cartItems.add( cartItem );
         }
 
         return cartItems;
     }
 
     // converting entity to dto
-    public CartDto convertEntityToDto(Cart cart){
+    @Override
+    public CartDto convertEntityToDto( Cart cart ) {
 //        System.out.println(cart);
-       CartDto cartDto = new CartDto();
-       List<CartItemDto> cartItemsDto = new ArrayList<>();
-
-       cartDto.setCartId(cart.getId());
-       cartDto.setAccountId(cart.getAccount().getId());
-
-       for(CartItem cartItem : cart.getCartItems()){
-           cartItemsDto.add(cartItemServiceimpl.convertEntityToDto(cartItem));
-       }
-       cartDto.setCartItemsDto(cartItemsDto);
-       return cartDto;
+//        CartDto cartDto = new CartDto();
+//        List<CartItemDto> cartItemsDto = new ArrayList<>();
+//
+//        cartDto.setCartId( cart.getId() );
+//        cartDto.setAccountId( cart.getAccount().getId() );
+//
+//        for ( CartItem cartItem : cart.getCartItems() ) {
+//            cartItemsDto.add( cartItemServiceimpl.convertEntityToDto( cartItem ) );
+//        }
+//        cartDto.setCartItemsDto( cartItemsDto );
+        return mapper.map( cart, CartDto.class );
     }
+
     // converting dto to entity
-    public Cart convertDtoToEntity(CartDto cartDto){
-        return mapper.map(cartDto, Cart.class);
+    @Override
+    public Cart convertDtoToEntity( CartDto cartDto ) {
+        return mapper.map( cartDto, Cart.class );
     }
 }

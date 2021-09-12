@@ -2,7 +2,7 @@ package com.project.inventory.store.cart.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.inventory.store.cart.cartItem.model.CartItem;
-import com.project.inventory.common.persmision.model.Account;
+import com.project.inventory.common.permission.model.Account;
 
 import javax.persistence.*;
 import java.io.Serializable;

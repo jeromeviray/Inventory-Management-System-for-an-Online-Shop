@@ -1,8 +1,8 @@
 package com.project.inventory.common.user.controller;
 
-import com.project.inventory.common.persmision.model.Account;
-import com.project.inventory.common.persmision.service.AccountService;
-import com.project.inventory.common.persmision.service.AuthenticatedUser;
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.service.AccountService;
+import com.project.inventory.common.permission.service.AuthenticatedUser;
 import com.project.inventory.common.user.model.User;
 import com.project.inventory.common.user.model.UserDto;
 import com.project.inventory.common.user.service.UserService;
@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "api/v1/account/information")
+@RequestMapping(value = "api/v1/account/user")
 public class UserInformationController {
 
     @Autowired
@@ -30,6 +30,10 @@ public class UserInformationController {
         userService.saveUserInformation(account, user);
         return new ResponseEntity(HttpStatus.OK);
     }
+//    @RequestMapping(value = "", method = RequestMethod.GET)
+//    public ResponseEntity<?> getUser(){
+//        return new ResponseEntity(userService.getUser(),HttpStatus.OK);
+//    }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> getUserInformationById(@PathVariable int id){

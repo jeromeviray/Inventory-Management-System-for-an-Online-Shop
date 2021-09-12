@@ -1,7 +1,6 @@
 package com.project.inventory.customer.address.model;
 
-import com.project.inventory.common.persmision.model.Account;
-import com.project.inventory.common.user.model.User;
+import com.project.inventory.common.permission.model.Account;
 
 import javax.persistence.*;
 import javax.transaction.Transactional;

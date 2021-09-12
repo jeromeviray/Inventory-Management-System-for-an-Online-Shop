@@ -1,13 +1,14 @@
 package com.project.inventory.jwtUtil.response;
 
-import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class JwtResponse {
     private final String type = "Bearer ";
     private String username;
     private String accessToken;
     private String refreshToken;
-    private String[] roles;
+    private Map<String, String> roles;
 
     public JwtResponse () {
     }
@@ -18,7 +19,7 @@ public class JwtResponse {
         this.refreshToken = refreshToken;
     }
 
-    public JwtResponse(String username, String accessToken, String refreshToken, String[] roles) {
+    public JwtResponse(String username, String accessToken, String refreshToken, Map<String, String> roles) {
         this.username = username;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
@@ -53,14 +54,15 @@ public class JwtResponse {
         return type;
     }
 
-    public String[] getRoles() {
+
+
+    public Map<String, String> getRoles() {
         return roles;
     }
 
-    public void setRoles(String[] roles) {
+    public void setRoles( Map<String, String> roles ) {
         this.roles = roles;
     }
-
     @Override
     public String toString() {
         return "JwtResponse{" +
@@ -68,7 +70,7 @@ public class JwtResponse {
                 ", username='" + username + '\'' +
                 ", accessToken='" + accessToken + '\'' +
                 ", refreshToken='" + refreshToken + '\'' +
-                ", roles=" + Arrays.toString(roles) +
+                ", roles=" + roles +
                 '}';
     }
 }

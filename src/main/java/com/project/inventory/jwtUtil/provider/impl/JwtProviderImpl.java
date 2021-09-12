@@ -1,115 +1,177 @@
 package com.project.inventory.jwtUtil.provider.impl;
 
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.project.inventory.common.persmision.model.Account;
-import com.project.inventory.common.persmision.role.model.Role;
-import com.project.inventory.common.persmision.service.AccountService;
-import com.project.inventory.exception.ForbiddenException;
+import com.project.inventory.BeanUtils;
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.role.model.Role;
+import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshToken;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshTokenResponse;
 import com.project.inventory.jwtUtil.refreshToken.service.RefreshTokenService;
+import com.project.inventory.webSecurity.impl.UserDetailsServiceImpl;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.function.Function;
 
 @Service
 public class JwtProviderImpl implements JwtProvider {
-    Logger logger = LoggerFactory.getLogger(JwtProviderImpl.class);
+    Logger logger = LoggerFactory.getLogger( JwtProviderImpl.class );
 
-    private static final Date accessTokenExpiresAt = new Date(System.currentTimeMillis() + 10 * 60 * 1000); // 1hr 3600000 or 10*60*1000 10 minutes duration
+    private static final Date accessTokenExpiresAt = new Date( System.currentTimeMillis() + 10 * 60 * 1000 ); // 1hr 3600000 or 10*60*1000 10 minutes duration
 
-    private static final Date refreshTokenExpiresAt = new Date(System.currentTimeMillis() + 604800000);
+    private static final Date refreshTokenExpiresAt = new Date( System.currentTimeMillis() + 604800000 );
 
-    private String SECRET_KEY = Base64.getEncoder().encodeToString("osqda#x!@jkd!@hda2".getBytes());
+    private String SECRET_KEY = Base64.getEncoder().encodeToString( "926D96C90030DD58429D2751AC1BDBBC".getBytes() );
 
     @Autowired
     private AccountService accountService;
     @Autowired
     private RefreshTokenService refreshTokenService;
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService = BeanUtils.getBean( UserDetailsServiceImpl.class );
 
-    public Algorithm getClaimSecretToken(){
-        Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY.getBytes());
-        return algorithm;
+    @Override
+    public String getUserNameFromToken( String token ) {
+        return getClaimFromToken( token, Claims::getSubject );
     }
 
     @Override
-    public String accessToken(Account account) {
-
-        return JWT.create()
-                .withSubject(account.getUsername())
-                .withExpiresAt(accessTokenExpiresAt)
-                .withIssuedAt(new Date())
-                .withClaim("roles", account.getRoles()
-                        .stream().map(Role::getRoleName)
-                        .collect(Collectors.toList()))
-                .sign(getClaimSecretToken());
-
+    public Date getExpirationDateFromToken( String token ) {
+        return getClaimFromToken( token, Claims::getExpiration );
     }
 
     @Override
-    public String refreshToken(Account account) {
-        String refreshToken =  JWT.create()
-                .withSubject(account.getUsername())
-                .withExpiresAt(refreshTokenExpiresAt)
-                .withIssuedAt(new Date())
-                .withClaim("roles", account.getRoles()
-                        .stream().map(Role::toString)
-                        .collect(Collectors.toList()))
-                .sign(getClaimSecretToken());
-
-        return refreshTokenService.saveRefreshToken( refreshToken, account )
-                .getId();
+    public <T> T getClaimFromToken( String token, Function<Claims, T> claimsResolver ) {
+        final Claims claims = getAllClaimsFromToken( token );
+        return claimsResolver.apply( claims );
     }
 
     @Override
-    public DecodedJWT verifier(String token) {
-        JWTVerifier verifier = JWT.require(getClaimSecretToken()).build();
-        return verifier.verify(token);
+    public Claims getAllClaimsFromToken( String token ) {
+        return Jwts.parser().setSigningKey( SECRET_KEY ).parseClaimsJws( token ).getBody();
     }
 
     @Override
-    public String getSubjectClaim(String token) {
-        return verifier(token).getSubject();
+    public Boolean isTokenExpired( String token ) {
+        final Date expiration = getExpirationDateFromToken( token );
+        return expiration.before( new Date() );
     }
 
     @Override
-    public String[] getRoles(String token) {
-        return verifier(token).getClaim("roles").asArray(String.class);
+    public String generateAccessToken( UserDetails userDetails ) {
+        return doGenerateAccessToken( userDetails.getUsername() );
     }
 
+    @Override
+    public String generateRefreshToken( UserDetails userDetails ) {
+        return doGenerateRefreshToken( userDetails.getUsername() );
+    }
 
     @Override
-    public RefreshTokenResponse refreshToken( RefreshToken requestRefreshToken ) throws IOException {
-        try{ // verify the refresh token
-            RefreshToken savedRefreshToken = refreshTokenService.getRefreshToken( requestRefreshToken.getId() );
-            String refreshToken = savedRefreshToken.getRefreshToken();
-            String username = getSubjectClaim( refreshToken );
-            if(username != null && savedRefreshToken.getAccount().getUsername().equals( username )){
-                RefreshTokenResponse response = new RefreshTokenResponse();
-                response.setRefreshTokenId( savedRefreshToken.getId() );
-                response.setAccessToken( accessToken( savedRefreshToken.getAccount() ) );
-                return response;
+    public String generateOAuth2AccessToken( String username ) {
+        return doGenerateAccessToken( username );
+    }
+
+    @Override
+    public String generateOAuth2RefreshToken( String username ) {
+        return doGenerateRefreshToken( username );
+    }
+
+    @Override
+    public String doGenerateAccessToken( String username ) {
+        Map<String, Object> claims = new HashMap<>();
+        return Jwts.builder()
+                .setClaims( claims )
+                .setSubject( username )
+                .setIssuedAt( new Date( System.currentTimeMillis() ) )
+                .setExpiration( new Date( System.currentTimeMillis() + 10 * 60 * 1000 ) )
+                .signWith( SignatureAlgorithm.HS512, SECRET_KEY ).compact();
+    }
+
+    @Override
+    public String doGenerateRefreshToken( String username ) {
+        Map<String, Object> claims = new HashMap<>();
+        try {
+            Account account = accountService.getAccountByUsername( username );
+            //generate refres token
+            String refreshToken = Jwts.builder()
+                    .setClaims( claims )
+                    .setSubject( username )
+                    .setIssuedAt( new Date( System.currentTimeMillis() ) )
+                    .setExpiration( new Date( System.currentTimeMillis() + 604800000 ) )
+                    .signWith( SignatureAlgorithm.HS512, SECRET_KEY ).compact();
+            // save and get the saved token
+            Optional<RefreshToken> existingRefreshToken = refreshTokenService.getFreshTokenByAccountId( account.getId() );
+            //filtering data
+            if ( existingRefreshToken.isPresent() ) {
+                return existingRefreshToken.get().getId();
+            } else {
+                return refreshTokenService.saveRefreshToken( refreshToken, account )
+                        .getId();
             }
-        }catch( Exception exception ){
+        } catch ( Exception e ) {
+            throw new NotFoundException( e.getMessage() );
+        }
+
+    }
+
+    @Override
+    public Boolean validateToken( String token, String username ) {
+        final String usernameFromToken = getUserNameFromToken( token );
+        return ( usernameFromToken.equals( username ) && !isTokenExpired( token ) );
+    }
+
+    @Override
+    public UserDetails getUserDetails( String username ) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername( username );
+        return userDetails;
+    }
+
+    @Override
+    public List<GrantedAuthority> getAuthorities( Account account ) {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for ( Role role : account.getRoles() ) {
+            authorities.add( new SimpleGrantedAuthority( "ROLE_" + role.getRoleName() ) );
+        }
+
+        return authorities;
+    }
+
+    @Override
+    public RefreshTokenResponse validateAndGetAccessToken( RefreshToken refreshToken ) {
+        try { // verify the refresh token
+            RefreshToken savedRefreshToken = refreshTokenService.getRefreshToken( refreshToken.getId() );
+            String token = savedRefreshToken.getRefreshToken();
+
+            String username = getUserNameFromToken( token );
+
+            if ( savedRefreshToken.getAccount().getUsername().equals( username ) ) {
+                if ( validateToken( token, username ) ) {
+                    RefreshTokenResponse response = new RefreshTokenResponse();
+                    response.setRefreshTokenId( savedRefreshToken.getId() );
+                    response.setAccessToken( doGenerateAccessToken( username ) );
+                    return response;
+                }
+            }
+        } catch ( Exception exception ) {
             // if the refresh token is expired
             // remove the refresh token in the database
-            refreshTokenService.removeRefreshToken( requestRefreshToken.getId() );
-            logger.info("Error Logging in: {}", exception.getMessage());
-            throw new ForbiddenException(exception.getMessage());
+            refreshTokenService.removeRefreshToken( refreshToken.getId() );
+            logger.info( "Error Logging in: {}", exception.getMessage() );
+            throw exception;
         }
-        throw new NotFoundException("Refresh Token Not Found");
+        throw new NotFoundException( "Refresh Token Not Found" );
     }
 }

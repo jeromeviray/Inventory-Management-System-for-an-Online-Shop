@@ -4,6 +4,10 @@ import com.project.inventory.exception.impl.AccessDeniedExceptionImpl;
 import com.project.inventory.exception.impl.AuthenticationEntryPointImpl;
 import com.project.inventory.webSecurity.filter.CustomAuthenticationFilter;
 import com.project.inventory.webSecurity.filter.CustomAuthorizationFilter;
+import com.project.inventory.webSecurity.oauth2.cookie.HttpCookieOAuth2RequestRepository;
+import com.project.inventory.webSecurity.oauth2.failureHandler.OAuth2AuthenticationFailureHandler;
+import com.project.inventory.webSecurity.oauth2.service.CustomOAuth2UserService;
+import com.project.inventory.webSecurity.oauth2.successHandler.OAuth2AuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -20,28 +24,33 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
-//        securedEnabled = true,
-//        jsr250Enabled = true,
+        securedEnabled = true,
+        jsr250Enabled = true,
         prePostEnabled = true
 )
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     static final String API = "api/v1/";
     @Autowired
-    @Qualifier(value = "userDetailsServiceImpl")
+    @Qualifier( value = "userDetailsServiceImpl" )
     private UserDetailsService userDetailsService;
     @Autowired
-    private AuthenticationEntryPointImpl authenticationEntryPoint;
+    private CustomOAuth2UserService customOAuth2UserService;
     @Autowired
-    private AccessDeniedExceptionImpl accessDeniedExceptionImpl;
+    private HttpCookieOAuth2RequestRepository httpCookieOAuth2RequestRepository;
+    @Autowired
+    private OAuth2AuthenticationSuccessHandler auth2AuthenticationSuccessHandler;
+    @Autowired
+    private OAuth2AuthenticationFailureHandler auth2AuthenticationFailureHandler;
+    @Autowired
+    private AccessDeniedExceptionImpl accessDeniedException;
+    @Autowired
+    private AuthenticationEntryPointImpl authenticationEntryPoint;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -49,73 +58,63 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
+    protected void configure( AuthenticationManagerBuilder auth ) throws Exception {
+        auth.userDetailsService( userDetailsService );
     }
 
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    protected void configure( HttpSecurity http ) throws Exception {
 
         // Enable CORS and disable CSRF
         http.cors().and().csrf().disable();
-        // Set session management to stateless
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         //public endpoint
         http.authorizeRequests()
-                .antMatchers(HttpMethod.POST,
+                .antMatchers( HttpMethod.POST,
                         "/api/v1/account/login",
                         "/api/v1/account/register",
-                        "/api/v1/account/token/refresh").permitAll();
-        //private endpoint
-        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/products").hasAnyRole("ROLE_OWNER");
+                        "/api/v1/account/token/refresh" ).permitAll()
+                .antMatchers( HttpMethod.GET, "/api/v1/products/getImages/bytesArrays/*",
+                        "/api/v1/products/discover",
+                        "/api/v1/products/details/**").permitAll()
+                .antMatchers( "/oauth2/**" ).permitAll();
 
         http.authorizeRequests().anyRequest().authenticated();
-        //add filter
-        http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
-        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
         // Set unauthorized and access denied requests exception handler
         http.exceptionHandling()
-                .accessDeniedHandler(accessDeniedExceptionImpl)
-                .authenticationEntryPoint(authenticationEntryPoint);
+                .accessDeniedHandler( accessDeniedException )
+                .authenticationEntryPoint( authenticationEntryPoint );
 
-        // Set permissions on endpoints
-//        http.authorizeRequests()
-        // Our public endpoints
-//            .antMatchers(HttpMethod.POST,"/api/v1/account/**").permitAll()
-//                .antMatchers(HttpMethod.POST, "api/v1/user/login/**").permitAll()
-//                .antMatchers(HttpMethod.POST,"/api/v1/products/**").permitAll()
-//                .antMatchers(HttpMethod.GET,"/api/v1/account/**").permitAll()
-//                .antMatchers(HttpMethod.POST,"/api/v1/store/**").permitAll()
-//                .antMatchers(HttpMethod.GET,"/api/v1/account/information/**").permitAll()
-//                .anyRequest().authenticated();// Our private endpoints
-
-
-    }
-
-    // Used by spring security if CORS is enabled.
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
-        CorsConfiguration config = new CorsConfiguration();
-
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
+        // Set session management to stateless
+        http.sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS );
+        // disable the default
+        http.formLogin()
+                .disable()
+                .httpBasic()
+                .disable();
+        http.oauth2Login()
+                .authorizationEndpoint()
+                .baseUri( "/oauth2/authorize" )
+                .authorizationRequestRepository( httpCookieOAuth2RequestRepository )
+                .and()
+                .redirectionEndpoint()
+                .baseUri( "/oauth2/callback/*" )
+                .and()
+                .userInfoEndpoint()
+                .userService( customOAuth2UserService )
+                .and()
+                .successHandler( auth2AuthenticationSuccessHandler )
+                .failureHandler( auth2AuthenticationFailureHandler );
+        //add filter
+        http.addFilter( new CustomAuthenticationFilter( authenticationManagerBean() ) );
+        http.addFilterBefore( new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class );
     }
 
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+
     }
 
-//    @Bean
-//    public AuthenticationEntryPointHandler authenticationEntryPointHandler(){
-//        return new AuthenticationEntryPointHandler();
-//    }
 }

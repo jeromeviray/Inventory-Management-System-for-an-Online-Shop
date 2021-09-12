@@ -1,11 +1,9 @@
 package com.project.inventory.common.user.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.project.inventory.customer.address.model.CustomerAddress;
-import com.project.inventory.common.persmision.model.Account;
+import com.project.inventory.common.permission.model.Account;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.Date;
 
 @Entity

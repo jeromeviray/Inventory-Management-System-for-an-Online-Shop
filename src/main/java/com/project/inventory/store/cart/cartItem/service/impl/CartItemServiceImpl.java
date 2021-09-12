@@ -8,7 +8,7 @@ import com.project.inventory.store.cart.model.Cart;
 import com.project.inventory.store.cart.service.CartService;
 import com.project.inventory.exception.notFound.cart.CartItemNotFoundException;
 import com.project.inventory.exception.invalid.cart.CartItemNotValidException;
-import com.project.inventory.common.persmision.service.AuthenticatedUser;
+import com.project.inventory.common.permission.service.AuthenticatedUser;
 import com.project.inventory.store.product.model.Product;
 import com.project.inventory.store.product.service.ProductService;
 import org.modelmapper.ModelMapper;
@@ -42,25 +42,26 @@ public class CartItemServiceImpl implements CartItemService {
         Product product = productService.getAvailableProductById(productId);
 
         Cart cart = getCart(authenticatedUser.getUserDetails().getId());
-        logger.info("{}", cart.getId());
+//        logger.info("cart id {}", cart.getId());
 
         CartItem cartItem = new CartItem();
 
         if(cart == null){
             logger.info("Cart is null. Processing new cart");
+            // when the user/customer is new and don't have cart
             // will create new cart
             // save the cart item
             createCart(cartItem, product, authenticatedUser.getUserDetails().getId());
         }else {
+            // if the user/customer has already cart and item. the item will
+            // just increment
             // get the saved item
             CartItem savedCartItem = getCartItemByCartIdAndProductId(cart.getId(), product.getId());
             if(savedCartItem != null){
-
-                logger.info("{}", savedCartItem.getId());
-
                 int quantity = incrementQuantity(savedCartItem.getId());
                 logger.info("Updated Quantity", quantity);
             }else {
+                // save the new product in their cart
                 cartItem.setProduct(product);
                 cartItem.setAmount(product.getPrice());
                 cartItem.setQuantity(1);
@@ -124,11 +125,10 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     public Cart getCart(int accountId){
-        logger.info("{}", accountId);
         Cart cart = cartService.getCartByAccountId(accountId);
 
         if(cart != null){
-            logger.info(String.format("Cart ID: " +cart.getId()));
+//            logger.info(String.format("Cart ID: " +cart.getId()));
             return cart;
         }
         return null;
@@ -146,17 +146,12 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     public void createCart(CartItem cartItem, Product product, int accountId){
-        logger.info("Product ID: "+product.getId());
-
         Cart savedCart = cartService.createCart(accountId);
-
         cartItem.setAmount(product.getPrice());
         cartItem.setProduct(product);
         cartItem.setCart(savedCart);
 
         cartItemRepository.save(cartItem);
-        logger.info("{}", cartItem.getId());
-
     }
 
     public int incrementQuantity(int cartItemId){

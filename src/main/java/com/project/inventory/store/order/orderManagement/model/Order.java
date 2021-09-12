@@ -3,7 +3,7 @@ package com.project.inventory.store.order.orderManagement.model;
 import com.project.inventory.customer.address.model.CustomerAddress;
 import com.project.inventory.customer.payment.model.PaymentMethod;
 import com.project.inventory.store.order.orderItem.model.OrderItem;
-import com.project.inventory.common.persmision.model.Account;
+import com.project.inventory.common.permission.model.Account;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -14,42 +14,45 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "order_management")
+@Table( name = "order_management" )
 @Transactional
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
     private int id;
 
-    @Column(name = "order_status", nullable = false, columnDefinition = "varchar(30)")
-    @Enumerated(EnumType.STRING)
+    @Column( name = "order_id", nullable = false, unique = true )
+    private String orderId;
+
+    @Column( name = "order_status", nullable = false, columnDefinition = "varchar(30)" )
+    @Enumerated( EnumType.STRING )
     private OrderStatus orderStatus;
 
-    @Column(name = "total_amount", nullable = false, columnDefinition = "double")
+    @Column( name = "total_amount", nullable = false, columnDefinition = "double" )
     private double totalAmount;
 
     @CreationTimestamp
-    @Column(name = "ordered_at", nullable = false, columnDefinition = "DATETIME default current_timestamp")
+    @Column( name = "ordered_at", nullable = false, columnDefinition = "DATETIME default current_timestamp" )
     private Date orderedAt;
 
     @UpdateTimestamp
-    @Column(name = "delivered_at", nullable = false, columnDefinition = "DATETIME default current_timestamp on update current_timestamp")
+    @Column( name = "delivered_at", nullable = false, columnDefinition = "DATETIME default current_timestamp on update current_timestamp" )
     private Date deliveredAt;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "account_id", nullable = false)
+    @ManyToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
+    @JoinColumn( name = "account_id", nullable = false )
     private Account account;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "payment_id", nullable = false)
+    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
+    @JoinColumn( name = "payment_id", nullable = false )
     private PaymentMethod paymentMethod;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "customer_address_id", nullable = false)
+    @OneToOne( cascade = CascadeType.MERGE, fetch = FetchType.EAGER )
+    @JoinColumn( name = "customer_address_id", nullable = false )
     private CustomerAddress customerAddress;
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany( mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL )
     private List<OrderItem> orderItems;
 
 
@@ -57,15 +60,23 @@ public class Order {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId( int id ) {
         this.id = id;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId( String orderId ) {
+        this.orderId = orderId;
     }
 
     public OrderStatus getOrderStatus() {
         return orderStatus;
     }
 
-    public void setOrderStatus(OrderStatus orderStatus) {
+    public void setOrderStatus( OrderStatus orderStatus ) {
         this.orderStatus = orderStatus;
     }
 
@@ -73,7 +84,7 @@ public class Order {
         return totalAmount;
     }
 
-    public void setTotalAmount(double totalAmount) {
+    public void setTotalAmount( double totalAmount ) {
         this.totalAmount = totalAmount;
     }
 
@@ -81,7 +92,7 @@ public class Order {
         return orderedAt;
     }
 
-    public void setOrderedAt(Date orderedAt) {
+    public void setOrderedAt( Date orderedAt ) {
         this.orderedAt = orderedAt;
     }
 
@@ -89,7 +100,7 @@ public class Order {
         return deliveredAt;
     }
 
-    public void setDeliveredAt(Date deliveredAt) {
+    public void setDeliveredAt( Date deliveredAt ) {
         this.deliveredAt = deliveredAt;
     }
 
@@ -97,7 +108,7 @@ public class Order {
         return account;
     }
 
-    public void setAccount(Account account) {
+    public void setAccount( Account account ) {
         this.account = account;
     }
 
@@ -105,7 +116,7 @@ public class Order {
         return paymentMethod;
     }
 
-    public void setPaymentMethod(PaymentMethod paymentMethod) {
+    public void setPaymentMethod( PaymentMethod paymentMethod ) {
         this.paymentMethod = paymentMethod;
     }
 
@@ -113,7 +124,7 @@ public class Order {
         return customerAddress;
     }
 
-    public void setCustomerAddress(CustomerAddress customerAddress) {
+    public void setCustomerAddress( CustomerAddress customerAddress ) {
         this.customerAddress = customerAddress;
     }
 
@@ -121,35 +132,25 @@ public class Order {
         return orderItems;
     }
 
-    public void setOrderItems(List<OrderItem> orderItems) {
+    public void setOrderItems( List<OrderItem> orderItems ) {
         this.orderItems = orderItems;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Order)) return false;
-        Order that = (Order) o;
-        return getId() == that.getId() && Double.compare(that.getTotalAmount(), getTotalAmount()) == 0 && getOrderStatus() == that.getOrderStatus() && Objects.equals(getOrderedAt(), that.getOrderedAt()) && Objects.equals(getDeliveredAt(), that.getDeliveredAt()) && Objects.equals(getAccount(), that.getAccount()) && Objects.equals(getPaymentMethod(), that.getPaymentMethod()) && Objects.equals(getCustomerAddress(), that.getCustomerAddress()) && Objects.equals(getOrderItems(), that.getOrderItems());
+    public boolean equals( Object o ) {
+        if ( this == o ) return true;
+        if ( !( o instanceof Order ) ) return false;
+        Order order = ( Order ) o;
+        return getId() == order.getId() && Double.compare( order.getTotalAmount(), getTotalAmount() ) == 0 && Objects.equals( getOrderId(), order.getOrderId() ) && getOrderStatus() == order.getOrderStatus() && Objects.equals( getOrderedAt(), order.getOrderedAt() ) && Objects.equals( getDeliveredAt(), order.getDeliveredAt() ) && Objects.equals( getAccount(), order.getAccount() ) && Objects.equals( getPaymentMethod(), order.getPaymentMethod() ) && Objects.equals( getCustomerAddress(), order.getCustomerAddress() ) && Objects.equals( getOrderItems(), order.getOrderItems() );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getOrderStatus(), getTotalAmount(), getOrderedAt(), getDeliveredAt(), getAccount(), getPaymentMethod(), getCustomerAddress(), getOrderItems());
+        return Objects.hash( getId(), getOrderId(), getOrderStatus(), getTotalAmount(), getOrderedAt(), getDeliveredAt(), getAccount(), getPaymentMethod(), getCustomerAddress(), getOrderItems() );
     }
 
     @Override
     public String toString() {
-        return "ShoppingOrder{" +
-                "id=" + id +
-                ", orderStatus=" + orderStatus +
-                ", totalAmount=" + totalAmount +
-                ", orderedAt=" + orderedAt +
-                ", deliveredAt=" + deliveredAt +
-                ", account=" + account +
-                ", paymentMethod=" + paymentMethod +
-                ", customerAddress=" + customerAddress +
-                ", orderItems=" + orderItems +
-                '}';
+        return super.toString();
     }
 }

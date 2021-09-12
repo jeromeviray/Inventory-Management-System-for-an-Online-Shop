@@ -1,69 +1,89 @@
 package com.project.inventory.store.inventory.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.inventory.store.inventory.stock.model.Stock;
+import com.project.inventory.store.inventory.stock.model.StockStatus;
 import com.project.inventory.store.product.model.Product;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Objects;
+import java.util.List;
 
 @Entity
-@Table(name = "inventory")
+@Table( name = "inventory" )
 public class Inventory implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
     private int id;
 
-    @Column(name = "stock", nullable = false, columnDefinition = "INT default 1")
-    private int stock;
+    @Enumerated( EnumType.STRING )
+    @Column( name = "inventory_status" )
+    private StockStatus status;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "product_id", nullable = false)
+    @Column( name = "threshold_stock" )
+    private int threshold;
+
+    @OneToMany( mappedBy = "inventory" )
+    private List<Stock> stock;
+
+    @OneToOne( fetch = FetchType.LAZY, cascade = CascadeType.ALL )
+    @JoinColumn( name = "product_id", nullable = false )
+    @JsonIgnore
     private Product product;
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId( int id ) {
         this.id = id;
     }
 
-    public int getStock() {
-        return stock;
+    public StockStatus getStatus() {
+        return status;
     }
 
-    public void setStock(int stock) {
-        this.stock = stock;
+    public void setStatus( StockStatus status ) {
+        this.status = status;
     }
 
     public Product getProduct() {
         return product;
     }
 
-    public void setProduct(Product product) {
+    public void setProduct( Product product ) {
         this.product = product;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Inventory)) return false;
-        Inventory inventory = (Inventory) o;
-        return getId() == inventory.getId() && getStock() == inventory.getStock() && Objects.equals(getProduct(), inventory.getProduct());
+    public int getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold( int threshold ) {
+        this.threshold = threshold;
+    }
+
+    public List<Stock> getStock() {
+        return stock;
+    }
+
+    public void setStock( List<Stock> stock ) {
+        this.stock = stock;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getStock(), getProduct());
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals( Object obj ) {
+        return super.equals( obj );
     }
 
     @Override
     public String toString() {
-        return "Inventory{" +
-                "id=" + id +
-                ", stock=" + stock +
-                ", product=" + product +
-                '}';
+        return super.toString();
     }
 }
