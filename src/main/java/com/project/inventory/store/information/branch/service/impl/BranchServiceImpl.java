@@ -1,22 +1,20 @@
-package com.project.inventory.store.information.service.impl;
+package com.project.inventory.store.information.branch.service.impl;
 
 import com.project.inventory.exception.notFound.NotFoundException;
-import com.project.inventory.store.information.model.Branch;
-import com.project.inventory.store.information.model.BranchDto;
-import com.project.inventory.store.information.model.GetBranchWithTotalProduct;
-import com.project.inventory.store.information.repository.BranchRepository;
-import com.project.inventory.store.information.service.BranchService;
+import com.project.inventory.store.information.branch.model.Branch;
+import com.project.inventory.store.information.branch.model.BranchDto;
+import com.project.inventory.store.information.branch.model.GetBranchWithTotalProduct;
+import com.project.inventory.store.information.branch.repository.BranchRepository;
+import com.project.inventory.store.information.branch.service.BranchService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service( value = "storeInformationServiceImpl" )
 public class BranchServiceImpl implements BranchService {

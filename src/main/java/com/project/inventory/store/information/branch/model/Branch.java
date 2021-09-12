@@ -1,4 +1,4 @@
-package com.project.inventory.store.information.model;
+package com.project.inventory.store.information.branch.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.inventory.store.product.model.Product;

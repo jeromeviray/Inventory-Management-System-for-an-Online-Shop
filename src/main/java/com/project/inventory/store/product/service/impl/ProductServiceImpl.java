@@ -3,11 +3,14 @@ package com.project.inventory.store.product.service.impl;
 import com.project.inventory.exception.invalid.InvalidException;
 import com.project.inventory.exception.notFound.product.ProductNotFound;
 import com.project.inventory.exception.serverError.product.ProductNotUpdatedException;
-import com.project.inventory.store.information.model.Branch;
-import com.project.inventory.store.information.service.BranchService;
+import com.project.inventory.store.information.branch.model.Branch;
+import com.project.inventory.store.information.branch.model.GetBranchDto;
+import com.project.inventory.store.information.branch.service.BranchService;
 import com.project.inventory.store.inventory.model.Inventory;
-import com.project.inventory.store.inventory.repository.InventoryRepository;
+import com.project.inventory.store.inventory.service.InventoryService;
+import com.project.inventory.store.inventory.stock.model.StockStatus;
 import com.project.inventory.store.product.model.FileImage;
+import com.project.inventory.store.product.model.FileImageDto;
 import com.project.inventory.store.product.model.Product;
 import com.project.inventory.store.product.model.ProductDto;
 import com.project.inventory.store.product.repository.ProductRepository;
@@ -41,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
     @Autowired
-    private InventoryRepository inventoryRepository;
+    private InventoryService inventoryService;
     @Autowired
     private ModelMapper mapper;
     @Autowired
@@ -57,12 +60,20 @@ public class ProductServiceImpl implements ProductService {
                                 String branch ) {
         if ( product != null ) {
             try {
+                //get the branch
                 Branch saveBranch = branchService.getBranchByBranch( branch );
-                List<FileImage> fileImages = new ArrayList<>();
 
+                List<FileImage> fileImages = new ArrayList<>();
+                // insert the saved branch on the product
                 product.setBranch( saveBranch );
+                // save the product
                 Product savedProduct = productRepository.save( product );
+                // after saving product, at same time the inventory save
+                // a long with new product saved
                 saveProductInventory( savedProduct );
+
+                // after saving product and inventory
+                // the image of the product will save also
                 for ( FileImage fileImage : getFileImages( files ) ) {
                     if ( savedProduct != null ) {
                         fileImage.setProduct( savedProduct );
@@ -84,7 +95,9 @@ public class ProductServiceImpl implements ProductService {
         // it will save the product in inventory when creating a product
         Inventory inventory = new Inventory();
         inventory.setProduct( product );
-        inventoryRepository.save( inventory );
+        inventory.setThreshold( 0 );
+        inventory.setStatus( StockStatus.LOW );
+        inventoryService.saveInventory( inventory );
     }
 
     @Override
@@ -138,10 +151,23 @@ public class ProductServiceImpl implements ProductService {
         return product;
     }
 
-    // converting entity to dto
+    // converting product entity to dto
     @Override
     public ProductDto convertEntityToDto( Product product ) {
-        return mapper.map( product, ProductDto.class );
+        ProductDto productDto = new ProductDto();
+
+        productDto.setId( product.getId() );
+        productDto.setProductName( product.getName() );
+        productDto.setProductPrice( product.getPrice() );
+        productDto.setProductDescription( product.getDescription() );
+
+        // convert file image to DTO
+
+        productDto.setFileImages( getFileImageDto( product.getFileImages() ) );
+        productDto.setBranch( getBranch( product.getBranch() ) );
+        productDto.setInventory( inventoryService.convertEntityToDto( product.getInventory() ) );
+
+        return productDto;
     }
 
     // converting dto to entity
@@ -192,5 +218,18 @@ public class ProductServiceImpl implements ProductService {
 
         }
         return fileImageList;
+    }
+    private List<FileImageDto> getFileImageDto(List<FileImage> fileImages){
+        List<FileImageDto> fileImageDto = new ArrayList<>();
+        for(FileImage fileImage : fileImages){
+            fileImageDto.add( fileImageService.convertEntityToDto( fileImage ) );
+        }
+        return fileImageDto;
+    }
+
+    private GetBranchDto getBranch(Branch branch){
+        GetBranchDto getBranchDto = new GetBranchDto();
+        getBranchDto.setBranch( branch.getBranch() );
+        return getBranchDto;
     }
 }

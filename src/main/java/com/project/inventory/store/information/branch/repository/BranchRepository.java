@@ -1,7 +1,7 @@
-package com.project.inventory.store.information.repository;
+package com.project.inventory.store.information.branch.repository;
 
-import com.project.inventory.store.information.model.Branch;
-import com.project.inventory.store.information.model.GetBranchWithTotalProduct;
+import com.project.inventory.store.information.branch.model.Branch;
+import com.project.inventory.store.information.branch.model.GetBranchWithTotalProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,7 +19,7 @@ public interface BranchRepository extends JpaRepository<Branch, Integer> {
     Branch findProductsByBranch( String location);
 
     @Modifying
-    @Query(value = "SELECT branch.id, branch,  COUNT(p.id) totalProduct " +
+    @Query(value = "SELECT branch.id, branch, COUNT(p.id) totalProduct " +
             "FROM branch as branch " +
             "LEFT JOIN product as p " +
             "ON branch.id = p.branch_id " +

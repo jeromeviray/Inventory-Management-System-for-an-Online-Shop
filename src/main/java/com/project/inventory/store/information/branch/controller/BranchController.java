@@ -1,7 +1,7 @@
-package com.project.inventory.store.information.controller;
+package com.project.inventory.store.information.branch.controller;
 
-import com.project.inventory.store.information.model.Branch;
-import com.project.inventory.store.information.service.BranchService;
+import com.project.inventory.store.information.branch.model.Branch;
+import com.project.inventory.store.information.branch.service.BranchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

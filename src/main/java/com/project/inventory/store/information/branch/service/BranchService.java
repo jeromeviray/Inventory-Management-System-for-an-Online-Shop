@@ -1,8 +1,8 @@
-package com.project.inventory.store.information.service;
+package com.project.inventory.store.information.branch.service;
 
-import com.project.inventory.store.information.model.Branch;
-import com.project.inventory.store.information.model.BranchDto;
-import com.project.inventory.store.information.model.GetBranchWithTotalProduct;
+import com.project.inventory.store.information.branch.model.Branch;
+import com.project.inventory.store.information.branch.model.BranchDto;
+import com.project.inventory.store.information.branch.model.GetBranchWithTotalProduct;
 
 import java.util.List;
 

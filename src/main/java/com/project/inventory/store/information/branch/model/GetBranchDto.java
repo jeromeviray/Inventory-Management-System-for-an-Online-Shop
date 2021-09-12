@@ -1,4 +1,4 @@
-package com.project.inventory.store.information.model;
+package com.project.inventory.store.information.branch.model;
 
 public class GetBranchDto {
     private String branch;

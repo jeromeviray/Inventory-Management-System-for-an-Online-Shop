@@ -1,7 +1,6 @@
 package com.project.inventory.store.product.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.inventory.store.information.model.Branch;
+import com.project.inventory.store.information.branch.model.Branch;
 import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.product.brand.model.Brand;
 import org.hibernate.annotations.CreationTimestamp;
@@ -43,12 +42,11 @@ public class Product implements Serializable {
     @Column(name = "product_is_deleted", columnDefinition = "TINYINT(1) default 0", nullable = false)
     private boolean isDeleted = false;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Inventory inventory;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "branch_id")
-    @JsonIgnore
     private Branch branch;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
