@@ -4,6 +4,7 @@ import com.project.inventory.store.inventory.stock.model.StockStatus;
 
 public class GetInventoryTotalStock {
     private int id;
+    private int barcode;
     private int threshold;
     private int totalStock;
     private String productName;
@@ -15,6 +16,14 @@ public class GetInventoryTotalStock {
 
     public void setId( int id ) {
         this.id = id;
+    }
+
+    public int getBarcode() {
+        return barcode;
+    }
+
+    public void setBarcode( int barcode ) {
+        this.barcode = barcode;
     }
 
     public String getProductName() {

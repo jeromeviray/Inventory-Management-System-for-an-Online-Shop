@@ -14,73 +14,56 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "product")
+@Table( name = "product" )
 @Transactional
 public class Product implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
     private int id;
 
-    @Column(name = "product_name", nullable = false)
+    @Column( name = "product_name", nullable = false )
     private String name;
 
-//    @NotEmpty(message = "Please provide a name")
-    @Column(name = "product_descriptions", nullable = false, columnDefinition = "TEXT")
+    //    @NotEmpty(message = "Please provide a name")
+    @Column( name = "product_descriptions", nullable = false, columnDefinition = "TEXT" )
     private String description;
 
-    @Column(name = "product_price", nullable = false)
+    @Column( name = "product_price", nullable = false )
     private double price;
 
-    @Column(name = "created_at", updatable = false, nullable = false, columnDefinition = "DATETIME default current_timestamp")
+    @Column( name = "barcode", nullable = false )
+    private int barcode;
+
+    @Column( name = "created_at", updatable = false, nullable = false, columnDefinition = "DATETIME default current_timestamp" )
     @CreationTimestamp
     private Date created;
 
-    @Column(name = "updated_at", nullable = false, columnDefinition = "DATETIME default current_timestamp on update current_timestamp")
+    @Column( name = "updated_at", nullable = false, columnDefinition = "DATETIME default current_timestamp on update current_timestamp" )
     @UpdateTimestamp
     private Date updated;
 
-    @Column(name = "product_is_deleted", columnDefinition = "TINYINT(1) default 0", nullable = false)
+    @Column( name = "product_is_deleted", columnDefinition = "TINYINT(1) default 0", nullable = false )
     private boolean isDeleted = false;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne( mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     private Inventory inventory;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "branch_id")
+    @ManyToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
+    @JoinColumn( name = "branch_id" )
     private Branch branch;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
+    @OneToMany( mappedBy = "product", fetch = FetchType.EAGER )
     private List<FileImage> fileImages;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name= "brand_id")
+    @ManyToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
+    @JoinColumn( name = "brand_id" )
     private Brand brand;
-
-    public Product() {
-    }
-
-    public Product(String name, String description, double price) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-    }
-
-    public Product(int id, String name, String description, double price, boolean isDeleted, Date created, Date updated, Branch branch ) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.isDeleted = isDeleted;
-        this.created = created;
-        this.updated = updated;
-        this.branch = branch;
-    }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId( int id ) {
         this.id = id;
     }
 
@@ -88,7 +71,7 @@ public class Product implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName( String name ) {
         this.name = name;
     }
 
@@ -96,7 +79,7 @@ public class Product implements Serializable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription( String description ) {
         this.description = description;
     }
 
@@ -104,15 +87,23 @@ public class Product implements Serializable {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice( double price ) {
         this.price = price;
+    }
+
+    public int getBarcode() {
+        return barcode;
+    }
+
+    public void setBarcode( int barcode ) {
+        this.barcode = barcode;
     }
 
     public Date getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated( Date created ) {
         this.created = created;
     }
 
@@ -120,7 +111,7 @@ public class Product implements Serializable {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated( Date updated ) {
         this.updated = updated;
     }
 
@@ -128,7 +119,7 @@ public class Product implements Serializable {
         return isDeleted;
     }
 
-    public void setDeleted(boolean deleted) {
+    public void setDeleted( boolean deleted ) {
         isDeleted = deleted;
     }
 
@@ -165,16 +156,13 @@ public class Product implements Serializable {
     }
 
     @Override
-    public boolean equals( Object o ) {
-        if ( this == o ) return true;
-        if ( !( o instanceof Product ) ) return false;
-        Product product = ( Product ) o;
-        return getId() == product.getId() && Double.compare( product.getPrice(), getPrice() ) == 0 && isDeleted() == product.isDeleted() && Objects.equals( getName(), product.getName() ) && Objects.equals( getDescription(), product.getDescription() ) && Objects.equals( getCreated(), product.getCreated() ) && Objects.equals( getUpdated(), product.getUpdated() ) && Objects.equals( getInventory(), product.getInventory() ) && Objects.equals( getBranch(), product.getBranch() ) && Objects.equals( getFileImages(), product.getFileImages() ) && Objects.equals( getBrand(), product.getBrand() );
+    public int hashCode() {
+        return super.hashCode();
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash( getId(), getName(), getDescription(), getPrice(), getCreated(), getUpdated(), isDeleted(), getInventory(), getBranch(), getFileImages(), getBrand() );
+    public boolean equals( Object obj ) {
+        return super.equals( obj );
     }
 
     @Override

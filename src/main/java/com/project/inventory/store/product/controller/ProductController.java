@@ -37,6 +37,7 @@ public class ProductController {
     public ResponseEntity<?> saveProduct( @RequestPart( "productImages[]" ) MultipartFile[] productImages,
                                           @RequestParam( "productName" ) String productName,
                                           @RequestParam( "productPrice" ) double productPrice,
+                                          @RequestParam( "barcode" ) int barcode,
                                           @RequestParam( "productDescription" ) Object productDescription,
                                           @RequestParam( "branch" ) String branch ) {
         String description = ( String ) productDescription;
@@ -44,6 +45,7 @@ public class ProductController {
         product.setName( productName );
         product.setPrice( productPrice );
         product.setDescription( description );
+        product.setBarcode( barcode );
         productService.saveProduct( productImages, product, branch );
         return new ResponseEntity( HttpStatus.OK );
 

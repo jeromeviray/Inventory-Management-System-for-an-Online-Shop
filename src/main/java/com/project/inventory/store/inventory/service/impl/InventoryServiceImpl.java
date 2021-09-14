@@ -75,6 +75,7 @@ public class InventoryServiceImpl implements InventoryService {
 
                 GetInventoryTotalStock getInventoryTotalStock = new GetInventoryTotalStock();
                 getInventoryTotalStock.setId( inventory.getId() );
+                getInventoryTotalStock.setBarcode( inventory.getProduct().getBarcode() );
                 getInventoryTotalStock.setProductName(
                         productService.getProductById(
                                         inventory.getProduct()
