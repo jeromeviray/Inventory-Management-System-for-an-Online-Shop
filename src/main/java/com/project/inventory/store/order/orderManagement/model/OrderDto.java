@@ -1,5 +1,6 @@
 package com.project.inventory.store.order.orderManagement.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.inventory.customer.address.model.CustomerAddressDto;
 import com.project.inventory.customer.payment.model.PaymentMethodDto;
 import com.project.inventory.store.order.orderItem.model.OrderItemDto;
@@ -13,8 +14,8 @@ public class OrderDto {
     private String orderId;
     private OrderStatus orderStatus;
     private double totalAmount;
-    private Date orderedAt;
-    private Date deliveredAt;
+    private String orderedAt;
+    private String deliveredAt;
     private AccountDto account;
     private PaymentMethodDto paymentMethod;
     private CustomerAddressDto customerAddress;
@@ -44,19 +45,19 @@ public class OrderDto {
         this.totalAmount = totalAmount;
     }
 
-    public Date getOrderedAt() {
+    public String getOrderedAt() {
         return orderedAt;
     }
 
-    public void setOrderedAt(Date orderedAt) {
+    public void setOrderedAt(String orderedAt) {
         this.orderedAt = orderedAt;
     }
 
-    public Date getDeliveredAt() {
+    public String getDeliveredAt() {
         return deliveredAt;
     }
 
-    public void setDeliveredAt(Date deliveredAt) {
+    public void setDeliveredAt(String deliveredAt) {
         this.deliveredAt = deliveredAt;
     }
 

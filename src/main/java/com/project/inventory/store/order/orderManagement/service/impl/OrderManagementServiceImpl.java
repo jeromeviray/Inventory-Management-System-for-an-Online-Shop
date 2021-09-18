@@ -1,6 +1,7 @@
 package com.project.inventory.store.order.orderManagement.service.impl;
 
 import com.project.inventory.common.permission.role.model.Role;
+import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.store.cart.cartItem.model.CartItem;
 import com.project.inventory.store.cart.cartItem.service.CartItemService;
 import com.project.inventory.customer.address.model.CustomerAddress;
@@ -159,6 +160,12 @@ public class OrderManagementServiceImpl implements OrderManagementService {
         } else {
             throw new AccessDeniedException( "ACCESS DENIED" );
         }
+    }
+
+    @Override
+    public Order getOrderByOrderId( String orderId ) {
+        return  orderManagementRepository.findByOrderId( orderId )
+                .orElseThrow(() -> new NotFoundException("No Order Found") );
     }
 
     @Override

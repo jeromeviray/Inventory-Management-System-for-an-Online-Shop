@@ -1,5 +1,6 @@
 package com.project.inventory.store.order.orderManagement.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.inventory.customer.address.model.CustomerAddress;
 import com.project.inventory.customer.payment.model.PaymentMethod;
 import com.project.inventory.store.order.orderItem.model.OrderItem;
@@ -32,10 +33,12 @@ public class Order {
     @Column( name = "total_amount", nullable = false, columnDefinition = "double" )
     private double totalAmount;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss a")
     @CreationTimestamp
     @Column( name = "ordered_at", nullable = false, columnDefinition = "DATETIME default current_timestamp" )
     private Date orderedAt;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss a")
     @UpdateTimestamp
     @Column( name = "delivered_at", nullable = false, columnDefinition = "DATETIME default current_timestamp on update current_timestamp" )
     private Date deliveredAt;
