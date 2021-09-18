@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@Table( name = "inventory" )
+@Table( name = "inventories" )
 public class Inventory implements Serializable {
 
     @Id

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table( name = "product" )
+@Table( name = "products" )
 @Transactional
 public class Product implements Serializable {
     @Id

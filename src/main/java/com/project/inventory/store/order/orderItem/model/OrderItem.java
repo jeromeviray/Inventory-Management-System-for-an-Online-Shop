@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name = "order_item")
+@Table(name = "order_items")
 @Transactional
 public class OrderItem {
 

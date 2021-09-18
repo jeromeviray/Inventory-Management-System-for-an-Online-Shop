@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table( name = "branch" )
+@Table( name = "branches" )
 public class Branch implements Serializable {
 
     @Id
