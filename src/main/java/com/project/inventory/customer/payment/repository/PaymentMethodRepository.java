@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PaymentMethodRepository extends JpaRepository<PaymentMethod, Integer> {
 
-    @Query(value = "SELECT * FROM payment_method", nativeQuery = true)
+    @Query(value = "SELECT * FROM payment_methods", nativeQuery = true)
     List<PaymentMethod> findAllPaymentMethod();
 
     PaymentMethod findById(int id);

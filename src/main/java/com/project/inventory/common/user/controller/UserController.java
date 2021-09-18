@@ -4,16 +4,18 @@ import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.common.permission.service.AuthenticatedUser;
 import com.project.inventory.common.user.model.User;
+import com.project.inventory.common.user.model.UserAccount;
 import com.project.inventory.common.user.model.UserDto;
 import com.project.inventory.common.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "api/v1/account/user")
-public class UserInformationController {
+@RequestMapping(value = "api/v1/users/accounts")
+public class UserController {
 
     @Autowired
     private UserService userService;
@@ -28,6 +30,11 @@ public class UserInformationController {
                                                                 .getUserDetails()
                                                                 .getUsername());
         userService.saveUserInformation(account, user);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+    @RequestMapping(value ="/create", method = RequestMethod.POST)
+    public ResponseEntity<?> createUserAccount( @RequestBody UserAccount userAccount ){
+        userService.createUserAccount( userAccount );
         return new ResponseEntity(HttpStatus.OK);
     }
 //    @RequestMapping(value = "", method = RequestMethod.GET)
@@ -50,5 +57,23 @@ public class UserInformationController {
         );
         return new ResponseEntity(userInformation,
                 HttpStatus.OK);
+    }
+
+    @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN')" )
+    @RequestMapping(value = "/customers", method = RequestMethod.GET)
+    public ResponseEntity<?> getCustomerAccounts(  ){
+        return new ResponseEntity( userService.getUsersByCustomerRole(), HttpStatus.OK );
+    }
+
+    @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN')" )
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public ResponseEntity<?> getUsers(  ){
+        return new ResponseEntity( userService.getUsersByRole(), HttpStatus.OK );
+    }
+    @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN')" )
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteEmployeeAccount( @PathVariable int id ){
+        userService.deleteUserAccount(id);
+        return new ResponseEntity( HttpStatus.OK );
     }
 }

@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface BranchRepository extends JpaRepository<Branch, Integer> {
 
-    @Query(value = "SELECT * from branch where is_deleted = 0", nativeQuery = true)
+    @Query(value = "SELECT * from branches where is_deleted = 0", nativeQuery = true)
     List<Branch> findAllIsDeleted();
 
     Optional<Branch> findByBranch( String location);
@@ -20,8 +20,8 @@ public interface BranchRepository extends JpaRepository<Branch, Integer> {
 
     @Modifying
     @Query(value = "SELECT branch.id, branch, COUNT(p.id) totalProduct " +
-            "FROM branch as branch " +
-            "LEFT JOIN product as p " +
+            "FROM branches as branch " +
+            "LEFT JOIN products as p " +
             "ON branch.id = p.branch_id " +
             "where is_deleted = 0 " +
             "GROUP BY branch.id", nativeQuery = true)

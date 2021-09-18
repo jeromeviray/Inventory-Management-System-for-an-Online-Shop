@@ -21,16 +21,16 @@ public interface OrderManagementRepository extends JpaRepository<Order, Integer>
 //    List<Order> findAllByStatusCompleted();
 
     @Modifying
-    @Query( value = "SELECT * FROM order_management WHERE order_status =:status", nativeQuery = true )
+    @Query( value = "SELECT * FROM orders WHERE order_status =:status", nativeQuery = true )
     List<Order> findAllByOrderStatus( @Param( "status" ) String status );
 
     @Modifying
-    @Query( value = "SELECT * FROM order_management WHERE order_status =:status AND account_id =:id", nativeQuery = true )
+    @Query( value = "SELECT * FROM orders WHERE order_status =:status AND account_id =:id", nativeQuery = true )
     List<Order> findAllByOrderStatusAndAccountId( @Param( "status" ) String status,
                                                   @Param( "id" ) int id );
 
     @Modifying
-    @Query( value = "SELECT * FROM order_management WHERE account_id =:id", nativeQuery = true )
+    @Query( value = "SELECT * FROM orders WHERE account_id =:id", nativeQuery = true )
     List<Order> findAllByAccountId( @Param( "id" ) int id );
 
     Optional<Order> findByOrderId( String orderId);

@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface CustomerAddressRepository extends JpaRepository<CustomerAddress, Integer> {
 
-    @Query(value = "SELECT * FROM address_detail WHERE account_id =:id", nativeQuery = true)
+    @Query(value = "SELECT * FROM addresses WHERE account_id =:id", nativeQuery = true)
     List<CustomerAddress> findAllCustomerAddresses( @Param ( "id" ) int id);
 
     Optional<CustomerAddress> findById(int id);
