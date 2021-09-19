@@ -62,33 +62,36 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String googleToken = request.getAccessToken().getTokenValue();
         RestTemplate restTemplate = new RestTemplate();
-        String googleUrl = "https://www.googleapis.com/oauth2/v1/userinfo?access_token="+googleToken;
-        logger.info(googleUrl);
+        String googleUrl = "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + googleToken;
 
-        ResponseEntity<Map> response = restTemplate.getForEntity(googleUrl, Map.class);
+        ResponseEntity<Map> response = restTemplate.getForEntity( googleUrl, Map.class );
+//        logger.info( "{}", response.getBody() );
+        Map googleResponse = response.getBody();
+//        String firstName = ( String ) googleResponse.get("given_name");
+//        logger.info( firstName );
         Optional<Account> getAccount = accountRepository.findByEmail( oAuth2UserInfo.getEmail() );
         Account account;
         if( getAccount.isPresent() ) {
             account = getAccount.get();
-            if( !account.getAuthProvider().equals( AuthProvider.valueOf( request.getClientRegistration().getRegistrationId() ) ) ) {
+            if( ! account.getAuthProvider().equals( AuthProvider.valueOf( request.getClientRegistration().getRegistrationId() ) ) ) {
                 throw new OAuth2AuthenticationException( "Looks like you're signed up with " +
                         account.getAuthProvider() + " account. Please use your " + account.getAuthProvider() +
                         " account to login." );
             }
-            account = updateAccount( account, oAuth2UserInfo );
+            account = updateAccount( account, oAuth2UserInfo, googleResponse );
         } else {
-            account = registerOAuth2Account( request, oAuth2UserInfo );
+            account = registerOAuth2Account( request, oAuth2UserInfo, googleResponse );
         }
 
         return AccountPrinciple.create( account, oAuth2User.getAttributes() );
     }
 
     @Transactional
-    private Account registerOAuth2Account( OAuth2UserRequest request, OAuth2UserInfo oAuth2UserInfo ) {
+    private Account registerOAuth2Account( OAuth2UserRequest request, OAuth2UserInfo oAuth2UserInfo, Map googleResponse ) {
         String username = oAuth2UserInfo.getEmail().substring( 0, oAuth2UserInfo.getEmail().indexOf( "@" ) );
 
 
-        try{
+        try {
             Role role = roleService.getRoleByRoleName( RoleType.CUSTOMER );
             Set<Role> authority = new HashSet<>();
             authority.add( role );
@@ -99,17 +102,29 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             account.setEmail( oAuth2UserInfo.getEmail() );
             account.setRoles( authority );
             Account savedAccount = accountRepository.save( account );
-            userService.saveUserInformation( account, new User() );
+            User user = new User();
+            user.setFirstName( ( String ) googleResponse.get( "given_name" ) );
+            user.setLastName( ( String ) googleResponse.get( "family_name" ) );
+            user.setProfileImage( (String) googleResponse.get("picture") );
+            userService.saveUserInformation( account, user );
             return savedAccount;
-        }catch ( Exception e ){
+        } catch( Exception e ) {
             throw e;
         }
 
     }
 
 
-    private Account updateAccount( Account account, OAuth2UserInfo auth2UserInfo ) {
+    private Account updateAccount( Account account, OAuth2UserInfo auth2UserInfo, Map googleResponse ) {
+        User user = userService.getUserInformationByAccountId( account.getId() );
+
+        user.setFirstName( ( String ) googleResponse.get( "given_name" ) );
+        user.setLastName( ( String ) googleResponse.get( "family_name" ) );
+        user.setProfileImage( (String) googleResponse.get("picture") );
+
+        userService.saveUser( user );
         String username = auth2UserInfo.getEmail().substring( 0, auth2UserInfo.getEmail().indexOf( "@" ) );
+
         account.setUsername( username );
         return accountRepository.save( account );
     }
