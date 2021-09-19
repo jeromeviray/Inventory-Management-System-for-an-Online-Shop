@@ -12,6 +12,7 @@ import com.project.inventory.webSecurity.oauth2.AuthProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -19,9 +20,11 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -57,6 +60,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             throw new OAuth2AuthenticationException( "Email not found from OAuth2 provider" );
         }
 
+        String googleToken = request.getAccessToken().getTokenValue();
+        RestTemplate restTemplate = new RestTemplate();
+        String googleUrl = "https://www.googleapis.com/oauth2/v1/userinfo?access_token="+googleToken;
+        logger.info(googleUrl);
+
+        ResponseEntity<Map> response = restTemplate.getForEntity(googleUrl, Map.class);
         Optional<Account> getAccount = accountRepository.findByEmail( oAuth2UserInfo.getEmail() );
         Account account;
         if( getAccount.isPresent() ) {
@@ -70,6 +79,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         } else {
             account = registerOAuth2Account( request, oAuth2UserInfo );
         }
+
         return AccountPrinciple.create( account, oAuth2User.getAttributes() );
     }
 
@@ -79,7 +89,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 
         try{
-            Role role = roleService.getRoleByRoleName( RoleType.USER );
+            Role role = roleService.getRoleByRoleName( RoleType.CUSTOMER );
             Set<Role> authority = new HashSet<>();
             authority.add( role );
 
