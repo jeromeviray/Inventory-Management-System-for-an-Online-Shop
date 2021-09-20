@@ -1,5 +1,8 @@
 package com.project.inventory.store.order.orderManagement.controller;
 
+import com.project.inventory.api.payment.PaymongoAPI;
+import com.project.inventory.store.order.orderManagement.model.Order;
+import com.project.inventory.store.order.orderManagement.model.OrderResponse;
 import com.project.inventory.store.order.orderManagement.model.PlaceOrder;
 import com.project.inventory.store.order.orderManagement.model.OrderDto;
 import com.project.inventory.store.order.orderManagement.service.OrderManagementService;
@@ -9,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
         @RequestMapping( value = "api/v1/orders" )
 public class OrderManagementController {
@@ -16,13 +21,31 @@ public class OrderManagementController {
     @Autowired
     private OrderManagementService orderManagementService;
 
-    @RequestMapping( value = "/place", method = RequestMethod.POST )
+    private PaymongoAPI paymongoAPI;
+
+    @RequestMapping( value = "/checkout", method = RequestMethod.POST )
     public ResponseEntity<?> placeOrder( @RequestBody PlaceOrder placeOrder ) {
-        orderManagementService.placeOrder(
-                placeOrder.getCustomerAddressId(),
-                placeOrder.getPaymentId(),
-                placeOrder.getCartItems() );
-        return new ResponseEntity( HttpStatus.OK );
+        OrderResponse response = new OrderResponse();
+        HttpStatus httpStatus = HttpStatus.OK;
+        try {
+            Order order = orderManagementService.placeOrder(
+                    placeOrder.getCustomerAddressId(),
+                    placeOrder.getPaymentId(),
+                    placeOrder.getCartItems() );
+
+            if(order.getPaymentMethod().getPaymentMethod() == "gcash") {
+                Map resp = paymongoAPI.generateSource( ( float ) order.getTotalAmount(), "PHP",  "", "" );
+                Map data = (Map ) resp.get("data");
+                Map attributes = (Map) data.get("attributes");
+                Map redirect = (Map) attributes.get("redirect");
+                response.setRedirectUrl( ( String ) redirect.get("checkout_url") );
+            }
+        } catch( Exception e ) {
+            httpStatus = HttpStatus.BAD_REQUEST;
+            response.setSuccess( false );
+            response.setMessage( e.getMessage() );
+        }
+        return new ResponseEntity( response, httpStatus );
     }
 
     @PreAuthorize( "hasRole('ROLE_CUSTOMER') or hasRole('ROLE_USER')" )

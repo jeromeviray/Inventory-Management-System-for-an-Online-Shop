@@ -27,10 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service( value = "shoppingOrderServiceImpl" )
 public class OrderManagementServiceImpl implements OrderManagementService {
@@ -56,7 +53,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     private AuthenticatedUser authenticatedUser;
 
     @Override
-    public void placeOrder( int customerAddressId,
+    public Order placeOrder( int customerAddressId,
                             int paymentId,
                             List<CartItem> cartItems ) {
 
@@ -85,6 +82,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
 
                 }
                 orderItemService.saveOrderItem( orderItems );
+                return order;
             } else {
                 logger.info( "Error has been occurs: " );
                 throw new OrderInvalidException( "Placing orders Unsuccessfully. Please Try Again" );
@@ -93,7 +91,6 @@ public class OrderManagementServiceImpl implements OrderManagementService {
             logger.info( "Error :{}", e.getMessage() );
             throw e;
         }
-
     }
 
     @Override
