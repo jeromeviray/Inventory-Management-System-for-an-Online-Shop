@@ -54,7 +54,7 @@ public class AccountServiceImpl implements AccountService {
         account.setAuthProvider( AuthProvider.local );
         account.setEmail( userAccount.getEmail() );
         account.setPassword( passwordEncoder.encode( userAccount.getPassword() ) );
-        Role role = roleService.getRoleByRoleName( RoleType.SUPER_ADMIN );
+        Role role = roleService.getRoleByRoleName( RoleType.CUSTOMER );
         Set<Role> authority = new HashSet<>();
         authority.add( role );
 

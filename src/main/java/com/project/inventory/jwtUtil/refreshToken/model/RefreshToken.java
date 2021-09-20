@@ -5,7 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
-@Entity
+@Entity(name = "refresh_tokens")
 public class RefreshToken {
 
     @Id
