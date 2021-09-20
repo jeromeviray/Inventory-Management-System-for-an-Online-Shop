@@ -70,6 +70,7 @@ public class UserController {
     public ResponseEntity<?> getUsers(  ){
         return new ResponseEntity( userService.getUsersByRole(), HttpStatus.OK );
     }
+
     @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN')" )
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteEmployeeAccount( @PathVariable int id ){

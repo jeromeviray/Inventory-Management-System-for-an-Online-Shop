@@ -3,6 +3,7 @@ package com.project.inventory.common.permission.service;
 import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.model.AccountDto;
 import com.project.inventory.common.permission.model.ChangePassword;
+import com.project.inventory.common.permission.role.model.RoleType;
 import com.project.inventory.common.user.model.UserAccount;
 
 import javax.security.auth.login.AccountLockedException;
@@ -12,7 +13,7 @@ public interface AccountService {
 
     void saveUserAccount( UserAccount userAccount );
 
-    Account saveEmployeeAccount( String username, String password, String email );
+    Account saveEmployeeAccount( String username, String password, String email, RoleType roleType );
 
     Account getAccountByUsername( String username );
 

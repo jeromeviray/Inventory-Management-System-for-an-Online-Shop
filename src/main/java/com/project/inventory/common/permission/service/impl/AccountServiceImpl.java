@@ -70,16 +70,16 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account saveEmployeeAccount( String username, String password, String email ) {
+    public Account saveEmployeeAccount( String username, String password, String email, RoleType roleType) {
         Account account = new Account();
         account.setAuthProvider( AuthProvider.local );
         account.setUsername( username );
         account.setPassword( passwordEncoder.encode( password ) );
         account.setEmail( email );
 
-        Role role = roleService.getRoleByRoleName( RoleType.ADMIN );
+        Role getRole = roleService.getRoleByRoleName( roleType );
         Set<Role> authority = new HashSet<>();
-        authority.add( role );
+        authority.add( getRole );
 
         account.setRoles( authority );
 

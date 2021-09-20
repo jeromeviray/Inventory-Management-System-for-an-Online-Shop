@@ -2,6 +2,7 @@ package com.project.inventory.common.user.service.impl;
 
 import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.role.model.RoleDto;
+import com.project.inventory.common.permission.role.model.RoleType;
 import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.common.user.model.User;
 import com.project.inventory.common.user.model.UserAccount;
@@ -29,9 +30,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void createUserAccount( UserAccount userAccount ) {
+        logger.info("{}", getRoleType( userAccount.getRole() ) );
         Account account = accountService.saveEmployeeAccount( userAccount.getUsername(),
                 userAccount.getPassword(),
-                userAccount.getEmail() );
+                userAccount.getEmail(), getRoleType( userAccount.getRole() ) );
         User user = new User();
         user.setFirstName( userAccount.getFirstName() );
         user.setLastName( userAccount.getLastName() );
@@ -66,7 +68,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUserAccount(int id) {
+        logger.info( "{}", id );
+
         User user = getUserInformationById(id);
+
         userRepository.delete(user);
     }
 
@@ -127,5 +132,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public User convertDtoTOEntity(UserDto userDto) {
         return modelMapper.map(userDto, User.class);
+    }
+
+    private RoleType getRoleType(String role) {
+
+        if(role.equals( RoleType.SUPER_ADMIN.name() )){
+            return RoleType.SUPER_ADMIN;
+        }else if(role.equals( RoleType.ADMIN.name() )){
+            return RoleType.ADMIN;
+        }else{
+            return null;
+        }
     }
 }
