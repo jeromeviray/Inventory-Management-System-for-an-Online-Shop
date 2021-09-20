@@ -1,6 +1,5 @@
 package com.project.inventory.store.product.model;
 
-import com.project.inventory.store.information.branch.model.Branch;
 import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.product.brand.model.Brand;
 import org.hibernate.annotations.CreationTimestamp;
@@ -11,7 +10,6 @@ import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table( name = "products" )
@@ -48,9 +46,6 @@ public class Product implements Serializable {
     @OneToOne( mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     private Inventory inventory;
 
-    @ManyToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
-    @JoinColumn( name = "branch_id" )
-    private Branch branch;
 
     @OneToMany( mappedBy = "product", fetch = FetchType.EAGER )
     private List<FileImage> fileImages;
@@ -129,14 +124,6 @@ public class Product implements Serializable {
 
     public void setInventory( Inventory inventory ) {
         this.inventory = inventory;
-    }
-
-    public Branch getBranch() {
-        return branch;
-    }
-
-    public void setBranch( Branch branch ) {
-        this.branch = branch;
     }
 
     public List<FileImage> getFileImages() {

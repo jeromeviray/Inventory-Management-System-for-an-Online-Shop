@@ -2,14 +2,16 @@ package com.project.inventory.store.inventory.service.impl;
 
 import com.project.inventory.exception.invalid.InvalidException;
 import com.project.inventory.exception.notFound.NotFoundException;
-import com.project.inventory.store.inventory.model.GetInventoryTotalStock;
+import com.project.inventory.store.inventory.model.GetProductDto;
 import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.inventory.model.InventoryDto;
 import com.project.inventory.store.inventory.repository.InventoryRepository;
 import com.project.inventory.store.inventory.service.InventoryService;
 import com.project.inventory.store.inventory.stock.model.Stock;
 import com.project.inventory.store.inventory.stock.model.StockStatus;
+import com.project.inventory.store.product.model.Product;
 import com.project.inventory.store.product.service.ProductService;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +31,15 @@ public class InventoryServiceImpl implements InventoryService {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private ModelMapper mapper;
+
     @Override
     public void saveInventory( Inventory inventory ) {
         try {
             inventoryRepository.save( inventory );
 
-        } catch ( Exception e ) {
+        } catch( Exception e ) {
             throw e;
         }
     }
@@ -61,36 +66,29 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public List<GetInventoryTotalStock> getInventories() {
-        List<GetInventoryTotalStock> inventoryTotalStocks = new ArrayList<>();
+    public List<InventoryDto> getInventories() {
+        List<InventoryDto> inventories = new ArrayList<>();
         try {
-            for ( Inventory inventory : inventoryRepository.findAll() ) {
+            for( Inventory inventory : inventoryRepository.findAll() ) {
                 int sum = 0;
 
-                for ( Stock stock : inventory.getStock() ) {
-                    if ( inventory.getId() == stock.getInventory().getId() ) {
+                for( Stock stock : inventory.getStock() ) {
+                    if( inventory.getId() == stock.getInventory().getId() ) {
                         sum += stock.getStock();
                     }
                 }
-
-                GetInventoryTotalStock getInventoryTotalStock = new GetInventoryTotalStock();
-                getInventoryTotalStock.setId( inventory.getId() );
-                getInventoryTotalStock.setBarcode( inventory.getProduct().getBarcode() );
-                getInventoryTotalStock.setProductName(
-                        productService.getProductById(
-                                        inventory.getProduct()
-                                                .getId() )
-                                .getName() );
-                getInventoryTotalStock.setThreshold( inventory.getThreshold() );
-                getInventoryTotalStock.setTotalStock( sum );
-                getInventoryTotalStock.setStatus(
-                        checkThresholdAndStock( getInventoryTotalStock, inventory.getProduct().getId() )
+                InventoryDto inventoryDto = new InventoryDto();
+                inventoryDto.setProduct( convertProductEntityToDto( inventory.getProduct() ) );
+                inventoryDto.setThreshold( inventory.getThreshold() );
+                inventoryDto.setTotalStock( sum );
+                inventoryDto.setStatus(
+                        checkThresholdAndStock( inventoryDto, inventory.getProduct().getId() )
                                 .getStatus().toString()
                 );
-                inventoryTotalStocks.add( getInventoryTotalStock );
+                inventories.add( inventoryDto );
             }
-            return inventoryTotalStocks;
-        } catch ( Exception e ) {
+            return inventories;
+        } catch( Exception e ) {
             throw e;
         }
     }
@@ -106,18 +104,18 @@ public class InventoryServiceImpl implements InventoryService {
         inventoryDto.setStatus( inventory.getStatus().toString() );
         inventoryDto.setThreshold( inventory.getThreshold() );
         int sum = 0;
-        for ( Stock stock : inventory.getStock() ) {
+        for( Stock stock : inventory.getStock() ) {
             sum += stock.getStock();
         }
         inventoryDto.setTotalStock( sum );
         return inventoryDto;
     }
 
-    private Inventory checkThresholdAndStock( GetInventoryTotalStock getInventoryTotalStock, int productId ) {
+    private Inventory checkThresholdAndStock( InventoryDto inventoryDto, int productId ) {
         Inventory inventory = getInventoryByProductId( productId );
-        if ( getInventoryTotalStock.getTotalStock() > getInventoryTotalStock.getThreshold() ) {
+        if( inventoryDto.getTotalStock() > inventoryDto.getThreshold() ) {
             inventory.setStatus( StockStatus.OK );
-        } else if ( getInventoryTotalStock.getTotalStock() < getInventoryTotalStock.getThreshold() ) {
+        } else if( inventoryDto.getTotalStock() < inventoryDto.getThreshold() ) {
             inventory.setStatus( StockStatus.LOW );
         } else {
             inventory.setStatus( StockStatus.OUT_OF_STOCK );
@@ -125,4 +123,7 @@ public class InventoryServiceImpl implements InventoryService {
         return inventoryRepository.save( inventory );
     }
 
+    private GetProductDto convertProductEntityToDto( Product product ) {
+        return mapper.map( product, GetProductDto.class );
+    }
 }

@@ -1,7 +1,5 @@
 package com.project.inventory.store.product.model;
 
-import com.project.inventory.store.information.branch.model.GetBranchDto;
-import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.inventory.model.InventoryDto;
 
 import java.util.List;
@@ -13,7 +11,6 @@ public class ProductDto {
     private String productDescription;
     private double productPrice;
     private List<FileImageDto> fileImages;
-    private GetBranchDto branch;
     private InventoryDto inventory;
 
     public int getId() {
@@ -54,14 +51,6 @@ public class ProductDto {
 
     public void setFileImages( List<FileImageDto> fileImages ) {
         this.fileImages = fileImages;
-    }
-
-    public GetBranchDto getBranch() {
-        return branch;
-    }
-
-    public void setBranch( GetBranchDto branch ) {
-        this.branch = branch;
     }
 
     public InventoryDto getInventory() {
