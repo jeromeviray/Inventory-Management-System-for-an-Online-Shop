@@ -9,6 +9,7 @@ import com.project.inventory.common.permission.role.model.RoleType;
 import com.project.inventory.common.permission.role.service.RoleService;
 import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.common.user.model.User;
+import com.project.inventory.common.user.model.UserAccount;
 import com.project.inventory.common.user.service.UserService;
 import com.project.inventory.exception.invalid.InvalidException;
 import com.project.inventory.exception.notFound.NotFoundException;
@@ -46,20 +47,26 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public void saveUserAccount( Account account ) {
+    public void saveUserAccount( UserAccount userAccount ) {
+        Account account = new Account();
+
+        account.setUsername( userAccount.getUsername() );
         account.setAuthProvider( AuthProvider.local );
-
-        account.setPassword( passwordEncoder.encode( account.getPassword() ) );
-
-        Role role = roleService.getRoleByRoleName( RoleType.CUSTOMER );
+        account.setEmail( userAccount.getEmail() );
+        account.setPassword( passwordEncoder.encode( userAccount.getPassword() ) );
+        Role role = roleService.getRoleByRoleName( RoleType.SUPER_ADMIN );
         Set<Role> authority = new HashSet<>();
         authority.add( role );
 
         account.setRoles( authority );
 
         Account savedAccount = accountRepository.save( account );
+        User user = new User();
+        user.setFirstName( userAccount.getFirstName() );
+        user.setLastName( userAccount.getLastName() );
+        user.setPhoneNumber( userAccount.getPhoneNumber() );
 
-        userService.saveUserInformation( savedAccount, new User() );
+        userService.saveUserInformation( savedAccount, user );
     }
 
     @Override
