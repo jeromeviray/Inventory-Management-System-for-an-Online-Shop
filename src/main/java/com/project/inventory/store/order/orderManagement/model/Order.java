@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table( name = "order_management" )
+@Table( name = "orders" )
 @Transactional
 public class Order {
 

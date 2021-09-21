@@ -11,10 +11,10 @@ import java.util.Optional;
 public interface ProductRepository extends JpaRepository<Product, Integer> {
     Optional<Product> findById(int id);
 
-    @Query( value = "SELECT * FROM product WHERE product_is_deleted = 0", nativeQuery = true)
+    @Query( value = "SELECT * FROM products WHERE product_is_deleted = 0", nativeQuery = true)
     List<Product> findAllAvailableProducts();
 
-    @Query(value = "SELECT * FROM product p WHERE p.product_is_deleted = 0 AND p.id =:id", nativeQuery = true)
+    @Query(value = "SELECT * FROM products p WHERE p.product_is_deleted = 0 AND p.id =:id", nativeQuery = true)
     Optional<Product> findAvailableProductById(@Param("id") int id);
 
     List<Product> findAll();

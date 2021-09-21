@@ -14,7 +14,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "account")
+@Table(name = "accounts")
 @Transactional
 public class Account implements Serializable {
 
@@ -50,7 +50,7 @@ public class Account implements Serializable {
     private AuthProvider authProvider;
 
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    @JoinTable(name = " user_privilege ",
+    @JoinTable(name = " user_privileges ",
                 joinColumns = { @JoinColumn ( name = "account_id")},
                 inverseJoinColumns = { @JoinColumn (name = "role_id")})
     private Set<Role> roles = new HashSet<>();

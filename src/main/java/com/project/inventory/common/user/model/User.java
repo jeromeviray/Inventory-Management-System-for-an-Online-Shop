@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
 
     @Id
@@ -27,7 +27,10 @@ public class User {
     @Column(name = "birth_day")
     private Date birthDay;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Column(name = "profile_image")
+    private String profileImage;
+
+    @OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
@@ -72,6 +75,14 @@ public class User {
         this.birthDay = birthDay;
     }
 
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage( String profileImage ) {
+        this.profileImage = profileImage;
+    }
+
     public Account getAccount() {
         return account;
     }
@@ -81,14 +92,17 @@ public class User {
     }
 
     @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals( Object obj ) {
+        return super.equals( obj );
+    }
+
+    @Override
     public String toString() {
-        return "UserInformation{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", phoneNumber=" + phoneNumber +
-                ", birthDay=" + birthDay +
-                ", account=" + account +
-                '}';
+        return super.toString();
     }
 }

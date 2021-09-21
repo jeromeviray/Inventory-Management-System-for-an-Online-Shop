@@ -4,6 +4,7 @@ import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.model.ChangePassword;
 import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.common.permission.service.AuthenticatedUser;
+import com.project.inventory.common.user.model.UserAccount;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshToken;
 import org.slf4j.Logger;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping(value = "api/v1/account")
+@RequestMapping(value = "api/v1/users/account")
 public class AccountController {
     Logger logger = LoggerFactory.getLogger(AccountController.class);
     @Autowired
@@ -31,27 +32,9 @@ public class AccountController {
     @Autowired
     private JwtProvider jwtProvider;
 
-//    @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-//    public ResponseEntity<?> authentication(@RequestBody Account account){
-//
-//        Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(
-//                        account.getUsername(),
-//                        account.getPassword()
-//                )
-//        );
-//        logger.info( "{}",authentication );
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//        String token = jwtProvider
-//                .accessToken(accountService.getAccountByUsername( authentication.getName() ));
-//
-//        return new ResponseEntity( HttpStatus.OK);
-//    }
-
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public ResponseEntity<?> saveAccount(@RequestBody Account account){
-        accountService.saveUserAccount(account);
+    public ResponseEntity<?> saveAccount(@RequestBody UserAccount userAccount){
+        accountService.saveUserAccount(userAccount);
         return new ResponseEntity(HttpStatus.OK);
     }
 

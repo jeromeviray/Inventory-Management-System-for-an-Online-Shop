@@ -7,8 +7,8 @@ import com.project.inventory.store.order.orderManagement.model.OrderDto;
 import java.util.List;
 
 public interface OrderManagementService {
-    void placeOrder( int customerAddressId,
-                     int paymentId,
+    Order placeOrder( int customerAddressId,
+                     int paymentMethodId,
                      List<CartItem> cartItems );
 
     List<OrderDto> getPendingOrders();

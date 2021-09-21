@@ -62,7 +62,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         String targetUrl = redirectUri.orElse( getDefaultTargetUrl() );
         String username = authentication.getName().substring( 0, authentication.getName().indexOf( "@" ) );
-
         String accessToken = jwtProvider.generateOAuth2AccessToken( username );
         String refreshToken = jwtProvider.generateOAuth2RefreshToken( username );
         String roles = getRoles( accountService.getAccountByUsername( username ).getRoles() );

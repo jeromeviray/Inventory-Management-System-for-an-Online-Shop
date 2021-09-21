@@ -8,7 +8,7 @@ import javax.transaction.Transactional;
 import java.util.Objects;
 
 @Entity
-@Table(name = "payment_method")
+@Table(name = "payment_methods")
 @Transactional
 public class PaymentMethod {
 

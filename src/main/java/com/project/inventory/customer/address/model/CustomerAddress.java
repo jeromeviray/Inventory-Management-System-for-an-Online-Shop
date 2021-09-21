@@ -7,7 +7,7 @@ import javax.transaction.Transactional;
 import java.util.Objects;
 
 @Entity
-@Table(name = "address_detail")
+@Table(name = "addresses")
 @Transactional
 public class CustomerAddress {
 

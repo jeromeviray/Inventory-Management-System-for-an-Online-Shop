@@ -3,9 +3,6 @@ package com.project.inventory.store.product.service.impl;
 import com.project.inventory.exception.invalid.InvalidException;
 import com.project.inventory.exception.notFound.product.ProductNotFound;
 import com.project.inventory.exception.serverError.product.ProductNotUpdatedException;
-import com.project.inventory.store.information.branch.model.Branch;
-import com.project.inventory.store.information.branch.model.GetBranchDto;
-import com.project.inventory.store.information.branch.service.BranchService;
 import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.inventory.service.InventoryService;
 import com.project.inventory.store.inventory.stock.model.StockStatus;
@@ -47,24 +44,21 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ModelMapper mapper;
     @Autowired
-    private BranchService branchService;
-    @Autowired
     private FileImageService fileImageService;
     @Autowired
     private ServletContext servletContext;
 
     @Override
     public Product saveProduct( MultipartFile[] files,
-                                Product product,
-                                String branch ) {
+                                Product product) {
         if( product != null ) {
             try {
                 //get the branch
-                Branch saveBranch = branchService.getBranchByBranch( branch );
+//                Branch saveBranch = branchService.getBranchByBranch( branch );
 
                 List<FileImage> fileImages = new ArrayList<>();
                 // insert the saved branch on the product
-                product.setBranch( saveBranch );
+//                product.setBranch( saveBranch );
                 // save the product
                 Product savedProduct = productRepository.save( product );
                 // after saving product, at same time the inventory save
@@ -163,7 +157,7 @@ public class ProductServiceImpl implements ProductService {
         // convert file image to DTO
 
         productDto.setFileImages( getFileImageDto( product.getFileImages() ) );
-        productDto.setBranch( getBranch( product.getBranch() ) );
+//        productDto.setBranch( getBranch( product.getBranch() ) );
         productDto.setInventory( inventoryService.convertEntityToDto( product.getInventory() ) );
 
         return productDto;
@@ -227,9 +221,4 @@ public class ProductServiceImpl implements ProductService {
         return fileImageDto;
     }
 
-    private GetBranchDto getBranch( Branch branch ) {
-        GetBranchDto getBranchDto = new GetBranchDto();
-        getBranchDto.setBranch( branch.getBranch() );
-        return getBranchDto;
-    }
 }

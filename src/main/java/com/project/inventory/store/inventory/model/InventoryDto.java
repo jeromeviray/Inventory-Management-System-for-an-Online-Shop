@@ -1,9 +1,13 @@
 package com.project.inventory.store.inventory.model;
 
+import com.project.inventory.store.product.model.Product;
+import com.project.inventory.store.product.model.ProductDto;
+
 public class InventoryDto {
     private int threshold;
     private int totalStock;
     private String status;
+    private GetProductDto product;
 
     public int getThreshold() {
         return threshold;
@@ -27,6 +31,14 @@ public class InventoryDto {
 
     public void setStatus( String status ) {
         this.status = status;
+    }
+
+    public GetProductDto getProduct() {
+        return product;
+    }
+
+    public void setProduct( GetProductDto product ) {
+        this.product = product;
     }
 
     @Override

@@ -10,7 +10,7 @@ public interface InventoryService {
 
     void saveInventory( Inventory inventory );
 
-    List<GetInventoryTotalStock> getInventories();
+    List<InventoryDto> getInventories();
 
     Inventory getInventory( int productId );
 

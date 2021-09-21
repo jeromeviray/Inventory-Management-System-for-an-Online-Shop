@@ -12,6 +12,7 @@ import com.project.inventory.webSecurity.oauth2.AuthProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -19,9 +20,11 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -57,29 +60,39 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             throw new OAuth2AuthenticationException( "Email not found from OAuth2 provider" );
         }
 
+        String googleToken = request.getAccessToken().getTokenValue();
+        RestTemplate restTemplate = new RestTemplate();
+        String googleUrl = "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + googleToken;
+
+        ResponseEntity<Map> response = restTemplate.getForEntity( googleUrl, Map.class );
+//        logger.info( "{}", response.getBody() );
+        Map googleResponse = response.getBody();
+//        String firstName = ( String ) googleResponse.get("given_name");
+//        logger.info( firstName );
         Optional<Account> getAccount = accountRepository.findByEmail( oAuth2UserInfo.getEmail() );
         Account account;
         if( getAccount.isPresent() ) {
             account = getAccount.get();
-            if( !account.getAuthProvider().equals( AuthProvider.valueOf( request.getClientRegistration().getRegistrationId() ) ) ) {
+            if( ! account.getAuthProvider().equals( AuthProvider.valueOf( request.getClientRegistration().getRegistrationId() ) ) ) {
                 throw new OAuth2AuthenticationException( "Looks like you're signed up with " +
                         account.getAuthProvider() + " account. Please use your " + account.getAuthProvider() +
                         " account to login." );
             }
-            account = updateAccount( account, oAuth2UserInfo );
+            account = updateAccount( account, oAuth2UserInfo, googleResponse );
         } else {
-            account = registerOAuth2Account( request, oAuth2UserInfo );
+            account = registerOAuth2Account( request, oAuth2UserInfo, googleResponse );
         }
+
         return AccountPrinciple.create( account, oAuth2User.getAttributes() );
     }
 
     @Transactional
-    private Account registerOAuth2Account( OAuth2UserRequest request, OAuth2UserInfo oAuth2UserInfo ) {
+    private Account registerOAuth2Account( OAuth2UserRequest request, OAuth2UserInfo oAuth2UserInfo, Map googleResponse ) {
         String username = oAuth2UserInfo.getEmail().substring( 0, oAuth2UserInfo.getEmail().indexOf( "@" ) );
 
 
-        try{
-            Role role = roleService.getRoleByRoleName( RoleType.USER );
+        try {
+            Role role = roleService.getRoleByRoleName( RoleType.CUSTOMER );
             Set<Role> authority = new HashSet<>();
             authority.add( role );
 
@@ -89,17 +102,29 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             account.setEmail( oAuth2UserInfo.getEmail() );
             account.setRoles( authority );
             Account savedAccount = accountRepository.save( account );
-            userService.saveUserInformation( account, new User() );
+            User user = new User();
+            user.setFirstName( ( String ) googleResponse.get( "given_name" ) );
+            user.setLastName( ( String ) googleResponse.get( "family_name" ) );
+            user.setProfileImage( (String) googleResponse.get("picture") );
+            userService.saveUserInformation( account, user );
             return savedAccount;
-        }catch ( Exception e ){
+        } catch( Exception e ) {
             throw e;
         }
 
     }
 
 
-    private Account updateAccount( Account account, OAuth2UserInfo auth2UserInfo ) {
+    private Account updateAccount( Account account, OAuth2UserInfo auth2UserInfo, Map googleResponse ) {
+        User user = userService.getUserInformationByAccountId( account.getId() );
+
+        user.setFirstName( ( String ) googleResponse.get( "given_name" ) );
+        user.setLastName( ( String ) googleResponse.get( "family_name" ) );
+        user.setProfileImage( (String) googleResponse.get("picture") );
+
+        userService.saveUser( user );
         String username = auth2UserInfo.getEmail().substring( 0, auth2UserInfo.getEmail().indexOf( "@" ) );
+
         account.setUsername( username );
         return accountRepository.save( account );
     }

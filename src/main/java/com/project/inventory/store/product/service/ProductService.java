@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ProductService {
-    Product saveProduct( MultipartFile[] files, Product product, String store );
+    Product saveProduct( MultipartFile[] files, Product product );
 
     Product updateProduct( int id, Product product );
 

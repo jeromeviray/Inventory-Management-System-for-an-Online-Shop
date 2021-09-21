@@ -5,7 +5,7 @@ import javax.transaction.Transactional;
 import java.util.Objects;
 
 @Entity
-@Table(name = "user_role")
+@Table(name = "user_roles")
 @Transactional
 public class Role {
 

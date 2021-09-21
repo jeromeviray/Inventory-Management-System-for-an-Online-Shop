@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "brand")
+@Table(name = "brands")
 public class Brand {
 
     @Id

@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@Table(name = "cart")
+@Table(name = "carts")
 public class Cart implements Serializable {
 
     @Id

@@ -42,9 +42,11 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal( HttpServletRequest request, HttpServletResponse response, FilterChain filterChain ) throws ServletException, IOException {
 
-        if( request.getServletPath().equals( "/api/v1/account/login" )
-                || request.getServletPath().equals( "/api/v1/account/token/refresh" )
-                || request.getServletPath().equals("/oauth2/authorize/google")) {
+        if( request.getServletPath().equals( "/api/v1/users/account/login" )
+                || request.getServletPath().equals( "/api/v1/users/account/token/refresh" )
+                || request.getServletPath().equals("/oauth2/authorize/google")
+                || request.getServletPath().equals( "/api/v1/users/account/register" )
+        ) {
             filterChain.doFilter( request, response );
         } else {
             String token = resolveToken( request );

@@ -6,7 +6,7 @@ import java.util.List;
 
 public class PlaceOrder {
     private int customerAddressId;
-    private int paymentId;
+    private int paymentMethodId;
     private List<CartItem> cartItems;
 
     public int getCustomerAddressId() {
@@ -18,11 +18,11 @@ public class PlaceOrder {
     }
 
     public int getPaymentId() {
-        return paymentId;
+        return paymentMethodId;
     }
 
-    public void setPaymentId(int paymentId) {
-        this.paymentId = paymentId;
+    public void setPaymentId(int paymentMethodId) {
+        this.paymentMethodId = paymentMethodId;
     }
 
     public List<CartItem> getCartItems() {
