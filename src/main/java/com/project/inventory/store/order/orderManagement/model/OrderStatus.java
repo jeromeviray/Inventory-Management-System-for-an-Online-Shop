@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 public enum OrderStatus implements Serializable {
     PENDING ("PENDING"),
-    CONFIRMED ("PENDING"),
-    COMPLETED ("PENDING"),
-    DELIVERED ("PENDING"),
-    CANCELLED ("PENDING"),
-    CURRIER ("PENDING"),
-    NONE ("PENDING");
+    CONFIRMED ("CONFIRMED"),
+    COMPLETED ("COMPLETED"),
+    DELIVERED ("DELIVERED"),
+    CANCELLED ("CANCELLED"),
+    CURRIER ("CURRIER"),
+    NONE ("NONE");
 
     String status;
 

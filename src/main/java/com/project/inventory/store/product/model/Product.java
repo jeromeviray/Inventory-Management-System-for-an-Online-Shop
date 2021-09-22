@@ -1,5 +1,8 @@
 package com.project.inventory.store.product.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.inventory.store.incomingSupply.incomingSupplyItem.model.IncomingSupplyItem;
+import com.project.inventory.store.incomingSupply.model.IncomingSupply;
 import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.product.brand.model.Brand;
 import org.hibernate.annotations.CreationTimestamp;
@@ -53,6 +56,10 @@ public class Product implements Serializable {
     @ManyToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     @JoinColumn( name = "brand_id" )
     private Brand brand;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<IncomingSupplyItem> incomingSupplyItems;
 
     public int getId() {
         return id;
