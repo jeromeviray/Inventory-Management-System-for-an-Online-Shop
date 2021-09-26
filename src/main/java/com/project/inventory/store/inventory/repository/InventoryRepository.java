@@ -1,10 +1,13 @@
 package com.project.inventory.store.inventory.repository;
 
-import com.project.inventory.store.inventory.model.GetInventoryTotalStock;
 import com.project.inventory.store.inventory.model.Inventory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
@@ -13,7 +16,7 @@ import java.util.Optional;
 
 public interface InventoryRepository extends JpaRepository<Inventory, Integer> {
 
-    List<Inventory> findAll();
+    Page<Inventory> findAll(Pageable pageable);
 
     @Query( value = "SELECT * " +
             "FROM inventory i " +
