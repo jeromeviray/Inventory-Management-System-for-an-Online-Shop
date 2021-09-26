@@ -15,6 +15,10 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -66,10 +70,13 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public List<InventoryDto> getInventories() {
-        List<InventoryDto> inventories = new ArrayList<>();
+    public Page<InventoryDto> getInventories( String query, Pageable pageable) {
         try {
-            for( Inventory inventory : inventoryRepository.findAll() ) {
+            query += "%";
+            Page<Inventory> inventories = inventoryRepository.findAll(query,
+                    pageable);
+            List<InventoryDto> pageRecords = new ArrayList<>();
+            for( Inventory inventory : inventories.getContent() ) {
                 int sum = 0;
 
                 for( Stock stock : inventory.getStock() ) {
@@ -85,9 +92,9 @@ public class InventoryServiceImpl implements InventoryService {
                         checkThresholdAndStock( inventoryDto, inventory.getProduct().getId() )
                                 .getStatus().toString()
                 );
-                inventories.add( inventoryDto );
+                pageRecords.add( inventoryDto );
             }
-            return inventories;
+            return new PageImpl<>(pageRecords, pageable, inventories.getTotalElements());
         } catch( Exception e ) {
             throw e;
         }
