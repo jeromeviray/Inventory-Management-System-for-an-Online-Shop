@@ -2,9 +2,9 @@ package com.project.inventory.store.product.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.inventory.store.incomingSupply.incomingSupplyItem.model.IncomingSupplyItem;
-import com.project.inventory.store.incomingSupply.model.IncomingSupply;
 import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.product.brand.model.Brand;
+import com.project.inventory.store.product.category.model.Category;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -60,6 +60,10 @@ public class Product implements Serializable {
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<IncomingSupplyItem> incomingSupplyItems;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn( name = "category_id" )
+    private Category category;
 
     public int getId() {
         return id;
@@ -147,6 +151,22 @@ public class Product implements Serializable {
 
     public void setBrand( Brand brand ) {
         this.brand = brand;
+    }
+
+    public List<IncomingSupplyItem> getIncomingSupplyItems() {
+        return incomingSupplyItems;
+    }
+
+    public void setIncomingSupplyItems( List<IncomingSupplyItem> incomingSupplyItems ) {
+        this.incomingSupplyItems = incomingSupplyItems;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory( Category category ) {
+        this.category = category;
     }
 
     @Override
