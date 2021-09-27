@@ -39,11 +39,10 @@ public class ProductController {
                                           @RequestParam( "productPrice" ) double productPrice,
                                           @RequestParam( "barcode" ) int barcode,
                                           @RequestParam( "productDescription" ) Object productDescription ) {
-        String description = ( String ) productDescription;
         Product product = new Product();
         product.setName( productName );
         product.setPrice( productPrice );
-        product.setDescription( description );
+        product.setDescription( ( String ) productDescription );
         product.setBarcode( barcode );
         productService.saveProduct( productImages, product);
         return new ResponseEntity( HttpStatus.OK );

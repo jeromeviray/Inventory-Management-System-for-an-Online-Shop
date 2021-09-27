@@ -18,8 +18,7 @@ public class FileImage implements Serializable {
     @Column( name = "file_name" )
     private String fileName;
 
-    @Column( name = "size" )
-    private Long size;
+
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY )
     @JoinColumn(name = "product_id")
@@ -33,15 +32,11 @@ public class FileImage implements Serializable {
         this.fileName = fileName;
     }
 
-    public FileImage(String fileName, Long size) {
-        this.fileName = fileName;
-        this.size = size;
-    }
 
-    public FileImage(int id, String fileName, Long size) {
+
+    public FileImage(int id, String fileName) {
         this.id = id;
         this.fileName = fileName;
-        this.size = size;
     }
 
     public int getId() {
@@ -60,13 +55,7 @@ public class FileImage implements Serializable {
         this.fileName = fileName;
     }
 
-    public Long getSize() {
-        return size;
-    }
 
-    public void setSize(Long size) {
-        this.size = size;
-    }
 
     public Product getProduct() {
         return product;
@@ -77,14 +66,18 @@ public class FileImage implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return "FileImage{" +
-                "id=" + id +
-                ", fileName='" + fileName + '\'' +
-                ", size=" + size +
-                ", product=" + product +
+    public int hashCode() {
+        return super.hashCode();
+    }
 
-                '}';
+    @Override
+    public boolean equals( Object obj ) {
+        return super.equals( obj );
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }
 

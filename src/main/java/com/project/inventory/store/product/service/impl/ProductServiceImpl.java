@@ -196,7 +196,6 @@ public class ProductServiceImpl implements ProductService {
             }
             FileImage fileImage = new FileImage();
             fileImage.setFileName( filename );
-            fileImage.setSize( file.getSize() );
 
             fileImageList.add( fileImage );
             // checking when product is available on database
