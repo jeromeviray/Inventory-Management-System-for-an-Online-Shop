@@ -1,9 +1,11 @@
 package com.project.inventory.store.inventory.repository;
 
 import com.project.inventory.store.inventory.model.Inventory;
+import com.project.inventory.store.product.model.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,7 +18,13 @@ import java.util.Optional;
 
 public interface InventoryRepository extends JpaRepository<Inventory, Integer> {
 
-    Page<Inventory> findAll(Pageable pageable);
+    @Query( value = "SELECT * " +
+            "FROM inventories i " +
+            "JOIN products as p ON p.id = i.product_id " +
+            "WHERE p.product_name LIKE :query " +
+            "OR p.barcode LIKE :query",
+            nativeQuery = true )
+    Page<Inventory> findAll( @Param("query") String query, Pageable pageable);
 
     @Query( value = "SELECT * " +
             "FROM inventory i " +

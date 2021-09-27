@@ -29,7 +29,6 @@ public class Inventory implements Serializable {
 
     @OneToOne( fetch = FetchType.LAZY, cascade = CascadeType.ALL )
     @JoinColumn( name = "product_id", nullable = false )
-    @JsonIgnore
     private Product product;
 
     public int getId() {

@@ -28,17 +28,21 @@ public class InventoryController {
     @PreAuthorize( "hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')" )
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<?> getInventoryTotalStock(
-            @RequestParam( "query" ) String query,
-            @RequestParam( name = "page", value = "0" ) Integer page,
-            @RequestParam( name = "limit", value = "10" ) Integer limit
+            @RequestParam( value = "query", defaultValue = "") String query,
+            @RequestParam( value = "page", defaultValue = "0" ) Integer page,
+            @RequestParam( value = "limit", defaultValue = "10" ) Integer limit
         ){
-        Pageable c = PageRequest.of(page, limit);
-        Page<InventoryDto> inventories = inventoryService.getInventories(c);
+
         Map<String, Object> response = new HashMap<>();
+
+        Pageable c = PageRequest.of(page, limit);
+        Page<InventoryDto> inventories = inventoryService.getInventories(query, c);
         response.put("data", inventories.getContent());
         response.put("currentPage", inventories.getNumber());
         response.put("totalItems", inventories.getTotalElements());
         response.put("totalPages", inventories.getTotalPages());
+
+
         return new ResponseEntity(response, HttpStatus.OK);
     }
 

@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -70,9 +70,11 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public Page<InventoryDto> getInventories(Pageable pageable) {
+    public Page<InventoryDto> getInventories( String query, Pageable pageable) {
         try {
-            Page<Inventory> inventories = inventoryRepository.findAll(pageable);
+            query += "%";
+            Page<Inventory> inventories = inventoryRepository.findAll(query,
+                    pageable);
             List<InventoryDto> pageRecords = new ArrayList<>();
             for( Inventory inventory : inventories.getContent() ) {
                 int sum = 0;
