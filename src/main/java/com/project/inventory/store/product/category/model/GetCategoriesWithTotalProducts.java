@@ -5,4 +5,5 @@ public interface GetCategoriesWithTotalProducts {
     String getCategoryName();
     int getTotalProducts();
     Object getDeleted();
+    String getCreatedAt();
 }
