@@ -19,6 +19,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -63,6 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
+
     @Override
     protected void configure( HttpSecurity http ) throws Exception {
 
@@ -70,6 +72,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable();
         //public endpoint
         http.authorizeRequests()
+                .antMatchers("/websocket/**").permitAll()
                 .antMatchers( HttpMethod.POST,
                         "/api/v1/account/login",
                         "/api/v1/users/account/register",
@@ -78,7 +81,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/v1/products/discover",
                         "/api/v1/products/details/**").permitAll()
                 .antMatchers( "/oauth2/**" ).permitAll();
-
         http.authorizeRequests().anyRequest().authenticated();
         // Set unauthorized and access denied requests exception handler
         http.exceptionHandling()
