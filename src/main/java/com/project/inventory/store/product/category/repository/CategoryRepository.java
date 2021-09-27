@@ -8,11 +8,11 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
-    @Query(value = "select category.id, category.category_name as categoryName, count(product.id) as totalProducts " +
-            "FROM product_categories category " +
+    @Query(value = "SELECT category.id, category.category_name as categoryName, category.is_deleted as deleted, count(product.id) totalProducts " +
+            "FROM product_categories as category " +
             "LEFT JOIN products as product " +
-            "on category.id = product.category_id " +
+            "ON category.id = product.id " +
+            "WHERE category.is_deleted = 0 " +
             "GROUP BY category.id", nativeQuery = true)
     List<GetCategoriesWithTotalProducts> countProductByCategoryId();
-
 }

@@ -28,10 +28,11 @@ public class Category {
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     private List<Product> products;
-
-
 
     public int getId() {
         return id;
@@ -59,6 +60,14 @@ public class Category {
 
     public Date getUpdatedAt() {
         return updatedAt;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted( boolean deleted ) {
+        isDeleted = deleted;
     }
 
     public void setUpdatedAt( Date updatedAt ) {

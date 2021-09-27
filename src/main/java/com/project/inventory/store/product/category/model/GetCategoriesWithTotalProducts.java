@@ -4,4 +4,5 @@ public interface GetCategoriesWithTotalProducts {
     int getId();
     String getCategoryName();
     int getTotalProducts();
+    Object getDeleted();
 }

@@ -46,7 +46,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategory( int id ) {
         try {
-            categoryRepository.delete( getCategory( id ) );
+            Category category = getCategory( id );
+            category.setDeleted( true );
+            saveCategory( category );
         }catch( Exception e ){
             throw e;
         }
