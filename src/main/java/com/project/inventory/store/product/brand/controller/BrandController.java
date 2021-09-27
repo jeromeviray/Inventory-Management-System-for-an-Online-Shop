@@ -24,7 +24,7 @@ public class BrandController {
     @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN') or hasRole('ROLE_ADMIN')" )
     @RequestMapping( value = "", method = RequestMethod.GET )
     public ResponseEntity<?> getBrands() {
-        return new ResponseEntity<>( brandService.getBrands(), HttpStatus.OK );
+        return new ResponseEntity<>( brandService.getBrandsWithTotalProducts(), HttpStatus.OK );
     }
 
     @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN') or hasRole('ROLE_ADMIN')" )

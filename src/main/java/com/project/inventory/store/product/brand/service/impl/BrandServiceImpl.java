@@ -2,6 +2,7 @@ package com.project.inventory.store.product.brand.service.impl;
 
 import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.store.product.brand.model.Brand;
+import com.project.inventory.store.product.brand.model.GetBrandsWithTotalProducts;
 import com.project.inventory.store.product.brand.repository.BrandRepository;
 import com.project.inventory.store.product.brand.service.BrandService;
 import org.slf4j.Logger;
@@ -33,7 +34,7 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public Brand getBrand( int id ) {
         logger.info( "Find Brand {}", id );
-        return brandRepository.findById( id )
+        return brandRepository.findByIdAndIsDeleted( id, false )
                 .orElseThrow(() ->   new NotFoundException("Brand not Found.") );
     }
 
@@ -46,6 +47,14 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public void deleteBrand( int id ) {
-        brandRepository.deleteById( id );
+        Brand brand = getBrand( id );
+        brand.setDeleted( true );
+        saveBrand( brand );
+        //        brandRepository.deleteById( id );
+    }
+
+    @Override
+    public List<GetBrandsWithTotalProducts> getBrandsWithTotalProducts() {
+        return brandRepository.countProductByBrandId();
     }
 }
