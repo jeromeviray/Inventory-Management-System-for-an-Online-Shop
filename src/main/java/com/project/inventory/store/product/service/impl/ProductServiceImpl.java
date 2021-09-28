@@ -6,16 +6,13 @@ import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.inventory.service.InventoryService;
 import com.project.inventory.store.inventory.stock.model.Stock;
 import com.project.inventory.store.inventory.stock.model.StockStatus;
-import com.project.inventory.store.product.brand.model.Brand;
 import com.project.inventory.store.product.brand.service.BrandService;
-import com.project.inventory.store.product.category.model.Category;
 import com.project.inventory.store.product.category.service.CategoryService;
 import com.project.inventory.store.product.model.*;
 import com.project.inventory.store.product.repository.ProductRepository;
 import com.project.inventory.store.product.service.FileImageService;
 import com.project.inventory.store.product.service.ProductService;
 import org.apache.commons.io.IOUtils;
-import org.hibernate.service.NullServiceException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,38 +53,48 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public Product saveProduct( MultipartFile[] files,
-                                Product product ) {
-        if ( product != null ) {
-            try {
-                //get the branch
-//                Branch saveBranch = branchService.getBranchByBranch( branch );
+    public Product saveProduct( MultipartFile[] productImages,
+                                String productName,
+                                double productPrice,
+                                int barcode,
+                                Object productDescription,
+                                String brandName,
+                                String categoryName ) {
 
-                List<FileImage> fileImages = new ArrayList<>();
-                // insert the saved branch on the product
+        Product product = new Product();
+        product.setName( productName );
+        product.setPrice( productPrice );
+        product.setDescription( ( String ) productDescription );
+        product.setBarcode( barcode );
+        product.setBrand( brandService.getBrandByBrandName( brandName ) );
+        product.setCategory( categoryService.getCategoryByCategoryName( categoryName ) );
+        try {
+
+            List<FileImage> fileImages = new ArrayList<>();
+            // insert the saved branch on the product
 //                product.setBranch( saveBranch );
-                // save the product
-                Product savedProduct = productRepository.save( product );
-                // after saving product, at same time the inventory save
-                // a long with new product saved
-                saveProductInventory( savedProduct );
+            // save the product
+            Product savedProduct = productRepository.save( product );
+            // after saving product, at same time the inventory save
+            // a long with new product saved
+            saveProductInventory( savedProduct );
 
-                // after saving product and inventory
-                // the image of the product will save also
-                for ( FileImage fileImage : getFileImages( files, savedProduct ) ) {
-                    if ( savedProduct != null ) {
+            // after saving product and inventory
+            // the image of the product will save also
+            if(productImages != null){
+                for( FileImage fileImage : getFileImages( productImages, savedProduct ) ) {
+                    if( savedProduct != null ) {
                         fileImage.setProduct( savedProduct );
                         fileImages.add( fileImage );
                     }
                 }
                 fileImageService.saveFileImages( fileImages );
-                return savedProduct;
-
-            } catch ( InvalidException | IOException e ) {
-                throw new InvalidException( "Unsuccessfully saved. Please Try Again!" );
             }
-        } else {
-            throw new NullServiceException( super.getClass() );
+
+            return savedProduct;
+
+        } catch( InvalidException | IOException e ) {
+            throw new InvalidException( "Unsuccessfully saved. Please Try Again!" );
         }
     }
 
@@ -128,16 +135,17 @@ public class ProductServiceImpl implements ProductService {
                                   String brandName, String categoryName,
                                   String[] removedImages
     ) {
-        Category category = categoryService.getCategoryByCategoryName( categoryName );
-        Brand brand = brandService.getBrandByBrandName( brandName );
-        Product product = getProductById( id );
-
-        product.setBarcode( barcode );
-        product.setName( productName );
-        product.setDescription( ( String ) productDescription );
-        product.setPrice( productPrice );
-        product.setBrand( brand );
-        product.setCategory( category );
+        logger.info( "{}", id );
+//        Category category = categoryService.getCategoryByCategoryName( categoryName );
+//        Brand brand = brandService.getBrandByBrandName( brandName );
+//        Product product = getProductById( id );
+//
+//        product.setBarcode( barcode );
+//        product.setName( productName );
+//        product.setDescription( ( String ) productDescription );
+//        product.setPrice( productPrice );
+//        product.setBrand( brand );
+//        product.setCategory( category );
 
 //        for(MultipartFile multipartFile: productImages){
 //            String filename = multipartFile.getOriginalFilename();
@@ -218,31 +226,31 @@ public class ProductServiceImpl implements ProductService {
         try {
             InputStream readImage = servletContext.getResourceAsStream( "WEB-INF/inventory-management-system-reactjs/public/images/products/" + image );
             return IOUtils.toByteArray( readImage );
-        } catch ( Exception e ) {
+        } catch( Exception e ) {
             throw e;
         }
     }
 
     public List<FileImage> getFileImages( MultipartFile[] files, Product product ) throws IOException {
 
-        File directory = new File( rootFile+product.getId() );
-        if(!directory.exists()){
+        File directory = new File( rootFile + product.getId() );
+        if( ! directory.exists() ) {
             directory.mkdir();
         }
         List<FileImage> fileImageList = new ArrayList<>();
         // reading all the image file and getting the details of the image
-        for ( MultipartFile file : files ) {
-            Path path = Paths.get( rootFile + product.getId() , file.getOriginalFilename() );
+        for( MultipartFile file : files ) {
+            Path path = Paths.get( rootFile + product.getId(), file.getOriginalFilename() );
             String filename = file.getOriginalFilename();
             try {
                 Files.write( path, file.getBytes() );
-            } catch ( IOException e ) {
+            } catch( IOException e ) {
                 e.printStackTrace();
                 throw new MultipartException( "You got an Error men" );
             }
             FileImage fileImage = new FileImage();
             fileImage.setFileName( filename );
-            fileImage.setPath( Integer.toString( product.getId() )+"/" );
+            fileImage.setPath( Integer.toString( product.getId() ) + "/" );
             fileImageList.add( fileImage );
             // checking when product is available on database
             // if not the saving of image for specific product will not save on database
@@ -260,7 +268,7 @@ public class ProductServiceImpl implements ProductService {
 
     private List<FileImageDto> getFileImageDto( List<FileImage> fileImages ) {
         List<FileImageDto> fileImageDto = new ArrayList<>();
-        for ( FileImage fileImage : fileImages ) {
+        for( FileImage fileImage : fileImages ) {
             fileImageDto.add( fileImageService.convertEntityToDto( fileImage ) );
         }
         return fileImageDto;
@@ -271,8 +279,8 @@ public class ProductServiceImpl implements ProductService {
         int sum = 0;
         Inventory inventory = inventoryService.getInventoryByProductId( product.getId() );
 
-        for ( Stock stock : inventory.getStock() ) {
-            if ( inventory.getId() == stock.getInventory().getId() ) {
+        for( Stock stock : inventory.getStock() ) {
+            if( inventory.getId() == stock.getInventory().getId() ) {
                 sum += stock.getStock();
             }
         }

@@ -19,13 +19,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping( value = "api/v1/products" )
@@ -44,23 +41,23 @@ public class ProductController {
     private ModelMapper mapper;
 
     @PreAuthorize( "hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')" )
-    @RequestMapping( value = "/save", method = RequestMethod.POST )
-    public ResponseEntity<?> saveProduct( @RequestPart( "productImages[]" ) MultipartFile[] productImages,
-                                          @RequestParam( "productName" ) String productName,
-                                          @RequestParam( "productPrice" ) double productPrice,
-                                          @RequestParam( "barcode" ) int barcode,
-                                          @RequestParam( "productDescription" ) Object productDescription,
-                                          @RequestParam( "brandName" ) String brandName,
-                                          @RequestParam( "categoryName" ) String categoryName ) {
+    @RequestMapping( value = "/save", method = RequestMethod.POST, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE } )
+    public ResponseEntity<?> saveProduct(  @RequestPart( value = "productImages[]", required = false ) MultipartFile[] productImages,
+                                         @RequestParam( "productName" ) String productName,
+                                         @RequestParam( "productPrice" ) double productPrice,
+                                         @RequestParam( "barcode" ) int barcode,
+                                         @RequestParam( "productDescription" ) Object productDescription,
+                                         @RequestParam( "brandName" ) String brandName,
+                                         @RequestParam( "categoryName" ) String categoryName ) {
 
-        Product product = new Product();
-        product.setName( productName );
-        product.setPrice( productPrice );
-        product.setDescription( ( String ) productDescription );
-        product.setBarcode( barcode );
-        product.setBrand( brandService.getBrandByBrandName( brandName ) );
-        product.setCategory( categoryService.getCategoryByCategoryName( categoryName ) );
-        productService.saveProduct( productImages, product );
+        productService.saveProduct(
+                productImages,
+                productName,
+                productPrice,
+                barcode,
+                productDescription,
+                brandName,
+                categoryName);
         return new ResponseEntity( HttpStatus.OK );
 
     }
@@ -69,8 +66,8 @@ public class ProductController {
     public ResponseEntity<?> getImage( @PathVariable String path,
                                        @PathVariable String image ) throws IOException {
 
-        InputStream readImage = path.equals( "null" ) ? readImage = servletContext.getResourceAsStream( "WEB-INF/inventory-management-system-reactjs/public/images/products/"+ image )
-                : servletContext.getResourceAsStream( "WEB-INF/inventory-management-system-reactjs/public/images/products/" + path +"/" + image );
+        InputStream readImage = path.equals( "null" ) ? readImage = servletContext.getResourceAsStream( "WEB-INF/inventory-management-system-reactjs/public/images/products/" + image )
+                : servletContext.getResourceAsStream( "WEB-INF/inventory-management-system-reactjs/public/images/products/" + path + "/" + image );
 
         return new ResponseEntity( IOUtils.toByteArray( readImage ), HttpStatus.OK );
     }
@@ -78,15 +75,14 @@ public class ProductController {
     @PreAuthorize( "hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')" )
     @RequestMapping( value = "/update/{id}", method = RequestMethod.PUT )
     public ResponseEntity<?> updateProduct( @PathVariable int id,
-                                            @RequestPart( "productImages[]" ) MultipartFile[] productImages,
+                                            @RequestPart( value = "productImages[]", required = false ) MultipartFile[] productImages,
                                             @RequestParam( "productName" ) String productName,
                                             @RequestParam( "productPrice" ) double productPrice,
                                             @RequestParam( "barcode" ) int barcode,
                                             @RequestParam( "productDescription" ) Object productDescription,
                                             @RequestParam( "brandName" ) String brandName,
                                             @RequestParam( "categoryName" ) String categoryName,
-                                            @RequestParam( "removeImages[]" ) String[] removeImages ) {
-
+                                            @RequestParam( value = "removedImages[]", required = false ) String[] removeImages ) {
         return ResponseEntity.ok( productService
                 .updateProduct( id,
                         productImages,
@@ -108,7 +104,7 @@ public class ProductController {
     @RequestMapping( value = "", method = RequestMethod.GET )
     public ResponseEntity<?> getAllAvailableProducts() {
         List<ProductDto> products = new ArrayList<>();
-        for ( Product product : productService.getAllAvailableProducts() ) {
+        for( Product product : productService.getAllAvailableProducts() ) {
             products.add( productService.convertEntityToDto( product ) );
         }
         return new ResponseEntity( products, HttpStatus.OK );
@@ -148,7 +144,7 @@ public class ProductController {
     @RequestMapping( value = "/discover", method = RequestMethod.GET )
     public ResponseEntity<?> getDiscoverProducts() throws IOException {
         List<ProductDto> products = new ArrayList<>();
-        for ( Product product : productService.getAllAvailableProducts() ) {
+        for( Product product : productService.getAllAvailableProducts() ) {
             products.add( productService.convertEntityToDto( product ) );
         }
         return ResponseEntity.ok( products );
