@@ -1,6 +1,10 @@
 package com.project.inventory.store.product.model;
 
 import com.project.inventory.store.inventory.model.InventoryDto;
+import com.project.inventory.store.product.brand.model.Brand;
+import com.project.inventory.store.product.brand.model.BrandDto;
+import com.project.inventory.store.product.category.model.Category;
+import com.project.inventory.store.product.category.model.CategoryDto;
 
 import java.util.List;
 
@@ -10,8 +14,11 @@ public class ProductDto {
     private String productName;
     private String productDescription;
     private double productPrice;
+    private int barcode;
+    private BrandDto brand;
+    private CategoryDto category;
     private List<FileImageDto> fileImages;
-    private InventoryDto inventory;
+    private GetInventory inventory;
 
     public int getId() {
         return id;
@@ -45,6 +52,30 @@ public class ProductDto {
         this.productPrice = productPrice;
     }
 
+    public int getBarcode() {
+        return barcode;
+    }
+
+    public void setBarcode( int barcode ) {
+        this.barcode = barcode;
+    }
+
+    public BrandDto getBrand() {
+        return brand;
+    }
+
+    public void setBrand( BrandDto brand ) {
+        this.brand = brand;
+    }
+
+    public CategoryDto getCategory() {
+        return category;
+    }
+
+    public void setCategory( CategoryDto category ) {
+        this.category = category;
+    }
+
     public List<FileImageDto> getFileImages() {
         return fileImages;
     }
@@ -53,11 +84,11 @@ public class ProductDto {
         this.fileImages = fileImages;
     }
 
-    public InventoryDto getInventory() {
+    public GetInventory getInventory() {
         return inventory;
     }
 
-    public void setInventory( InventoryDto inventory ) {
+    public void setInventory( GetInventory inventory ) {
         this.inventory = inventory;
     }
 

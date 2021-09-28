@@ -8,7 +8,6 @@ public class CategoryDto {
 
     private int id;
     private String name;
-    private List<GetProductDto> products;
 
     public int getId() {
         return id;
@@ -24,14 +23,6 @@ public class CategoryDto {
 
     public void setName( String name ) {
         this.name = name;
-    }
-
-    public List<GetProductDto> getProducts() {
-        return products;
-    }
-
-    public void setProducts( List<GetProductDto> products ) {
-        this.products = products;
     }
 
     @Override

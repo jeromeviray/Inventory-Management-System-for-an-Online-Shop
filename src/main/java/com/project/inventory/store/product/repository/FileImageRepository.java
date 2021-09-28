@@ -11,4 +11,6 @@ public interface FileImageRepository extends JpaRepository<FileImage, Integer> {
 
     @Override
     <S extends FileImage> List<S> saveAllAndFlush( Iterable<S> iterable );
+
+    FileImage findByFileNameAndProductId(String fileName, int productId);
 }

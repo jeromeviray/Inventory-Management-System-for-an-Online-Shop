@@ -32,7 +32,7 @@ public class Product implements Serializable {
     @Column( name = "product_price", nullable = false )
     private double price;
 
-    @Column( name = "barcode", nullable = false )
+    @Column( name = "barcode", nullable = false, unique = true, updatable = false )
     private int barcode;
 
     @Column( name = "created_at", updatable = false, nullable = false, columnDefinition = "DATETIME default current_timestamp" )

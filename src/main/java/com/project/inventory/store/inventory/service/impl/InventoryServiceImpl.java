@@ -50,10 +50,11 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public Inventory getInventoryByProductId( int productId ) {
-        return inventoryRepository.findByProductId( productId )
+        Inventory inventory = inventoryRepository.findByProductId( productId )
                 .orElseThrow( () ->
                         new NotFoundException( String.format( "Inventory not Found with product ID %s", productId ) )
                 );
+        return inventory;
 
     }
 
@@ -107,15 +108,8 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public InventoryDto convertEntityToDto( Inventory inventory ) {
-        InventoryDto inventoryDto = new InventoryDto();
-        inventoryDto.setStatus( inventory.getStatus().toString() );
-        inventoryDto.setThreshold( inventory.getThreshold() );
-        int sum = 0;
-        for( Stock stock : inventory.getStock() ) {
-            sum += stock.getStock();
-        }
-        inventoryDto.setTotalStock( sum );
-        return inventoryDto;
+
+        return mapper.map(inventory, InventoryDto.class);
     }
 
     private Inventory checkThresholdAndStock( InventoryDto inventoryDto, int productId ) {

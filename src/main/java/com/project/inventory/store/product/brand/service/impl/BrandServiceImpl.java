@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BrandServiceImpl implements BrandService {
@@ -36,6 +37,11 @@ public class BrandServiceImpl implements BrandService {
         logger.info( "Find Brand {}", id );
         return brandRepository.findByIdAndIsDeleted( id, false )
                 .orElseThrow(() ->   new NotFoundException("Brand not Found.") );
+    }
+
+    @Override
+    public Brand getBrandByBrandName( String brandName ) {
+        return brandRepository.findByBrandName( brandName );
     }
 
     @Override

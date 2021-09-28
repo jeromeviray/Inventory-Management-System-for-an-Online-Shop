@@ -18,7 +18,8 @@ public class FileImage implements Serializable {
     @Column( name = "file_name" )
     private String fileName;
 
-
+    @Column(name = "path")
+    private String path;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY )
     @JoinColumn(name = "product_id")
@@ -55,7 +56,13 @@ public class FileImage implements Serializable {
         this.fileName = fileName;
     }
 
+    public String getPath() {
+        return path;
+    }
 
+    public void setPath( String path ) {
+        this.path = path;
+    }
 
     public Product getProduct() {
         return product;

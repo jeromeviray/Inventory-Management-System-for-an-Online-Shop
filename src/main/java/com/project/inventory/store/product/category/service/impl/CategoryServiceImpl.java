@@ -65,6 +65,11 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public Category getCategoryByCategoryName( String categoryName ) {
+        return categoryRepository.findByCategoryName( categoryName );
+    }
+
+    @Override
     public List<GetCategoriesWithTotalProducts> getCategoriesWithTotalProducts() {
         return categoryRepository.countProductByCategoryId();
     }

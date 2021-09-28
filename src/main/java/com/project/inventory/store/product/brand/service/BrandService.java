@@ -8,6 +8,8 @@ import java.util.List;
 public interface BrandService {
     void saveBrand( Brand brand );
 
+    Brand getBrandByBrandName(String brandName);
+
     List<Brand> getBrands();
 
     Brand getBrand( int id );

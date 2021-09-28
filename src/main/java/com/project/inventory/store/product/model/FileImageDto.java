@@ -3,6 +3,7 @@ package com.project.inventory.store.product.model;
 public class FileImageDto {
     private String id;
     private String fileName;
+    public String path;
 
     public String getId() {
         return id;
@@ -20,11 +21,16 @@ public class FileImageDto {
         this.fileName = fileName;
     }
 
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath( String path ) {
+        this.path = path;
+    }
+
     @Override
     public String toString() {
-        return "FileImageDto{" +
-                "id='" + id + '\'' +
-                ", fileName='" + fileName + '\'' +
-                '}';
+        return super.toString();
     }
 }

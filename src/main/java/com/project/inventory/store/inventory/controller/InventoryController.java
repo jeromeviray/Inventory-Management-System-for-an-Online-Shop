@@ -46,26 +46,9 @@ public class InventoryController {
         return new ResponseEntity(response, HttpStatus.OK);
     }
 
-//    @RequestMapping(value = "/{inventoryId}/{productId}", method = RequestMethod.GET)
-//    public ResponseEntity<?> getInventory(@PathVariable int inventoryId,
-//                                  @PathVariable int productId){
-//
-//        logger.info(String.format("{} %s", inventoryService.getInventory(inventoryId, productId)));
-//
-//        return new ResponseEntity(inventoryService.getInventory(inventoryId, productId), HttpStatus.OK);
-//    }
-
-//    @RequestMapping(value = "/stock/{inventoryId}/{productId}", method =  RequestMethod.PUT)
-//    public void addStock(@PathVariable int inventoryId,
-//                         @PathVariable int productId,
-//                         @RequestParam int stock){
-//        inventoryService.addStock(inventoryId, productId, stock);
-//    }
-//@PreAuthorize( "hasRole('ROLE_CUSTOMER') or hasRole('ROLE_USER')" )
     @PreAuthorize( "hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')" )
     @RequestMapping(value = "/{productId}", method = RequestMethod.GET)
     public ResponseEntity<?> getInventoryByProductId(@PathVariable int productId){
-        logger.info( "{}", productId );
-        return new ResponseEntity(inventoryService.getInventoryByProductId( productId ), HttpStatus.OK);
+        return new ResponseEntity(inventoryService.convertEntityToDto( inventoryService.getInventoryByProductId( productId ) ), HttpStatus.OK);
     }
 }

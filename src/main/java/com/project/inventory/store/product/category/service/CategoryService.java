@@ -18,6 +18,8 @@ public interface CategoryService {
 
     Category getCategory( int id );
 
+    Category getCategoryByCategoryName(String categoryName);
+
     List<GetCategoriesWithTotalProducts> getCategoriesWithTotalProducts();
 
     CategoryDto convertEntityToDto(Category category);

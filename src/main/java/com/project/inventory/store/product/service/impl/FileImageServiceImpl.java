@@ -49,6 +49,11 @@ public class FileImageServiceImpl implements FileImageService {
     }
 
     @Override
+    public FileImage getFileImageByFileNameAndProductId( String fileName, int productId ) {
+        return fileImageRepository.findByFileNameAndProductId(fileName, productId);
+    }
+
+    @Override
     public FileImageDto convertEntityToDto( FileImage fileImage ) {
         return mapper.map( fileImage, FileImageDto.class );
     }

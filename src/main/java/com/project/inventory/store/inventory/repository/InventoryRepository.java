@@ -50,7 +50,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, Integer> {
             nativeQuery = true )
     Optional<Inventory> findByProductIdAndThresholdNotZero( @Param( "productId" ) int productId );
 
-    Optional<Inventory> findByProductId( int productId );
+    @Query(value = "SELECT * FROM inventories where product_id =:productId", nativeQuery = true)
+    Optional<Inventory> findByProductId( @Param( "productId" ) int productId );
 
 //    @Query(value = "select inv.id, sum(s.stock) " +
 //            "from inventory inv " +

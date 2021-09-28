@@ -77,7 +77,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/v1/account/login",
                         "/api/v1/users/account/register",
                         "/api/v1/users/account/token/refresh" ).permitAll()
-                .antMatchers( HttpMethod.GET, "/api/v1/products/getImages/bytesArrays/*",
+                .antMatchers( HttpMethod.GET, "/api/v1/products/getImages/bytesArrays/**",
                         "/api/v1/products/discover",
                         "/api/v1/products/details/**").permitAll()
                 .antMatchers( "/oauth2/**" ).permitAll();
