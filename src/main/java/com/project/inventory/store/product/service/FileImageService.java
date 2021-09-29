@@ -4,13 +4,14 @@ import com.project.inventory.store.product.model.FileImage;
 import com.project.inventory.store.product.model.FileImageDto;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 public interface FileImageService {
 
     void saveFileImage( FileImage fileImage );
 
-    void deleteFileImage( int id );
+    void deleteFileImage( FileImage fileImage, Path path, int productId) throws Exception;
 
     FileImage getFileImageById( int id );
 
@@ -23,5 +24,6 @@ public interface FileImageService {
     List<FileImage> saveFileImages( List<FileImage> fileImages );
 
     FileImageDto convertEntityToDto(FileImage fileImage);
+
 
 }

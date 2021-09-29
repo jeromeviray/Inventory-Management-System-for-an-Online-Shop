@@ -24,7 +24,7 @@ public interface ProductService {
                            Object productDescription,
                            String brandName,
                            String categoryName,
-                           String[] removeImages);
+                           String[] removeImages) throws Exception;
 
     void deleteProduct( int id );
 

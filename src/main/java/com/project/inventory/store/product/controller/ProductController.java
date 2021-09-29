@@ -82,7 +82,7 @@ public class ProductController {
                                             @RequestParam( "productDescription" ) Object productDescription,
                                             @RequestParam( "brandName" ) String brandName,
                                             @RequestParam( "categoryName" ) String categoryName,
-                                            @RequestParam( value = "removedImages[]", required = false ) String[] removeImages ) {
+                                            @RequestParam( value = "removedImages[]", required = false ) String[] removeImages ) throws Exception {
         return ResponseEntity.ok( productService
                 .updateProduct( id,
                         productImages,
