@@ -66,8 +66,7 @@ public class ProductController {
     public ResponseEntity<?> getImage( @PathVariable String path,
                                        @PathVariable String image ) throws IOException {
 
-        InputStream readImage = path.equals( "null" ) ? readImage = servletContext.getResourceAsStream( "WEB-INF/inventory-management-system-reactjs/public/images/products/" + image )
-                : servletContext.getResourceAsStream( "WEB-INF/inventory-management-system-reactjs/public/images/products/" + path + "/" + image );
+        InputStream readImage = servletContext.getResourceAsStream( "WEB-INF/inventory-management-system-reactjs/public/images/products/" + path + "/" + image );
 
         return new ResponseEntity( IOUtils.toByteArray( readImage ), HttpStatus.OK );
     }
@@ -96,7 +95,7 @@ public class ProductController {
     }
 
     @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN')" )
-    @RequestMapping( value = "/delete/{id}", method = RequestMethod.POST )
+    @RequestMapping( value = "/delete/{id}", method = RequestMethod.DELETE )
     public void deleteProduct( @PathVariable int id ) {
         productService.deleteProduct( id );
     }
