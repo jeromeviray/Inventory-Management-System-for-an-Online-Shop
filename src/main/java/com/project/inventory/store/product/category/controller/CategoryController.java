@@ -1,13 +1,19 @@
 package com.project.inventory.store.product.category.controller;
 
+import com.project.inventory.store.product.category.model.CategoriesWithTotalProductsDto;
 import com.project.inventory.store.product.category.model.Category;
 import com.project.inventory.store.product.category.service.CategoryService;
-import com.twilio.http.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping( value = "/api/v1/categories" )
@@ -30,8 +36,21 @@ public class CategoryController {
 
     @RequestMapping( value = "", method = RequestMethod.GET )
     @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN') or hasRole('ROLE_ADMIN')" )
-    public ResponseEntity<?> getCategories() {
-        return new ResponseEntity( categoryService.getCategoriesWithTotalProducts(), HttpStatus.OK );
+    public ResponseEntity<?> getCategories( @RequestParam(value = "query", defaultValue = "") String query,
+                                            @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                            @RequestParam(value = "limit", defaultValue = "10") Integer limit) {
+        Map<String, Object> response = new HashMap<>();
+
+        Pageable pageable = PageRequest.of( page, limit );
+
+        Page<CategoriesWithTotalProductsDto> categories = categoryService.getCategoriesWithTotalProducts( query, pageable );
+
+        response.put("data", categories.getContent());
+        response.put("currentPage", categories.getNumber());
+        response.put("totalItems", categories.getTotalElements());
+        response.put("totalPages", categories.getTotalPages());
+
+        return new ResponseEntity( response, HttpStatus.OK );
     }
 
     @RequestMapping( value = "/{id}", method = RequestMethod.GET )

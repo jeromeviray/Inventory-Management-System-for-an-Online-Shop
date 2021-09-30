@@ -3,15 +3,19 @@ package com.project.inventory.store.product.category.service.impl;
 import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.store.product.category.model.Category;
 import com.project.inventory.store.product.category.model.CategoryDto;
-import com.project.inventory.store.product.category.model.GetCategoriesWithTotalProducts;
+import com.project.inventory.store.product.category.model.CategoriesWithTotalProductsDto;
 import com.project.inventory.store.product.category.repository.CategoryRepository;
 import com.project.inventory.store.product.category.service.CategoryService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -70,8 +74,18 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<GetCategoriesWithTotalProducts> getCategoriesWithTotalProducts() {
-        return categoryRepository.countProductByCategoryId();
+    public Page<CategoriesWithTotalProductsDto> getCategoriesWithTotalProducts( String query, Pageable pageable ) {
+        try {
+            Page<CategoriesWithTotalProductsDto> categories = categoryRepository.findAll(query, pageable);
+            logger.info( "{}", categoryRepository.findAll(query, pageable) );
+            List<CategoriesWithTotalProductsDto> categoryRecordsByPage = new ArrayList<>();
+            for(CategoriesWithTotalProductsDto categoriesWithTotalProductsDto : categories.getContent()){
+                categoryRecordsByPage.add( categoriesWithTotalProductsDto );
+            }
+            return new PageImpl<>( categoryRecordsByPage, pageable, categories.getTotalElements()  );
+        }catch( Exception e ){
+            throw e;
+        }
     }
 
     @Override

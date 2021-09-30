@@ -2,7 +2,9 @@ package com.project.inventory.store.product.category.service;
 
 import com.project.inventory.store.product.category.model.Category;
 import com.project.inventory.store.product.category.model.CategoryDto;
-import com.project.inventory.store.product.category.model.GetCategoriesWithTotalProducts;
+import com.project.inventory.store.product.category.model.CategoriesWithTotalProductsDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -20,7 +22,7 @@ public interface CategoryService {
 
     Category getCategoryByCategoryName(String categoryName);
 
-    List<GetCategoriesWithTotalProducts> getCategoriesWithTotalProducts();
+    Page<CategoriesWithTotalProductsDto> getCategoriesWithTotalProducts( String query, Pageable pageable );
 
     CategoryDto convertEntityToDto(Category category);
 

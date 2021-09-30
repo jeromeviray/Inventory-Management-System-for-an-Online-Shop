@@ -1,7 +1,9 @@
 package com.project.inventory.store.product.brand.service;
 
 import com.project.inventory.store.product.brand.model.Brand;
-import com.project.inventory.store.product.brand.model.GetBrandsWithTotalProducts;
+import com.project.inventory.store.product.brand.model.BrandsWithTotalProductsDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -18,6 +20,6 @@ public interface BrandService {
 
     void deleteBrand( int id );
 
-    List<GetBrandsWithTotalProducts> getBrandsWithTotalProducts();
+    Page<BrandsWithTotalProductsDto> getBrandsWithTotalProducts( String query, Pageable pageable );
 
 }

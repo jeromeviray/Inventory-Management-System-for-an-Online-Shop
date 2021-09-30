@@ -1,6 +1,6 @@
 package com.project.inventory.store.product.category.model;
 
-public interface GetCategoriesWithTotalProducts {
+public interface CategoriesWithTotalProductsDto {
     int getId();
     String getCategoryName();
     int getTotalProducts();

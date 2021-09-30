@@ -73,7 +73,7 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public Page<InventoryDto> getInventories( String query, Pageable pageable) {
         try {
-            query += "%";
+//            query += "%";
             Page<Inventory> inventories = inventoryRepository.findAll(query,
                     pageable);
             List<InventoryDto> pageRecords = new ArrayList<>();

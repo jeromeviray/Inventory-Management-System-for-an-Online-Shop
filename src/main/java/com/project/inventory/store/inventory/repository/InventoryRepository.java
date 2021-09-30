@@ -21,8 +21,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, Integer> {
     @Query( value = "SELECT * " +
             "FROM inventories i " +
             "JOIN products as p ON p.id = i.product_id " +
-            "WHERE (p.product_name LIKE :query " +
-            "OR p.barcode LIKE :query) AND p.product_is_deleted = 0 ",
+            "WHERE (p.product_name LIKE concat('%',:query,'%') " +
+            "OR p.barcode LIKE concat('%',:query,'%')) AND p.product_is_deleted = 0 ",
             nativeQuery = true )
     Page<Inventory> findAll( @Param("query") String query, Pageable pageable);
 
