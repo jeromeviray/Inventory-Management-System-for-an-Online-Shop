@@ -36,7 +36,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 )
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    static final String API = "api/v1/";
+    static final String API = "/api/v1/";
     @Autowired
     @Qualifier( value = "userDetailsServiceImpl" )
     private UserDetailsService userDetailsService;
@@ -79,7 +79,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/v1/users/account/token/refresh" ).permitAll()
                 .antMatchers( HttpMethod.GET, "/api/v1/products/getImages/bytesArrays/**",
                         "/api/v1/products/discover",
-                        "/api/v1/products/details/**").permitAll()
+                        "/api/v1/products/details/**",
+                        API+"/categories/list").permitAll()
                 .antMatchers( "/oauth2/**" ).permitAll();
         http.authorizeRequests().anyRequest().authenticated();
         // Set unauthorized and access denied requests exception handler

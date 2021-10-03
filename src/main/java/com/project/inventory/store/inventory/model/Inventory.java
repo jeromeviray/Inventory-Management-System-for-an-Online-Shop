@@ -1,6 +1,5 @@
 package com.project.inventory.store.inventory.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.inventory.store.inventory.stock.model.Stock;
 import com.project.inventory.store.inventory.stock.model.StockStatus;
 import com.project.inventory.store.product.model.Product;
@@ -25,7 +24,7 @@ public class Inventory implements Serializable {
     private int threshold;
 
     @OneToMany( mappedBy = "inventory" )
-    private List<Stock> stock;
+    private List<Stock> stocks;
 
     @OneToOne( fetch = FetchType.LAZY, cascade = CascadeType.ALL )
     @JoinColumn( name = "product_id", nullable = false )
@@ -64,11 +63,11 @@ public class Inventory implements Serializable {
     }
 
     public List<Stock> getStock() {
-        return stock;
+        return stocks;
     }
 
-    public void setStock( List<Stock> stock ) {
-        this.stock = stock;
+    public void setStock( List<Stock> stocks ) {
+        this.stocks = stocks;
     }
 
     @Override

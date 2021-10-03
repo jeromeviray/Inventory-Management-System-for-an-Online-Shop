@@ -14,6 +14,8 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -61,18 +63,19 @@ public class IncomingSupplyServiceImpl implements IncomingSupplyService {
     }
 
     @Override
-    public List<IncomingSupply> getIncomingSuppliesByPendingStatus() {
-        try{
-            return incomingSupplyRepository.findAllByIncomingSupplyStatus(IncomingSupplyStatus.PENDING);
-        }catch ( Exception e ){
-            throw e;
-        }
+    public Page<IncomingSupply> getIncomingSuppliesByPendingStatus( String query, Pageable pageable ) {
+//        try{
+//            return incomingSupplyRepository.findAllByIncomingSupplyStatus(IncomingSupplyStatus.PENDING.name());
+//        }catch ( Exception e ){
+//            throw e;
+//        }
+        return null;
     }
 
     @Override
-    public List<IncomingSupply> getIncomingSuppliesByDeliveredStatus() {
+    public Page<IncomingSupply> getIncomingSuppliesByDeliveredStatus( String query, Pageable pageable ) {
         try{
-            return incomingSupplyRepository.findAllByIncomingSupplyStatus(IncomingSupplyStatus.DELIVERED);
+            return incomingSupplyRepository.findAllByIncomingSupplyStatus(query, IncomingSupplyStatus.DELIVERED.name(), pageable);
         }catch ( Exception e ){
             throw e;
         }

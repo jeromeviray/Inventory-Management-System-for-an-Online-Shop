@@ -1,6 +1,5 @@
 package com.project.inventory.store.inventory.service.impl;
 
-import com.project.inventory.exception.invalid.InvalidException;
 import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.store.inventory.model.GetProductDto;
 import com.project.inventory.store.inventory.model.Inventory;
@@ -15,14 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Service( "inventoryServiceImpl" )
@@ -64,55 +56,29 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public Inventory getInventoryByProductIdAndThresholdNotZero( int productId ) {
-        return inventoryRepository.findByProductIdAndThresholdNotZero( productId )
-                .orElseThrow( () -> new InvalidException( "Threshold is Zero. " +
-                        "Please Add Threshold before add new Stock" ) );
-    }
-
-    @Override
-    public Page<InventoryDto> getInventories( String query, Pageable pageable) {
-        try {
-//            query += "%";
-            Page<Inventory> inventories = inventoryRepository.findAll(query,
-                    pageable);
-            List<InventoryDto> pageRecords = new ArrayList<>();
-            for( Inventory inventory : inventories.getContent() ) {
-                int sum = 0;
-
-                for( Stock stock : inventory.getStock() ) {
-                    if( inventory.getId() == stock.getInventory().getId() ) {
-                        sum += stock.getStock();
-                    }
-                }
-                InventoryDto inventoryDto = new InventoryDto();
-                inventoryDto.setProduct( convertProductEntityToDto( inventory.getProduct() ) );
-                inventoryDto.setThreshold( inventory.getThreshold() );
-                inventoryDto.setTotalStock( sum );
-                inventoryDto.setStatus(
-                        checkThresholdAndStock( inventoryDto, inventory.getProduct().getId() )
-                                .getStatus().toString()
-                );
-                pageRecords.add( inventoryDto );
-            }
-            return new PageImpl<>(pageRecords, pageable, inventories.getTotalElements());
-        } catch( Exception e ) {
-            throw e;
-        }
-    }
-
-    @Override
-    public Inventory getInventory( int productId ) {
-        return null;
-    }
-
-    @Override
     public InventoryDto convertEntityToDto( Inventory inventory ) {
-
-        return mapper.map(inventory, InventoryDto.class);
+        InventoryDto inventoryDto = new InventoryDto();
+        inventoryDto.setTotalStock( getTotalStocks( inventory.getProduct() ) );
+        inventoryDto.setThreshold( inventory.getThreshold() );
+        inventoryDto.setStatus( inventory.getStatus().name() );
+        return inventoryDto;
     }
 
-    private Inventory checkThresholdAndStock( InventoryDto inventoryDto, int productId ) {
+    @Override
+    public int getTotalStocks( Product product ) {
+        int sum = 0;
+        Inventory inventory = getInventoryByProductId( product.getId() );
+
+        for( Stock stock : inventory.getStock() ) {
+            if( inventory.getId() == stock.getInventory().getId() ) {
+                sum += stock.getStock();
+            }
+        }
+        return sum;
+    }
+
+    @Override
+    public Inventory checkThresholdAndStock( InventoryDto inventoryDto, int productId ) {
         Inventory inventory = getInventoryByProductId( productId );
         if( inventoryDto.getTotalStock() > inventoryDto.getThreshold() ) {
             inventory.setStatus( StockStatus.OK );

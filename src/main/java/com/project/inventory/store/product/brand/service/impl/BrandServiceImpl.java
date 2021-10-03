@@ -38,8 +38,8 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public Brand getBrand( int id ) {
         logger.info( "Find Brand {}", id );
-        return brandRepository.findByIdAndIsDeleted( id, false )
-                .orElseThrow(() ->   new NotFoundException("Brand not Found.") );
+        return brandRepository.findByIdAndIsDeleted( id )
+                .orElseThrow( () -> new NotFoundException( "Brand not Found." ) );
     }
 
     @Override
@@ -65,15 +65,15 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public Page<BrandsWithTotalProductsDto> getBrandsWithTotalProducts( String query, Pageable pageable ) {
 //        return brandRepository.findAllBrandAndProduct();
-        try{
+        try {
             Page<BrandsWithTotalProductsDto> brands = brandRepository.findAll( query, pageable );
 
             List<BrandsWithTotalProductsDto> brandRecordsByPage = new ArrayList<>();
-            for( BrandsWithTotalProductsDto brandsWithTotalProductsDto : brands.getContent()){
+            for( BrandsWithTotalProductsDto brandsWithTotalProductsDto : brands.getContent() ) {
                 brandRecordsByPage.add( brandsWithTotalProductsDto );
             }
             return new PageImpl<>( brandRecordsByPage, pageable, brands.getTotalElements() );
-        }catch( Exception e ){
+        } catch( Exception e ) {
             throw e;
         }
     }

@@ -3,8 +3,8 @@ package com.project.inventory.store.product.service.impl;
 import com.project.inventory.exception.invalid.InvalidException;
 import com.project.inventory.exception.notFound.product.ProductNotFound;
 import com.project.inventory.store.inventory.model.Inventory;
+import com.project.inventory.store.inventory.model.InventoryDto;
 import com.project.inventory.store.inventory.service.InventoryService;
-import com.project.inventory.store.inventory.stock.model.Stock;
 import com.project.inventory.store.inventory.stock.model.StockStatus;
 import com.project.inventory.store.product.brand.model.Brand;
 import com.project.inventory.store.product.brand.service.BrandService;
@@ -19,6 +19,9 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,7 +33,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -85,7 +87,7 @@ public class ProductServiceImpl implements ProductService {
 
             // after saving product and inventory
             // the image of the product will save also
-            if(productImages != null){
+            if( productImages != null ) {
                 for( FileImage fileImage : getFileImages( productImages, savedProduct ) ) {
                     if( savedProduct != null ) {
                         fileImage.setProduct( savedProduct );
@@ -139,23 +141,24 @@ public class ProductServiceImpl implements ProductService {
             for( String removedImage : removedImages ) {
                 logger.info( "{}", removedImage );
                 FileImage fileImage = fileImageService.getFileImageByFileNameAndProductId( removedImage, savedProduct.getId() );
-                if(fileImage != null){
+                if( fileImage != null ) {
                     Path path = Paths.get( rootFile + product.getId(), removedImage );
                     fileImageService.deleteFileImage( fileImage, path, product.getId() );
                 }
             }
         }
-       // add the new Images
+        // add the new Images
         List<FileImage> fileImages = new ArrayList<>();
-        if(productImages != null){
+        if( productImages != null ) {
             for( FileImage fileImage : getFileImages( productImages, savedProduct ) ) {
-                    fileImage.setProduct( savedProduct );
-                    fileImages.add( fileImage );
+                fileImage.setProduct( savedProduct );
+                fileImages.add( fileImage );
             }
             fileImageService.saveFileImages( fileImages );
         }
         return null;
     }
+
     @Override
     public void deleteProduct( int id ) {
         Product product = getProductById( id );
@@ -166,13 +169,21 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getAllAvailableProducts() {
-        return productRepository.findAllAvailableProducts();
-    }
-
-    @Override
-    public List<Product> getProducts() {
-        return productRepository.findAll();
+    public Page<ProductAndInventoryDto> getProducts( String query, Pageable pageable ) {
+        try {
+            List<ProductAndInventoryDto> productRecordByPages = new ArrayList<>();
+            Page<Product> products = productRepository.findAll( query, pageable );
+            for( Product product : products.getContent() ) {
+                ProductAndInventoryDto productAndInventory = new ProductAndInventoryDto();
+                InventoryDto inventory = inventoryService.convertEntityToDto( product.getInventory() );
+                productAndInventory.setProduct( convertEntityToDto( product ) );
+                productAndInventory.setInventory( inventory );
+                productRecordByPages.add( productAndInventory );
+            }
+            return new PageImpl<>( productRecordByPages, pageable, products.getTotalElements() );
+        } catch( Exception e ) {
+            throw e;
+        }
     }
 
     @Override
@@ -181,6 +192,15 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById( id )
                 .orElseThrow( () -> new ProductNotFound( String.format( "Product Not Found with ID: " + id ) ) );
         return product;
+    }
+
+    @Override
+    public ProductAndInventoryDto getProductAndInventoryByProductId( int id ) {
+        Product product = getProductById( id );
+        ProductAndInventoryDto productAndInventoryDto = new ProductAndInventoryDto();
+        productAndInventoryDto.setProduct( convertEntityToDto( product ) );
+        productAndInventoryDto.setInventory( inventoryService.convertEntityToDto( product.getInventory() ) );
+        return productAndInventoryDto;
     }
 
     @Override
@@ -195,24 +215,7 @@ public class ProductServiceImpl implements ProductService {
     // converting product entity to dto
     @Override
     public ProductDto convertEntityToDto( Product product ) {
-        ProductDto productDto = new ProductDto();
-
-        productDto.setId( product.getId() );
-        productDto.setProductName( product.getName() );
-        productDto.setProductPrice( product.getPrice() );
-        productDto.setProductDescription( product.getDescription() );
-        productDto.setBarcode( product.getBarcode() );
-        // convert file image to DTO
-
-        productDto.setFileImages( getFileImageDto( product.getFileImages() ) );
-        GetInventory inventory = new GetInventory();
-        inventory.setStatus( product.getInventory().getStatus().name() );
-        inventory.setThreshold( product.getInventory().getThreshold() );
-        inventory.setTotalStock( getTotalStocks( product ) );
-
-        productDto.setInventory( inventory );
-
-        return productDto;
+        return mapper.map( product, ProductDto.class );
     }
 
     // converting dto to entity
@@ -241,7 +244,7 @@ public class ProductServiceImpl implements ProductService {
         List<FileImage> fileImageList = new ArrayList<>();
         // reading all the image file and getting the details of the image
         for( MultipartFile file : files ) {
-            String imageName = "PR_"+generateStrings()+"_"+file.getOriginalFilename();
+            String imageName = "PR_" + generateStrings() + "_" + file.getOriginalFilename();
             Path path = Paths.get( rootFile + product.getId(), imageName );
 //            String filename = file.getOriginalFilename();
             try {
@@ -252,7 +255,7 @@ public class ProductServiceImpl implements ProductService {
             }
             FileImage fileImage = new FileImage();
             fileImage.setFileName( imageName );
-            fileImage.setPath(product.getId() + "/" );
+            fileImage.setPath( product.getId() + "/" );
             fileImageList.add( fileImage );
 
         }
@@ -267,25 +270,12 @@ public class ProductServiceImpl implements ProductService {
         return fileImageDto;
     }
 
-    @Override
-    public int getTotalStocks( Product product ) {
-        int sum = 0;
-        Inventory inventory = inventoryService.getInventoryByProductId( product.getId() );
-
-        for( Stock stock : inventory.getStock() ) {
-            if( inventory.getId() == stock.getInventory().getId() ) {
-                sum += stock.getStock();
-            }
-        }
-        return sum;
-    }
-
-    private String generateStrings(){
+    private String generateStrings() {
         String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijk";
         Random rnd = new Random();
-        StringBuilder randomString = new StringBuilder(5);
-        for (int i = 0; i < 5; i++){
-            randomString.append(chars.charAt(rnd.nextInt(chars.length())));
+        StringBuilder randomString = new StringBuilder( 5 );
+        for( int i = 0; i < 5; i++ ) {
+            randomString.append( chars.charAt( rnd.nextInt( chars.length() ) ) );
         }
         return randomString.toString();
     }

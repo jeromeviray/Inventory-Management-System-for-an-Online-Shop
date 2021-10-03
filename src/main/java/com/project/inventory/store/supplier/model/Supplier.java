@@ -28,6 +28,9 @@ public class Supplier {
     @Column( name = "updated_at" )
     private Date updatedAt;
 
+    @Column(name ="is_deleted", columnDefinition = "TINYINT default 0")
+    private boolean isDeleted;
+
     public int getId() {
         return id;
     }
@@ -58,6 +61,14 @@ public class Supplier {
 
     public void setUpdatedAt( Date updatedAt ) {
         this.updatedAt = updatedAt;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted( boolean deleted ) {
+        isDeleted = deleted;
     }
 
     @Override

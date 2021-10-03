@@ -1,16 +1,20 @@
 package com.project.inventory.store.product.controller;
 
+import com.project.inventory.store.inventory.model.InventoryDto;
+import com.project.inventory.store.inventory.service.InventoryService;
 import com.project.inventory.store.product.brand.service.BrandService;
 import com.project.inventory.store.product.category.service.CategoryService;
-import com.project.inventory.store.product.model.GetInventory;
 import com.project.inventory.store.product.model.Product;
-import com.project.inventory.store.product.model.ProductDto;
+import com.project.inventory.store.product.model.ProductAndInventoryDto;
 import com.project.inventory.store.product.service.ProductService;
 import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,14 +25,16 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.ServletContext;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping( value = "api/v1/products" )
 public class ProductController {
     Logger logger = LoggerFactory.getLogger( ProductController.class );
 
+    @Autowired
+    private InventoryService inventoryService;
     @Autowired
     private ProductService productService;
     @Autowired
@@ -42,13 +48,13 @@ public class ProductController {
 
     @PreAuthorize( "hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')" )
     @RequestMapping( value = "/save", method = RequestMethod.POST, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE } )
-    public ResponseEntity<?> saveProduct(  @RequestPart( value = "productImages[]", required = false ) MultipartFile[] productImages,
-                                         @RequestParam( "productName" ) String productName,
-                                         @RequestParam( "productPrice" ) double productPrice,
-                                         @RequestParam( "barcode" ) int barcode,
-                                         @RequestParam( "productDescription" ) Object productDescription,
-                                         @RequestParam( "brandName" ) String brandName,
-                                         @RequestParam( "categoryName" ) String categoryName ) {
+    public ResponseEntity<?> saveProduct( @RequestPart( value = "productImages[]", required = false ) MultipartFile[] productImages,
+                                          @RequestParam( "productName" ) String productName,
+                                          @RequestParam( "productPrice" ) double productPrice,
+                                          @RequestParam( "barcode" ) int barcode,
+                                          @RequestParam( "productDescription" ) Object productDescription,
+                                          @RequestParam( "brandName" ) String brandName,
+                                          @RequestParam( "categoryName" ) String categoryName ) {
 
         productService.saveProduct(
                 productImages,
@@ -57,7 +63,7 @@ public class ProductController {
                 barcode,
                 productDescription,
                 brandName,
-                categoryName);
+                categoryName );
         return new ResponseEntity( HttpStatus.OK );
 
     }
@@ -94,58 +100,62 @@ public class ProductController {
                         removeImages ) );
     }
 
-    @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN')" )
+    @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN') OR hasRole('ROLE_ADMIN')" )
     @RequestMapping( value = "/delete/{id}", method = RequestMethod.DELETE )
     public void deleteProduct( @PathVariable int id ) {
         productService.deleteProduct( id );
     }
 
+    @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN') OR hasRole('ROLE_ADMIN')" )
     @RequestMapping( value = "", method = RequestMethod.GET )
-    public ResponseEntity<?> getAllAvailableProducts() {
-        List<ProductDto> products = new ArrayList<>();
-        for( Product product : productService.getAllAvailableProducts() ) {
-            products.add( productService.convertEntityToDto( product ) );
-        }
-        return new ResponseEntity( products, HttpStatus.OK );
+    public ResponseEntity<?> getProducts( @RequestParam( value = "query", defaultValue = "", required = false ) String query,
+                                                      @RequestParam( value = "page", defaultValue = "0" ) Integer page,
+                                                      @RequestParam( value = "limit", defaultValue = "0" ) Integer limit ) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        Pageable pageable = PageRequest.of( page, limit );
+        Page<ProductAndInventoryDto> products = productService.getProducts( query, pageable );
+
+        response.put("data", products.getContent());
+        response.put("currentPage", products.getNumber());
+        response.put("totalItems", products.getTotalElements());
+        response.put("totalPages", products.getTotalPages());
+
+        return new ResponseEntity(response, HttpStatus.OK );
     }
 
-    @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN')" )
-    @RequestMapping( value = "/all", method = RequestMethod.GET )
-    public List<Product> getAllProducts() {
-        return productService.getProducts();
-    }
-
-    //    @PreAuthorize( "hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')" )
     @RequestMapping( value = "/{id}", method = RequestMethod.GET )
     public ResponseEntity<?> getProductById( @PathVariable int id ) throws IOException {
-        Product product = productService.getProductById( id );
 
-        GetInventory inventory = new GetInventory();
-
-        inventory.setTotalStock( productService.getTotalStocks( product ) );
-        inventory.setThreshold( product.getInventory().getThreshold() );
-        inventory.setStatus( product.getInventory().getStatus().name() );
-
-        ProductDto productDto = mapper.map( product, ProductDto.class );
-        productDto.setInventory( inventory );
-
-        return ResponseEntity.ok( productDto );
-//        return ResponseEntity.ok( mapper.map( product, ProductDto.class )  );
+//        ProductAndInventoryDto productAndInventory = new ProductAndInventoryDto();
+//        InventoryDto inventory = inventoryService.convertEntityToDto( product.getInventory() );
+//
+//        productAndInventory.setProduct( productService.convertEntityToDto( product ) );
+//        productAndInventory.setInventory( inventory );
+        return new ResponseEntity(productService.getProductAndInventoryByProductId( id ), HttpStatus.OK);
     }
 
     @RequestMapping( value = "/details/{id}", method = RequestMethod.GET )
     public ResponseEntity<?> getProductSummaryDetails( @PathVariable int id ) throws IOException {
-        Product product = productService.getProductById( id );
 
-        return ResponseEntity.ok( productService.convertEntityToDto( product ) );
+        return ResponseEntity.ok( productService.getProductAndInventoryByProductId( id ) );
     }
 
     @RequestMapping( value = "/discover", method = RequestMethod.GET )
-    public ResponseEntity<?> getDiscoverProducts() throws IOException {
-        List<ProductDto> products = new ArrayList<>();
-        for( Product product : productService.getAllAvailableProducts() ) {
-            products.add( productService.convertEntityToDto( product ) );
-        }
-        return ResponseEntity.ok( products );
+    public ResponseEntity<?> getDiscoverProducts( @RequestParam( value = "query", defaultValue = "", required = false ) String query,
+                                                  @RequestParam( value = "page", defaultValue = "0" ) Integer page,
+                                                  @RequestParam( value = "limit", defaultValue = "0" ) Integer limit ) throws IOException {
+        Map<String, Object> response = new HashMap<>();
+
+        Pageable pageable = PageRequest.of( page, limit );
+        Page<ProductAndInventoryDto> products = productService.getProducts( query, pageable );
+
+        response.put("data", products.getContent());
+        response.put("currentPage", products.getNumber());
+        response.put("totalItems", products.getTotalElements());
+        response.put("totalPages", products.getTotalPages());
+
+        return ResponseEntity.ok( response );
     }
 }

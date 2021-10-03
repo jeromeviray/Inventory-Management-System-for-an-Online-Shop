@@ -4,6 +4,7 @@ import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.store.product.category.model.Category;
 import com.project.inventory.store.product.category.model.CategoryDto;
 import com.project.inventory.store.product.category.model.CategoriesWithTotalProductsDto;
+import com.project.inventory.store.product.category.model.CategoryListDto;
 import com.project.inventory.store.product.category.repository.CategoryRepository;
 import com.project.inventory.store.product.category.service.CategoryService;
 import org.modelmapper.ModelMapper;
@@ -59,8 +60,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> getCategories() {
-        return categoryRepository.findAll();
+    public List<CategoryListDto> getCategories() {
+        return categoryRepository.findAllCategory();
     }
 
     @Override

@@ -1,19 +1,14 @@
 package com.project.inventory.store.inventory.repository;
 
 import com.project.inventory.store.inventory.model.Inventory;
-import com.project.inventory.store.product.model.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
-import java.util.List;
 import java.util.Optional;
 
 public interface InventoryRepository extends JpaRepository<Inventory, Integer> {
@@ -24,14 +19,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Integer> {
             "WHERE (p.product_name LIKE concat('%',:query,'%') " +
             "OR p.barcode LIKE concat('%',:query,'%')) AND p.product_is_deleted = 0 ",
             nativeQuery = true )
-    Page<Inventory> findAll( @Param("query") String query, Pageable pageable);
-
-    @Query( value = "SELECT * " +
-            "FROM inventory i " +
-            "WHERE i.inventory_id =:inventoryId " +
-            "AND i.product_id =:productId",
-            nativeQuery = true )
-    Optional<Inventory> findByInventoryIdAndProductId( @Param( "inventoryId" ) int inventoryId, @Param( "productId" ) int productId );
+    Page<Inventory> findAll( @Param( "query" ) String query, Pageable pageable );
 
     @Modifying
     @Transactional
@@ -41,16 +29,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, Integer> {
             nativeQuery = true )
     void updateInventoryThreshold( @Param( "threshold" ) int threshold, @Param( "inventoryId" ) int inventoryId );
 
-    @Modifying
-    @Transactional
-    @Query( value = "SELECT * " +
-            "from inventory " +
-            "where product_id =:productId " +
-            "AND threshold_stock > 0",
-            nativeQuery = true )
-    Optional<Inventory> findByProductIdAndThresholdNotZero( @Param( "productId" ) int productId );
 
-    @Query(value = "SELECT * FROM inventories where product_id =:productId", nativeQuery = true)
+    @Query( value = "SELECT * FROM inventories where product_id =:productId", nativeQuery = true )
     Optional<Inventory> findByProductId( @Param( "productId" ) int productId );
 
 //    @Query(value = "select inv.id, sum(s.stock) " +

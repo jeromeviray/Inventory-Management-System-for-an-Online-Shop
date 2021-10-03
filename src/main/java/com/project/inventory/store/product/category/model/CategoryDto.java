@@ -1,9 +1,5 @@
 package com.project.inventory.store.product.category.model;
 
-import com.project.inventory.store.inventory.model.GetProductDto;
-
-import java.util.List;
-
 public class CategoryDto {
 
     private int id;

@@ -19,7 +19,8 @@ public class IncomingSupply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
+    @Column(name = "supply_reference")
+    private String supplyReference;
     @Column(name = "purchased_at")
     @CreationTimestamp
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
@@ -51,6 +52,17 @@ public class IncomingSupply {
 
     public void setId( int id ) {
         this.id = id;
+    }
+
+    public String getSupplyReference() {
+        return supplyReference;
+    }
+    @PostPersist
+    public void setSupplyReference( ) {
+        int startingPoint = 100000;
+        if(this.id != 0){
+            this.supplyReference = "IS-REF-"+startingPoint+this.id;
+        }
     }
 
     public Date getPurchasedAt() {

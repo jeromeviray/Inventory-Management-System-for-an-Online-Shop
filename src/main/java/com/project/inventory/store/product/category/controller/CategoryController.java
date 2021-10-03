@@ -53,6 +53,10 @@ public class CategoryController {
         return new ResponseEntity( response, HttpStatus.OK );
     }
 
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public ResponseEntity<?> getCategoriesList(){
+        return new ResponseEntity<>(categoryService.getCategories(), HttpStatus.OK );
+    }
     @RequestMapping( value = "/{id}", method = RequestMethod.GET )
     @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN') or hasRole('ROLE_ADMIN')" )
     public ResponseEntity<?> getCategory( @PathVariable int id ) {

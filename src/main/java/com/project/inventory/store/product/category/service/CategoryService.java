@@ -3,6 +3,7 @@ package com.project.inventory.store.product.category.service;
 import com.project.inventory.store.product.category.model.Category;
 import com.project.inventory.store.product.category.model.CategoryDto;
 import com.project.inventory.store.product.category.model.CategoriesWithTotalProductsDto;
+import com.project.inventory.store.product.category.model.CategoryListDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,7 +17,7 @@ public interface CategoryService {
 
     void deleteCategory( int id );
 
-    List<Category> getCategories();
+    List<CategoryListDto> getCategories();
 
     Category getCategory( int id );
 

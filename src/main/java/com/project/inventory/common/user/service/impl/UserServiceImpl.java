@@ -4,6 +4,7 @@ import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.role.model.RoleDto;
 import com.project.inventory.common.permission.role.model.RoleType;
 import com.project.inventory.common.permission.service.AccountService;
+import com.project.inventory.common.user.model.RequestUserAccount;
 import com.project.inventory.common.user.model.User;
 import com.project.inventory.common.user.model.UserAccount;
 import com.project.inventory.common.user.model.UserDto;
@@ -13,6 +14,9 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -55,24 +59,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUserInformation(int id, User user) {
-        User updateSavedUser = getUserInformationById(id);
-
-        updateSavedUser.setFirstName(user.getFirstName());
-        updateSavedUser.setLastName(user.getLastName());
-        updateSavedUser.setPhoneNumber(user.getPhoneNumber());
-        updateSavedUser.setBirthDay(user.getBirthDay());
-
-        userRepository.save(updateSavedUser);
+    public void updateUserInformation( int id, RequestUserAccount userAccount ) {
+        User savedUser = getUserInformationById(id);
+//        if(accountService.updateAccount( savedUser.getAccount().getId(), userAccount ) != null){
+            savedUser.setFirstName(userAccount.getFirstName());
+            savedUser.setLastName(userAccount.getLastName());
+            savedUser.setPhoneNumber(userAccount.getPhoneNumber());
+            savedUser.setBirthDay(userAccount.getBirthday());
+            userRepository.save(savedUser);
+//        }
     }
 
     @Override
     public void deleteUserAccount(int id) {
         logger.info( "{}", id );
-
-        User user = getUserInformationById(id);
-
-        userRepository.delete(user);
+        accountService.deleteAccount( id );
     }
 
     @Override
@@ -85,32 +86,41 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getUsersByCustomerRole() {
-        List<UserDto> users = new ArrayList<>();
-        for(UserDto user: getUsers()){
-            if(user.getAccount().isEnabled() && user.getAccount().isLocked()){
-                for( RoleDto role : user.getAccount().getRoles() ){
+    public Page<UserDto> getUsersByCustomerRole( String query, Pageable pageable ) {
+        Page<User> users = userRepository.findAll(query, pageable);
+
+
+        List<UserDto> userPageRecords = new ArrayList<>();
+        for(User user: users.getContent()){
+            UserDto userDto = convertEntityToDto( user );
+
+            if(userDto.getAccount().isEnabled() && userDto.getAccount().isLocked()){
+                for( RoleDto role : userDto.getAccount().getRoles() ){
                     if(role.getRoleName().equals( "CUSTOMER" ) || role.getRoleName().equals( "USER" )){
-                        users.add( user );
+                        userPageRecords.add( userDto );
                     }
                 }
             }
         }
-        return users;
+        return new PageImpl<>(userPageRecords, pageable, users.getTotalElements());
     }
     @Override
-    public List<UserDto> getUsersByRole() {
-        List<UserDto> users = new ArrayList<>();
-        for(UserDto user: getUsers()){
-            if(user.getAccount().isEnabled() && user.getAccount().isLocked()){
-                for( RoleDto role : user.getAccount().getRoles() ){
+    public Page<UserDto> getUsersByAdminOrSuperRole( String query, Pageable pageable ) {
+        Page<User> users = userRepository.findAll(query, pageable);
+
+        List<UserDto> userPageRecords = new ArrayList<>();
+        for(User user: users.getContent()){
+            UserDto userDto = convertEntityToDto( user );
+
+            if(userDto.getAccount().isEnabled() && userDto.getAccount().isLocked()){
+                for( RoleDto role : userDto.getAccount().getRoles() ){
                     if(role.getRoleName().equals( "ADMIN" ) || role.getRoleName().equals( "SUPER_ADMIN" )){
-                        users.add( user );
+                        userPageRecords.add( userDto );
                     }
                 }
             }
         }
-        return users;
+        return new PageImpl<>(userPageRecords, pageable, users.getTotalElements());
     }
     @Override
     public User getUserInformationById(int id) {

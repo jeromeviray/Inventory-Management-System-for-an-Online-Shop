@@ -1,9 +1,6 @@
 package com.project.inventory.store.product.model;
 
-import com.project.inventory.store.inventory.model.InventoryDto;
-import com.project.inventory.store.product.brand.model.Brand;
 import com.project.inventory.store.product.brand.model.BrandDto;
-import com.project.inventory.store.product.category.model.Category;
 import com.project.inventory.store.product.category.model.CategoryDto;
 
 import java.util.List;
@@ -18,7 +15,6 @@ public class ProductDto {
     private BrandDto brand;
     private CategoryDto category;
     private List<FileImageDto> fileImages;
-    private GetInventory inventory;
 
     public int getId() {
         return id;
@@ -82,14 +78,6 @@ public class ProductDto {
 
     public void setFileImages( List<FileImageDto> fileImages ) {
         this.fileImages = fileImages;
-    }
-
-    public GetInventory getInventory() {
-        return inventory;
-    }
-
-    public void setInventory( GetInventory inventory ) {
-        this.inventory = inventory;
     }
 
     @Override

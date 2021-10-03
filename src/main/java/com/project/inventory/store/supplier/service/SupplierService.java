@@ -1,6 +1,9 @@
 package com.project.inventory.store.supplier.service;
 
 import com.project.inventory.store.supplier.model.Supplier;
+import com.project.inventory.store.supplier.model.SupplierDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -12,8 +15,10 @@ public interface SupplierService {
 
     void deleteSupplier(int id);
 
-    List<Supplier> getSuppliers();
+    Page<Supplier> getSuppliers( String query, Pageable pageable );
 
     Supplier getSupplier( int id );
+
+    SupplierDto convertEntityToDto(Supplier supplier);
 
 }

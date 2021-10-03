@@ -7,6 +7,7 @@ import java.util.List;
 
 public class IncomingSupplyDto {
     private int id;
+    private String supplyReference;
     private String purchasedAt;
     private String deliveredAt;
     private String updatedAt;
@@ -20,6 +21,14 @@ public class IncomingSupplyDto {
 
     public void setId( int id ) {
         this.id = id;
+    }
+
+    public String getSupplyReference() {
+        return supplyReference;
+    }
+
+    public void setSupplyReference( String supplyReference ) {
+        this.supplyReference = supplyReference;
     }
 
     public String getPurchasedAt() {

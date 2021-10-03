@@ -4,6 +4,7 @@ import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.model.AccountDto;
 import com.project.inventory.common.permission.model.ChangePassword;
 import com.project.inventory.common.permission.role.model.RoleType;
+import com.project.inventory.common.user.model.RequestUserAccount;
 import com.project.inventory.common.user.model.UserAccount;
 
 import javax.security.auth.login.AccountLockedException;
@@ -32,4 +33,8 @@ public interface AccountService {
     Boolean isEnabledAndLocked( Account account ) throws AccountLockedException;
 
     void deleteAccount(int id);
+
+    void disableAccount(int id, boolean isEnabled);
+
+    Account updateAccount( int id, RequestUserAccount account );
 }

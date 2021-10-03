@@ -8,6 +8,7 @@ import com.project.inventory.common.permission.role.model.Role;
 import com.project.inventory.common.permission.role.model.RoleType;
 import com.project.inventory.common.permission.role.service.RoleService;
 import com.project.inventory.common.permission.service.AccountService;
+import com.project.inventory.common.user.model.RequestUserAccount;
 import com.project.inventory.common.user.model.User;
 import com.project.inventory.common.user.model.UserAccount;
 import com.project.inventory.common.user.service.UserService;
@@ -150,10 +151,28 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void deleteAccount( int id ) {
+        logger.info( "{}", id );
         Account account = getAccountById( id );
         account.setEnabled( false );
         account.setLocked( false );
         accountRepository.save( account );
+    }
+
+    @Override
+    public void disableAccount( int id, boolean disabled ) {
+        Account savedAccount = getAccountById( id );
+        savedAccount.setEnabled( disabled );
+
+        accountRepository.save( savedAccount );
+    }
+
+    @Override
+    public Account updateAccount( int id, RequestUserAccount userAccount ) {
+        Account account = accountRepository.findById(id);
+        account.setUsername( userAccount.getUsername() );
+        account.setEmail( userAccount.getEmail() );
+
+        return accountRepository.save( account );
     }
 
     protected boolean comparePassword( Account account, String currentPassword ) {
