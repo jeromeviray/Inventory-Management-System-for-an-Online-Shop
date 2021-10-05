@@ -13,24 +13,26 @@ import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
-    @Query(value = "SELECT * FROM products WHERE product_is_deleted = 0 AND id =:id", nativeQuery = true)
-    Optional<Product> findById(@Param( "id" ) int id);
+    @Query( value = "SELECT * FROM products WHERE product_is_deleted = 0 AND id =:id", nativeQuery = true )
+    Optional<Product> findById( @Param( "id" ) int id );
 
 //    Product findById(int id);
 
-    @Query( value = "SELECT * FROM products WHERE product_is_deleted = 0", nativeQuery = true)
+    @Query( value = "SELECT * FROM products WHERE product_is_deleted = 0", nativeQuery = true )
     List<Product> findAllAvailableProducts();
 
-    @Query(value = "SELECT * FROM products p WHERE p.product_is_deleted = 0 AND p.id =:id", nativeQuery = true)
-    Optional<Product> findAvailableProductById(@Param("id") int id);
+    @Query( value = "SELECT * FROM products p WHERE p.product_is_deleted = 0 AND p.id =:id", nativeQuery = true )
+    Optional<Product> findAvailableProductById( @Param( "id" ) int id );
 
-//    @Query(value = "SELECT product.*, inventory.*, sum(stock.stock) as totalStocks FROM products as product " +
-//            "JOIN inventories as inventory on product.id = inventory.product_id " +
-//            "LEFT JOIN stocks as stock on inventory.id = stock.inventory_id " +
-//            "GROUP BY product.id", nativeQuery = true)
-    @Query(value = "SELECT * FROM products as p " +
-           "WHERE (p.product_name LIKE concat('%',:query,'%') " +
+    @Query( value = "SELECT * FROM products as p " +
+            "WHERE (p.product_name LIKE concat('%',:query,'%') " +
             "OR p.barcode LIKE concat('%',:query)) AND p.product_is_deleted = 0",
-            nativeQuery = true)
+            nativeQuery = true )
     Page<Product> findAll( @Param( "query" ) String query, Pageable pageable );
+
+    @Query( value = " SELECT * FROM products product " +
+            "WHERE product.product_name LIKE concat('%',:query,'%') " +
+            "OR product.barcode LIKE concat('%',:query)",
+            nativeQuery = true )
+    Product searchProductByBarcodeOrName( @Param( "query" ) String query );
 }
