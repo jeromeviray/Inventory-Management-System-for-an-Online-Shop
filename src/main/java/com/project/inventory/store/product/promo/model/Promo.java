@@ -24,10 +24,11 @@ public class Promo {
     @JsonFormat(pattern = "dd-MMM-yyyy HH:mm:ss")
     @Column( name = "end_date" )
     private Date endDate;
+    @Enumerated(EnumType.STRING)
     @Column( name = "status" )
     private PromoStatus status;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id", unique = true)
     private Product product;
 
     public int getId() {

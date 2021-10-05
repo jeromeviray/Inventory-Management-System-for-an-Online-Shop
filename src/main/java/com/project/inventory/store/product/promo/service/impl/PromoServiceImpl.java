@@ -3,10 +3,12 @@ package com.project.inventory.store.product.promo.service.impl;
 import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.store.product.model.Product;
 import com.project.inventory.store.product.promo.model.Promo;
+import com.project.inventory.store.product.promo.model.PromoDto;
 import com.project.inventory.store.product.promo.model.PromoStatus;
 import com.project.inventory.store.product.promo.repository.PromoRepository;
 import com.project.inventory.store.product.promo.service.PromoService;
 import com.project.inventory.store.product.service.ProductService;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,33 +27,28 @@ public class PromoServiceImpl implements PromoService {
     private PromoRepository promoRepository;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private ModelMapper mapper;
 
     @Override
     public void savePromo( int productId, Promo promo ) {
-        SimpleDateFormat pattern = new SimpleDateFormat( "dd-MMM-yyyy HH:mm:ss" );
-        Date current = new Date();
 
-//        promo.setStatus(
-//                pattern.format( current ).equals( pattern.format( promo.getStartDate() ) ) ?
-//                        PromoStatus.ONGOING : PromoStatus.UNSCHEDULED
-//        );
-
-            Product product = productService.getProductById( productId );
+        Product product = productService.getProductById( productId );
         promo.setProduct( product );
         promoRepository.save( promo );
     }
 
     @Override
-    public void updatePromo( int promoId, Promo promo ) {
+    public Promo updatePromo( int promoId, Promo promo ) {
         Promo savedPromo = getPromo( promoId );
         savedPromo.setPercentage( promo.getPercentage() );
-        savedPromo.setProduct( productService.getProductById( promo.getId() ) );
+        savedPromo.setProduct( productService.getProductById( promo.getProduct().getId() ) );
         savedPromo.setQuantity( promo.getQuantity() );
         savedPromo.setSoldQuantity( promo.getSoldQuantity() );
         savedPromo.setStartDate( promo.getStartDate() );
         savedPromo.setEndDate( promo.getEndDate() );
 
-        promoRepository.save( promo );
+        return promoRepository.save( promo );
     }
 
     @Override
@@ -67,5 +64,10 @@ public class PromoServiceImpl implements PromoService {
     @Override
     public Promo getPromo( int id ) {
         return promoRepository.findById( id ).orElseThrow( () -> new NotFoundException( String.format( "Promo not Found. %s", id ) ) );
+    }
+
+    @Override
+    public PromoDto convertEntityToDto( Promo promo ) {
+        return mapper.map( promo, PromoDto.class );
     }
 }
