@@ -29,10 +29,10 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             "OR p.barcode LIKE concat('%',:query)) AND p.product_is_deleted = 0",
             nativeQuery = true )
     Page<Product> findAll( @Param( "query" ) String query, Pageable pageable );
-
-    @Query( value = " SELECT * FROM products product " +
-            "WHERE product.product_name LIKE concat('%',:query,'%') " +
-            "OR product.barcode LIKE concat('%',:query)",
-            nativeQuery = true )
-    Product searchProductByBarcodeOrName( @Param( "query" ) String query );
+//
+//    @Query( value = " SELECT * FROM products product " +
+//            "WHERE (product.product_name LIKE concat('%',:query,'%') " +
+//            "OR product.barcode LIKE concat('%',:query)) AND product.product_is_deleted = 0",
+//            nativeQuery = true )
+//    List<Product> searchProductByBarcodeOrName( @Param( "query" ) String query );
 }

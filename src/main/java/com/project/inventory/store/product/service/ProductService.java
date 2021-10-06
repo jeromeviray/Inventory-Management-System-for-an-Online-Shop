@@ -47,4 +47,6 @@ public interface ProductService {
 //    int getTotalStocks( Product product );
 
     byte[] getImage( String image ) throws IOException;
+//
+//    List<Product> searchProductByBarcodeOrProductName(String query);
 }

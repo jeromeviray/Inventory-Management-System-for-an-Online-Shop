@@ -234,6 +234,11 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+//    @Override
+//    public List<Product> searchProductByBarcodeOrProductName( String query ) {
+//        return productRepository.findAll(query);
+//    }
+
     public List<FileImage> getFileImages( MultipartFile[] files, Product product ) throws IOException {
 
         File directory = new File( rootFile + product.getId() );

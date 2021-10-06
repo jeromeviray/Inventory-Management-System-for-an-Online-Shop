@@ -80,6 +80,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers( HttpMethod.GET, "/api/v1/products/getImages/bytesArrays/**",
                         "/api/v1/products/discover",
                         "/api/v1/products/details/**",
+                        "/api/v1/products/search",
                         API+"/categories/list").permitAll()
                 .antMatchers( "/oauth2/**" ).permitAll();
         http.authorizeRequests().anyRequest().authenticated();

@@ -6,6 +6,7 @@ import com.project.inventory.store.product.brand.service.BrandService;
 import com.project.inventory.store.product.category.service.CategoryService;
 import com.project.inventory.store.product.model.Product;
 import com.project.inventory.store.product.model.ProductAndInventoryDto;
+import com.project.inventory.store.product.model.ProductDto;
 import com.project.inventory.store.product.service.ProductService;
 import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
@@ -25,7 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.ServletContext;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -128,11 +131,6 @@ public class ProductController {
     @RequestMapping( value = "/{id}", method = RequestMethod.GET )
     public ResponseEntity<?> getProductById( @PathVariable int id ) throws IOException {
 
-//        ProductAndInventoryDto productAndInventory = new ProductAndInventoryDto();
-//        InventoryDto inventory = inventoryService.convertEntityToDto( product.getInventory() );
-//
-//        productAndInventory.setProduct( productService.convertEntityToDto( product ) );
-//        productAndInventory.setInventory( inventory );
         return new ResponseEntity(productService.getProductAndInventoryByProductId( id ), HttpStatus.OK);
     }
 
@@ -157,5 +155,25 @@ public class ProductController {
         response.put("totalPages", products.getTotalPages());
 
         return ResponseEntity.ok( response );
+    }
+
+    @RequestMapping(value ="/search", method = RequestMethod.GET)
+    public ResponseEntity<?> searchProductByBarcodeOrProductName(@RequestParam( value = "query", defaultValue = "", required = false ) String query,
+                                                                 @RequestParam( value = "page", defaultValue = "0" ) Integer page,
+                                                                 @RequestParam( value = "limit", defaultValue = "0" ) Integer limit ){
+        Map<String, Object> response = new HashMap<>();
+
+        Pageable pageable = PageRequest.of( page, limit );
+        Page<ProductAndInventoryDto> products = productService.getProducts( query, pageable );
+        List<ProductDto> productDto = new ArrayList<>();
+        for(ProductAndInventoryDto productAndInventoryDto : products.getContent()){
+            productDto.add( productAndInventoryDto.getProduct() );
+        }
+        response.put("data", productDto);
+        response.put("currentPage", products.getNumber());
+        response.put("totalItems", products.getTotalElements());
+        response.put("totalPages", products.getTotalPages());
+
+        return new ResponseEntity<>(response , HttpStatus.OK );
     }
 }
