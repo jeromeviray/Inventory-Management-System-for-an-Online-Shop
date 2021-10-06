@@ -34,25 +34,23 @@ public class PromoServiceImpl implements PromoService {
     private ModelMapper mapper;
 
     @Override
-    public void savePromo( PromoRequest promoRequest ) throws ParseException {
-        SimpleDateFormat pattern = new SimpleDateFormat( "dd-MMM-yyyy HH:mm:ss" );
-        Date current = new Date();
-        Promo promo = new Promo();
-        int compared = pattern.format(pattern.parse( pattern.format( current ) )).compareTo(pattern.format(pattern.parse( promoRequest.getStartDate() )));
-        if( compared > 0 ) {
-            promo.setStatus( PromoStatus.ONGOING );
-        } else if( compared < 0 ) {
-            promo.setStatus( PromoStatus.UNSCHEDULED );
-        } else {
-            promo.setStatus( PromoStatus.ONGOING );
+    public void savePromo( PromoRequest promoRequest ) throws Exception {
+        Promo getPromo = promoRepository.findByProductIdAndStatusOngoingOrUnscheduled( promoRequest.getProductId() );
+        if(getPromo == null){
+            SimpleDateFormat pattern = new SimpleDateFormat( "dd-MMM-yyyy HH:mm:ss" );
+            Promo promo = new Promo();
+            promo.setPercentage( promoRequest.getPercentage() );
+            promo.setQuantity( promoRequest.getQuantity() );
+            promo.setStartDate( pattern.parse( promoRequest.getStartDate() ) );
+            promo.setEndDate( pattern.parse( promoRequest.getEndDate() ) );
+            Product product = productService.getProductById( promoRequest.getProductId() );
+            promo.setProduct( product );
+            promo.setStatus( checkSchedulePromo( promo ) );
+            promoRepository.save( promo );
+        }else{
+            throw new Exception("There is already Promo with this Product. "+ promoRequest.getProductId());
         }
-        promo.setPercentage( promoRequest.getPercentage() );
-        promo.setQuantity( promoRequest.getQuantity() );
-        promo.setStartDate( pattern.parse( promoRequest.getStartDate() ) );
-        promo.setEndDate( pattern.parse( promoRequest.getEndDate() ) );
-        Product product = productService.getProductById( promoRequest.getProductId() );
-        promo.setProduct( product );
-        promoRepository.save( promo );
+
     }
 
     @Override
@@ -64,13 +62,16 @@ public class PromoServiceImpl implements PromoService {
         savedPromo.setSoldQuantity( promo.getSoldQuantity() );
         savedPromo.setStartDate( promo.getStartDate() );
         savedPromo.setEndDate( promo.getEndDate() );
-
-        return promoRepository.save( promo );
+        return promoRepository.save( savedPromo );
     }
 
     @Override
-    public void deletePromo( int promoId ) {
-
+    public void deletePromo( int promoId ) throws Exception {
+        try {
+            promoRepository.deleteById( promoId );
+        } catch( Exception e ) {
+            throw new Exception( "UNABLE TO DELETE." + e.getMessage() );
+        }
     }
 
     @Override
@@ -78,22 +79,9 @@ public class PromoServiceImpl implements PromoService {
         List<PromoDto> promos = new ArrayList<>();
         SimpleDateFormat pattern = new SimpleDateFormat( "dd-MMM-yyyy HH:mm:ss" );
 
-        for( Promo promo : promoRepository.findAll()) {
-            Date current = new Date();
-            int startDate = pattern.format( pattern.parse( pattern.format(promo.getStartDate()) ) ).compareTo(pattern.format( pattern.parse( pattern.format( current ) ) ));
-            int endDate = pattern.format( pattern.parse( pattern.format(promo.getEndDate()) ) ).compareTo(pattern.format( pattern.parse( pattern.format( current ) ) ));
-            if(startDate > 0){
-                if(endDate < 0){
-                    promo.setStatus( PromoStatus.END );
-                }else {
-                    promo.setStatus( PromoStatus.ONGOING );
-                }
-            }
-            if(endDate < 0){
-                promo.setStatus( PromoStatus.END );
-            }else {
-                promo.setStatus( PromoStatus.ONGOING );
-            }
+        for( Promo promo : promoRepository.findAll() ) {
+            promo.setStatus( checkSchedulePromo( promo ) );
+
             updatePromo( promo.getId(), promo );
             promos.add( convertEntityToDto( promo ) );
         }
@@ -108,5 +96,30 @@ public class PromoServiceImpl implements PromoService {
     @Override
     public PromoDto convertEntityToDto( Promo promo ) {
         return mapper.map( promo, PromoDto.class );
+    }
+
+    @Override
+    public PromoStatus checkSchedulePromo( Promo promo ) throws ParseException {
+        SimpleDateFormat pattern = new SimpleDateFormat( "dd-MMM-yyyy HH:mm:ss" );
+        Date current = new Date();
+
+        if( pattern.parse( pattern.format( current ) ).before( pattern.parse( pattern.format( promo.getStartDate() ) ) ) ) {
+            if( pattern.parse( pattern.format( current ) ).before( pattern.parse( pattern.format( promo.getEndDate() ) ) ) ) {
+                return PromoStatus.UNSCHEDULED;
+            }
+        } else if( pattern.parse( pattern.format( current ) ).after( pattern.parse( pattern.format( promo.getStartDate() ) ) ) ) {
+            if( pattern.parse( pattern.format( current ) ).before( pattern.parse( pattern.format( promo.getEndDate() ) ) ) ) {
+                return PromoStatus.ONGOING;
+            } else if( pattern.parse( pattern.format( current ) ).after( pattern.parse( pattern.format( promo.getEndDate() ) ) ) ) {
+                return PromoStatus.END;
+
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Promo getPromoByProductIdAndStatusOngoingOrStatusUnscheduled( int productId ) {
+        return promoRepository.findByProductIdAndStatusOngoingOrUnscheduled(productId);
     }
 }
