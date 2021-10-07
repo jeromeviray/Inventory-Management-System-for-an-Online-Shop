@@ -87,9 +87,9 @@ public class ProductServiceImpl implements ProductService {
 
             // after saving product and inventory
             // the image of the product will save also
-            if( productImages != null ) {
-                for( FileImage fileImage : getFileImages( productImages, savedProduct ) ) {
-                    if( savedProduct != null ) {
+            if ( productImages != null ) {
+                for ( FileImage fileImage : getFileImages( productImages, savedProduct ) ) {
+                    if ( savedProduct != null ) {
                         fileImage.setProduct( savedProduct );
                         fileImages.add( fileImage );
                     }
@@ -99,7 +99,7 @@ public class ProductServiceImpl implements ProductService {
 
             return savedProduct;
 
-        } catch( InvalidException | IOException e ) {
+        } catch ( InvalidException | IOException e ) {
             throw new InvalidException( "Unsuccessfully saved. Please Try Again!" );
         }
     }
@@ -137,11 +137,11 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory( category );
         Product savedProduct = productRepository.save( product );
         //remove the image in directory and database
-        if( removedImages != null ) {
-            for( String removedImage : removedImages ) {
+        if ( removedImages != null ) {
+            for ( String removedImage : removedImages ) {
                 logger.info( "{}", removedImage );
                 FileImage fileImage = fileImageService.getFileImageByFileNameAndProductId( removedImage, savedProduct.getId() );
-                if( fileImage != null ) {
+                if ( fileImage != null ) {
                     Path path = Paths.get( rootFile + product.getId(), removedImage );
                     fileImageService.deleteFileImage( fileImage, path, product.getId() );
                 }
@@ -149,8 +149,8 @@ public class ProductServiceImpl implements ProductService {
         }
         // add the new Images
         List<FileImage> fileImages = new ArrayList<>();
-        if( productImages != null ) {
-            for( FileImage fileImage : getFileImages( productImages, savedProduct ) ) {
+        if ( productImages != null ) {
+            for ( FileImage fileImage : getFileImages( productImages, savedProduct ) ) {
                 fileImage.setProduct( savedProduct );
                 fileImages.add( fileImage );
             }
@@ -173,7 +173,7 @@ public class ProductServiceImpl implements ProductService {
         try {
             List<ProductAndInventoryDto> productRecordByPages = new ArrayList<>();
             Page<Product> products = productRepository.findAll( query, pageable );
-            for( Product product : products.getContent() ) {
+            for ( Product product : products.getContent() ) {
                 ProductAndInventoryDto productAndInventory = new ProductAndInventoryDto();
                 InventoryDto inventory = inventoryService.convertEntityToDto( product.getInventory() );
                 productAndInventory.setProduct( convertEntityToDto( product ) );
@@ -181,7 +181,7 @@ public class ProductServiceImpl implements ProductService {
                 productRecordByPages.add( productAndInventory );
             }
             return new PageImpl<>( productRecordByPages, pageable, products.getTotalElements() );
-        } catch( Exception e ) {
+        } catch ( Exception e ) {
             throw e;
         }
     }
@@ -229,11 +229,29 @@ public class ProductServiceImpl implements ProductService {
         try {
             InputStream readImage = servletContext.getResourceAsStream( "WEB-INF/inventory-management-system-reactjs/public/images/products/" + image );
             return IOUtils.toByteArray( readImage );
-        } catch( Exception e ) {
+        } catch ( Exception e ) {
             throw e;
         }
     }
 
+    @Override
+    public Page<ProductAndInventoryDto> getProductByCategoryName( String categoryName, String query, Pageable pageable ) {
+        try {
+            List<ProductAndInventoryDto> productRecordByPages = new ArrayList<>();
+            Page<Product> products = productRepository.findAllProductsByCategoryName( categoryName, query, pageable );
+            for ( Product product : products.getContent() ) {
+                logger.info( product.getName() );
+                ProductAndInventoryDto productAndInventory = new ProductAndInventoryDto();
+                InventoryDto inventory = inventoryService.convertEntityToDto( product.getInventory() );
+                productAndInventory.setProduct( convertEntityToDto( product ) );
+                productAndInventory.setInventory( inventory );
+                productRecordByPages.add( productAndInventory );
+            }
+            return new PageImpl<>( productRecordByPages, pageable, products.getTotalElements() );
+        } catch ( Exception e ) {
+            throw e;
+        }
+    }
 //    @Override
 //    public List<Product> searchProductByBarcodeOrProductName( String query ) {
 //        return productRepository.findAll(query);
@@ -243,18 +261,18 @@ public class ProductServiceImpl implements ProductService {
 
         File directory = new File( rootFile + product.getId() );
         //folder for each product images
-        if( ! directory.exists() ) {
+        if ( !directory.exists() ) {
             directory.mkdir();
         }
         List<FileImage> fileImageList = new ArrayList<>();
         // reading all the image file and getting the details of the image
-        for( MultipartFile file : files ) {
+        for ( MultipartFile file : files ) {
             String imageName = "PR_" + generateStrings() + "_" + file.getOriginalFilename();
             Path path = Paths.get( rootFile + product.getId(), imageName );
 //            String filename = file.getOriginalFilename();
             try {
                 Files.write( path, file.getBytes() );
-            } catch( IOException e ) {
+            } catch ( IOException e ) {
                 e.printStackTrace();
                 throw new MultipartException( "You got an Error men" );
             }
@@ -269,7 +287,7 @@ public class ProductServiceImpl implements ProductService {
 
     private List<FileImageDto> getFileImageDto( List<FileImage> fileImages ) {
         List<FileImageDto> fileImageDto = new ArrayList<>();
-        for( FileImage fileImage : fileImages ) {
+        for ( FileImage fileImage : fileImages ) {
             fileImageDto.add( fileImageService.convertEntityToDto( fileImage ) );
         }
         return fileImageDto;
@@ -279,7 +297,7 @@ public class ProductServiceImpl implements ProductService {
         String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijk";
         Random rnd = new Random();
         StringBuilder randomString = new StringBuilder( 5 );
-        for( int i = 0; i < 5; i++ ) {
+        for ( int i = 0; i < 5; i++ ) {
             randomString.append( chars.charAt( rnd.nextInt( chars.length() ) ) );
         }
         return randomString.toString();

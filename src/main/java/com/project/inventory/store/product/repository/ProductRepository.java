@@ -35,4 +35,17 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 //            "OR product.barcode LIKE concat('%',:query)) AND product.product_is_deleted = 0",
 //            nativeQuery = true )
 //    List<Product> searchProductByBarcodeOrName( @Param( "query" ) String query );
+
+    @Query( value = "SELECT * " +
+            "FROM  products product " +
+            "JOIN product_categories as category " +
+            "ON  product.category_id = category.id  " +
+            "LEFT JOIN brands brand " +
+            "ON product.brand_id = brand.id " +
+            "WHERE product.product_is_deleted = 0 " +
+            "AND category.category_name =:categoryName " +
+            "AND (product.product_name LIKE concat('%', :query, '%') OR brand.brand_name LIKE concat('%', :query, '%'))" ,
+            countQuery = "SELECT count(*) FROM products product WHERE product.product_is_deleted = 0",
+            nativeQuery = true )
+    Page<Product> findAllProductsByCategoryName(@Param( "categoryName" ) String categoryName, @Param("query") String query, Pageable pageable);
 }

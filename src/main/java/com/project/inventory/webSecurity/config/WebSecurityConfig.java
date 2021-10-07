@@ -81,7 +81,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/v1/products/discover",
                         "/api/v1/products/details/**",
                         "/api/v1/products/search",
-                        API+"/categories/list").permitAll()
+                        "/api/v1/products/category/**",
+                        "/api/v1/categories/list").permitAll()
                 .antMatchers( "/oauth2/**" ).permitAll();
         http.authorizeRequests().anyRequest().authenticated();
         // Set unauthorized and access denied requests exception handler

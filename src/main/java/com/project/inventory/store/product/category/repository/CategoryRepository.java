@@ -31,7 +31,17 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
             "JOIN products product " +
             "ON category.id = product.category_id " +
             "WHERE category.is_deleted = 0 " +
-            "GROUP BY category.id",
+            "AND product.product_is_deleted = 0 " +
+            "GROUP BY category.id" ,
             nativeQuery = true )
     List<CategoryListDto> findAllCategory();
+
+//    @Query( value = "SELECT * " +
+//            "FROM product_categories as category " +
+//            "JOIN products product " +
+//            "ON category.id = product.category_id " +
+//            "WHERE category.is_deleted = 0 " +
+//            "AND product.product_is_deleted = 0 " ,
+//            nativeQuery = true )
+//    List<Category> findAllProductInCategoryByName(@Param( "query" ) String query);
 }

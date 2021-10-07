@@ -27,7 +27,7 @@ public interface ProductService {
                            Object productDescription,
                            String brandName,
                            String categoryName,
-                           String[] removeImages) throws Exception;
+                           String[] removeImages ) throws Exception;
 
     void deleteProduct( int id );
 
@@ -35,7 +35,8 @@ public interface ProductService {
 
     Page<ProductAndInventoryDto> getProducts( String query, Pageable pageable );
 
-    ProductAndInventoryDto getProductAndInventoryByProductId(int id);
+    ProductAndInventoryDto getProductAndInventoryByProductId( int id );
+
     Product getProductById( int id );
 
     Product getAvailableProductById( int id );
@@ -47,6 +48,9 @@ public interface ProductService {
 //    int getTotalStocks( Product product );
 
     byte[] getImage( String image ) throws IOException;
-//
+
+    //
 //    List<Product> searchProductByBarcodeOrProductName(String query);
+    Page<ProductAndInventoryDto> getProductByCategoryName( String categoryName, String query, Pageable pageable );
+
 }

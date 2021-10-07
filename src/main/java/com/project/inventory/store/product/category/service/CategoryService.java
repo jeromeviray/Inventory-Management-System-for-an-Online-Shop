@@ -28,4 +28,5 @@ public interface CategoryService {
     CategoryDto convertEntityToDto(Category category);
 
     Category convertDtoToEntity(CategoryDto category);
+
 }

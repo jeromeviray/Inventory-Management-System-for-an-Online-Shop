@@ -112,26 +112,26 @@ public class ProductController {
     @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN') OR hasRole('ROLE_ADMIN')" )
     @RequestMapping( value = "", method = RequestMethod.GET )
     public ResponseEntity<?> getProducts( @RequestParam( value = "query", defaultValue = "", required = false ) String query,
-                                                      @RequestParam( value = "page", defaultValue = "0" ) Integer page,
-                                                      @RequestParam( value = "limit", defaultValue = "0" ) Integer limit ) {
+                                          @RequestParam( value = "page", defaultValue = "0" ) Integer page,
+                                          @RequestParam( value = "limit", defaultValue = "0" ) Integer limit ) {
 
         Map<String, Object> response = new HashMap<>();
 
         Pageable pageable = PageRequest.of( page, limit );
         Page<ProductAndInventoryDto> products = productService.getProducts( query, pageable );
 
-        response.put("data", products.getContent());
-        response.put("currentPage", products.getNumber());
-        response.put("totalItems", products.getTotalElements());
-        response.put("totalPages", products.getTotalPages());
+        response.put( "data", products.getContent() );
+        response.put( "currentPage", products.getNumber() );
+        response.put( "totalItems", products.getTotalElements() );
+        response.put( "totalPages", products.getTotalPages() );
 
-        return new ResponseEntity(response, HttpStatus.OK );
+        return new ResponseEntity( response, HttpStatus.OK );
     }
 
     @RequestMapping( value = "/{id}", method = RequestMethod.GET )
     public ResponseEntity<?> getProductById( @PathVariable int id ) throws IOException {
 
-        return new ResponseEntity(productService.getProductAndInventoryByProductId( id ), HttpStatus.OK);
+        return new ResponseEntity( productService.getProductAndInventoryByProductId( id ), HttpStatus.OK );
     }
 
     @RequestMapping( value = "/details/{id}", method = RequestMethod.GET )
@@ -149,31 +149,53 @@ public class ProductController {
         Pageable pageable = PageRequest.of( page, limit );
         Page<ProductAndInventoryDto> products = productService.getProducts( query, pageable );
 
-        response.put("data", products.getContent());
-        response.put("currentPage", products.getNumber());
-        response.put("totalItems", products.getTotalElements());
-        response.put("totalPages", products.getTotalPages());
+        response.put( "data", products.getContent() );
+        response.put( "currentPage", products.getNumber() );
+        response.put( "totalItems", products.getTotalElements() );
+        response.put( "totalPages", products.getTotalPages() );
 
         return ResponseEntity.ok( response );
     }
 
-    @RequestMapping(value ="/search", method = RequestMethod.GET)
-    public ResponseEntity<?> searchProductByBarcodeOrProductName(@RequestParam( value = "query", defaultValue = "", required = false ) String query,
-                                                                 @RequestParam( value = "page", defaultValue = "0" ) Integer page,
-                                                                 @RequestParam( value = "limit", defaultValue = "0" ) Integer limit ){
+    @RequestMapping( value = "/search", method = RequestMethod.GET )
+    public ResponseEntity<?> searchProductByBarcodeOrProductName( @RequestParam( value = "query", defaultValue = "", required = false ) String query,
+                                                                  @RequestParam( value = "page", defaultValue = "0" ) Integer page,
+                                                                  @RequestParam( value = "limit", defaultValue = "0" ) Integer limit ) {
         Map<String, Object> response = new HashMap<>();
 
         Pageable pageable = PageRequest.of( page, limit );
         Page<ProductAndInventoryDto> products = productService.getProducts( query, pageable );
         List<ProductDto> productDto = new ArrayList<>();
-        for(ProductAndInventoryDto productAndInventoryDto : products.getContent()){
+        for ( ProductAndInventoryDto productAndInventoryDto : products.getContent() ) {
             productDto.add( productAndInventoryDto.getProduct() );
         }
-        response.put("data", productDto);
-        response.put("currentPage", products.getNumber());
-        response.put("totalItems", products.getTotalElements());
-        response.put("totalPages", products.getTotalPages());
+        response.put( "data", productDto );
+        response.put( "currentPage", products.getNumber() );
+        response.put( "totalItems", products.getTotalElements() );
+        response.put( "totalPages", products.getTotalPages() );
 
-        return new ResponseEntity<>(response , HttpStatus.OK );
+        return new ResponseEntity<>( response, HttpStatus.OK );
+    }
+
+    @RequestMapping( value = "category/{categoryName}", method = RequestMethod.GET )
+    public ResponseEntity<?> getProductByCategoryName( @PathVariable String categoryName,
+                                                       @RequestParam( value = "query", defaultValue = "", required = false ) String query,
+                                                       @RequestParam( value = "page", defaultValue = "0" ) Integer page,
+                                                       @RequestParam( value = "limit", defaultValue = "10" ) Integer limit ) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        Pageable pageable = PageRequest.of( page, limit );
+        Page<ProductAndInventoryDto> products = productService.getProductByCategoryName( categoryName, query, pageable );
+        List<ProductAndInventoryDto> productDto = new ArrayList<>();
+        for ( ProductAndInventoryDto productAndInventoryDto : products.getContent() ) {
+            productDto.add( productAndInventoryDto );
+        }
+        response.put( "data", productDto );
+        response.put( "currentPage", products.getNumber() );
+        response.put( "totalItems", products.getTotalElements() );
+        response.put( "totalPages", products.getTotalPages() );
+
+        return new ResponseEntity<>( response, HttpStatus.OK );
     }
 }
