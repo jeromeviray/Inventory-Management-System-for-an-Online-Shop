@@ -1,5 +1,6 @@
 package com.project.inventory.common.permission.controller;
 
+import com.project.inventory.common.permission.forgotPassword.model.ResetPassword;
 import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.model.ChangePassword;
 import com.project.inventory.common.permission.service.AccountService;
@@ -66,10 +67,9 @@ public class AccountController {
     public ResponseEntity<?> tokenRefresh( @RequestBody RefreshToken refreshToken ) throws IOException {
         return new ResponseEntity(jwtProvider.validateAndGetAccessToken( refreshToken ), HttpStatus.OK);
     }
-
-    @RequestMapping(value = "/authenticated")
-    public ResponseEntity<?> getAuthenticatedUser(){
-        Account account = authenticatedUser.getUserDetails();
-        return new ResponseEntity(accountService.convertEntityToDto(account), HttpStatus.OK);
+    @RequestMapping(value = "/reset/password", method = RequestMethod.POST)
+    public ResponseEntity<?> resetPassword( @RequestBody ResetPassword resetPassword ) throws IOException {
+        accountService.resetPassword( resetPassword );
+        return new ResponseEntity( HttpStatus.OK);
     }
 }

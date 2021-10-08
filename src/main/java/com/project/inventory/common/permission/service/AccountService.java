@@ -1,5 +1,6 @@
 package com.project.inventory.common.permission.service;
 
+import com.project.inventory.common.permission.forgotPassword.model.ResetPassword;
 import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.model.AccountDto;
 import com.project.inventory.common.permission.model.ChangePassword;
@@ -18,6 +19,8 @@ public interface AccountService {
 
     Account getAccountByUsername( String username );
 
+    Account getAccountByEmail( String email );
+
     void changePassword( ChangePassword changePassword );
 
     String changeUsername( int id, String username );
@@ -32,9 +35,11 @@ public interface AccountService {
 
     Boolean isEnabledAndLocked( Account account ) throws AccountLockedException;
 
-    void deleteAccount(int id);
+    void deleteAccount( int id );
 
-    void disableAccount(int id, boolean isEnabled);
+    void disableAccount( int id, boolean isEnabled );
 
     Account updateAccount( int id, RequestUserAccount account );
+
+    void resetPassword( ResetPassword resetPassword );
 }

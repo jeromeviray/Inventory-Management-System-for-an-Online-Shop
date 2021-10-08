@@ -1,5 +1,8 @@
 package com.project.inventory.common.permission.service.impl;
 
+import com.project.inventory.common.permission.forgotPassword.model.ForgotPassword;
+import com.project.inventory.common.permission.forgotPassword.model.ResetPassword;
+import com.project.inventory.common.permission.forgotPassword.service.ForgotPasswordService;
 import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.model.AccountDto;
 import com.project.inventory.common.permission.model.ChangePassword;
@@ -39,7 +42,8 @@ public class AccountServiceImpl implements AccountService {
     private UserService userService;
     @Autowired
     private ModelMapper mapper;
-
+    @Autowired
+    private ForgotPasswordService forgotPasswordService;
 
     @Override
     public Account getAccountById( int accountId ) throws NotFoundException {
@@ -71,7 +75,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account saveEmployeeAccount( String username, String password, String email, RoleType roleType) {
+    public Account saveEmployeeAccount( String username, String password, String email, RoleType roleType ) {
         Account account = new Account();
         account.setAuthProvider( AuthProvider.local );
         account.setUsername( username );
@@ -95,9 +99,9 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void changePassword( ChangePassword changePassword ) {
         Account account = getAccountById( changePassword.getId() );
-        if ( !comparePassword( account, changePassword.getCurrentPassword() ) ) {
+        if( ! comparePassword( account, changePassword.getCurrentPassword() ) ) {
             throw new InvalidException( "Mismatch Current Password. Please Try Again!" );
-        } else if ( !changePassword.getPassword().equals( changePassword.getConfirmPassword() ) ) {
+        } else if( ! changePassword.getPassword().equals( changePassword.getConfirmPassword() ) ) {
             throw new InvalidException( "Not match New Password. Please Try Again!" );
         }
         account.setPassword( passwordEncoder.encode( changePassword.getPassword() ) );
@@ -127,7 +131,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Boolean isEnabled( Account account ) throws AccountLockedException {
-        if ( !account.isEnabled() ) {
+        if( ! account.isEnabled() ) {
             throw new AccountLockedException();
         }
         return true;
@@ -135,7 +139,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Boolean isLocked( Account account ) throws AccountLockedException {
-        if ( !account.isLocked() ) {
+        if( ! account.isLocked() ) {
             throw new AccountLockedException();
         }
         return true;
@@ -143,7 +147,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Boolean isEnabledAndLocked( Account account ) throws AccountLockedException {
-        if ( !account.isLocked() && !account.isEnabled() ) {
+        if( ! account.isLocked() && ! account.isEnabled() ) {
             throw new AccountLockedException();
         }
         return true;
@@ -168,7 +172,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account updateAccount( int id, RequestUserAccount userAccount ) {
-        Account account = accountRepository.findById(id);
+        Account account = accountRepository.findById( id );
         account.setUsername( userAccount.getUsername() );
         account.setEmail( userAccount.getEmail() );
 
@@ -176,9 +180,21 @@ public class AccountServiceImpl implements AccountService {
     }
 
     protected boolean comparePassword( Account account, String currentPassword ) {
-        logger.info( "{}", "Compare Current Password: "
-                + passwordEncoder.matches( currentPassword, account.getPassword() ) );
-
         return passwordEncoder.matches( currentPassword, account.getPassword() );
+    }
+
+    @Override
+    public Account getAccountByEmail( String email ) {
+        return accountRepository.findByEmail( email ).orElseThrow( () -> new NotFoundException( "Email not Found." ) );
+    }
+
+    @Override
+    public void resetPassword( ResetPassword resetPassword ) {
+        if( ! resetPassword.getPassword().equals( resetPassword.getConfirmPassword() ) )
+            throw new InvalidException( "Not match New Password. Please Try Again!" );
+        forgotPasswordService.deleteToken( resetPassword.getToken() );
+        Account account = getAccountById( resetPassword.getAccountId() );
+        account.setPassword( passwordEncoder.encode( resetPassword.getPassword() ) );
+        accountRepository.save( account );
     }
 }
