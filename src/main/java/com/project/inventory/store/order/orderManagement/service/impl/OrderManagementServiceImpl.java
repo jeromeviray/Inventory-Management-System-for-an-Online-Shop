@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.*;
 
 @Service( value = "shoppingOrderServiceImpl" )
@@ -53,10 +54,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     private AuthenticatedUser authenticatedUser;
 
     @Override
-    public Order placeOrder( int customerAddressId,
-                            int paymentId,
-                            List<CartItem> cartItems ) {
-
+    public Order placeOrder( int customerAddressId, int paymentId, List<CartItem> cartItems ) {
         try {
             //get customer address
             CustomerAddress customerAddress = getCustomerAddress( customerAddressId );
@@ -104,7 +102,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     }
 
     @Override
-    public List<OrderDto> getPendingOrders() {
+    public List<OrderDto> getOrdersByStatus(String status) {
         // retrieve all the pending orders dynamically based on the role
         // with role customer or user they just retrieve their own order data
 
@@ -113,50 +111,35 @@ public class OrderManagementServiceImpl implements OrderManagementService {
 
         String permission = getRoles( account.getRoles() );
         if ( permission.equals( "ROLE_SUPER_ADMIN" ) || permission.equals( "ROLE_ADMIN" ) ) {
-            return getOrders( OrderStatus.PENDING.name() );
+            return getOrders( status );
 
         } else if ( permission.equals( "ROLE_USER" ) || permission.equals( "ROLE_CUSTOMER" ) ) {
-            return getCustomerOrders( OrderStatus.PENDING.name(), account.getId() );
-
+            return getCustomerOrders( status, account.getId() );
         } else {
             throw new AccessDeniedException( "ACCESS DENIED" );
         }
     }
 
     @Override
-    public List<OrderDto> getConfirmedOrders() {
-        List<OrderDto> orders = new ArrayList<>();
-
+    public Map<String, BigInteger> getOrderCountByStatus() {
         Account account = authenticatedUser.getUserDetails();
-
         String permission = getRoles( account.getRoles() );
+        List<Object[]> counts = new ArrayList();
+
+        Integer accountId = 0;
         if ( permission.equals( "ROLE_SUPER_ADMIN" ) || permission.equals( "ROLE_ADMIN" ) ) {
-            return getOrders( OrderStatus.CONFIRMED.name() );
-
+            counts = orderManagementRepository.getOrderCountGroupBy();
         } else if ( permission.equals( "ROLE_USER" ) || permission.equals( "ROLE_CUSTOMER" ) ) {
-            return getCustomerOrders( OrderStatus.CONFIRMED.name(), account.getId() );
-
+            counts = orderManagementRepository.getCustomerOrderCountGroupBy(account.getId());
         } else {
             throw new AccessDeniedException( "ACCESS DENIED" );
         }
-    }
 
-    @Override
-    public List<OrderDto> getCompletedOrders() {
-        List<OrderDto> orders = new ArrayList<>();
-
-        Account account = authenticatedUser.getUserDetails();
-
-        String permission = getRoles( account.getRoles() );
-        if ( permission.equals( "ROLE_SUPER_ADMIN" ) || permission.equals( "ROLE_ADMIN" ) ) {
-            return getOrders( OrderStatus.COMPLETED.name() );
-
-        } else if ( permission.equals( "ROLE_USER" ) || permission.equals( "ROLE_CUSTOMER" ) ) {
-            return getCustomerOrders( OrderStatus.COMPLETED.name(), account.getId() );
-
-        } else {
-            throw new AccessDeniedException( "ACCESS DENIED" );
+        Map<String, BigInteger> totals = new HashMap<>();
+        for (Object[] result : counts) {
+            totals.put(result[0].toString(), ( BigInteger ) result[1]);
         }
+        return totals;
     }
 
     @Override

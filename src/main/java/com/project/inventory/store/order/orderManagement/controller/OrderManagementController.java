@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -59,19 +60,12 @@ public class OrderManagementController {
         return new ResponseEntity( orderManagementService.getOrdersByAccountId(), HttpStatus.OK );
     }
 
-    @RequestMapping( value = "/pending", method = RequestMethod.GET )
-    public ResponseEntity<OrderDto> getPendingOrders() {
-        return new ResponseEntity( orderManagementService.getPendingOrders(), HttpStatus.OK );
-    }
-
-    @RequestMapping( value = "/confirmed", method = RequestMethod.GET )
-    public ResponseEntity<OrderDto> getConfirmedOrders() {
-        return new ResponseEntity( orderManagementService.getConfirmedOrders(), HttpStatus.OK );
-    }
-
-    @RequestMapping( value = "/completed", method = RequestMethod.GET )
-    public ResponseEntity<OrderDto> getCompletedOrders() {
-        return new ResponseEntity( orderManagementService.getCompletedOrders(), HttpStatus.OK );
+    @RequestMapping( value = "/status/{status}", method = RequestMethod.GET )
+    public ResponseEntity<Map> getOrdersByStatus(@PathVariable(value = "status") String status ) {
+        Map response = new HashMap();
+        response.put("orders", orderManagementService.getOrdersByStatus(status));
+        response.put("orderCounts", orderManagementService.getOrderCountByStatus());
+        return new ResponseEntity( response, HttpStatus.OK );
     }
 
     @RequestMapping(value = "/{orderId}", method = RequestMethod.GET)
