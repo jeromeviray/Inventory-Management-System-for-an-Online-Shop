@@ -1,5 +1,7 @@
 package com.project.inventory.store.inventory.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.project.inventory.store.inventory.stock.model.Stock;
 import com.project.inventory.store.inventory.stock.model.StockStatus;
 import com.project.inventory.store.product.model.Product;
@@ -28,6 +30,7 @@ public class Inventory implements Serializable {
 
     @OneToOne( fetch = FetchType.LAZY, cascade = CascadeType.ALL )
     @JoinColumn( name = "product_id", nullable = false )
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "inventory"})
     private Product product;
 
     public int getId() {
