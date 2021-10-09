@@ -10,8 +10,7 @@ public class RequestUserAccount {
     private int phoneNumber;
     private String username;
     private String email;
-    @JsonFormat(pattern = "dd/MM/YYYY")
-    private Date birthday;
+    private String birthday;
 
     public String getFirstName() {
         return firstName;
@@ -53,11 +52,11 @@ public class RequestUserAccount {
         this.email = email;
     }
 
-    public Date getBirthday() {
+    public String getBirthday() {
         return birthday;
     }
 
-    public void setBirthday( Date birthday ) {
+    public void setBirthday( String birthday ) {
         this.birthday = birthday;
     }
 

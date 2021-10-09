@@ -10,7 +10,7 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private int phoneNumber;
-    private Date birthDay;
+    private String birthday;
     private AccountInfoDto account;
 //    private Collection<CustomerAddressDto> customerAddresses;
 
@@ -46,12 +46,12 @@ public class UserDto {
         this.phoneNumber = phoneNumber;
     }
 
-    public Date getBirthDay() {
-        return birthDay;
+    public String getBirthday() {
+        return birthday;
     }
 
-    public void setBirthDay(Date birthDay) {
-        this.birthDay = birthDay;
+    public void setBirthday( String birthday ) {
+        this.birthday = birthday;
     }
 
     public AccountInfoDto getAccount() {
@@ -62,17 +62,8 @@ public class UserDto {
         this.account = account;
     }
 
-
-
     @Override
     public String toString() {
-        return "UserInformationDto{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", phoneNumber=" + phoneNumber +
-                ", birthDay=" + birthDay +
-                ", account=" + account +
-                '}';
+        return super.toString();
     }
 }

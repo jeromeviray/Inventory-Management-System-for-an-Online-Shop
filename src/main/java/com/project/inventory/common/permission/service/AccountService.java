@@ -29,15 +29,15 @@ public interface AccountService {
 
     Account convertDtoToEntity( AccountDto accountDto );
 
-    Boolean isEnabled( Account account ) throws AccountLockedException;
+    Boolean isNotBanned( Account account ) throws AccountLockedException;
 
-    Boolean isLocked( Account account ) throws AccountLockedException;
+    Boolean isNotDeleted( Account account ) throws AccountLockedException;
 
-    Boolean isEnabledAndLocked( Account account ) throws AccountLockedException;
+    Boolean isNotBannedAndDeleted( Account account ) throws AccountLockedException;
 
     void deleteAccount( int id );
 
-    void disableAccount( int id, boolean isEnabled );
+    void banAccount( int id);
 
     Account updateAccount( int id, RequestUserAccount account );
 

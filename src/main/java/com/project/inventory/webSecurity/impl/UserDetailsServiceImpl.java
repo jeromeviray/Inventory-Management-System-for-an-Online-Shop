@@ -38,10 +38,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new User(
                 account.getUsername(),
                 account.getPassword(),
-                account.isEnabled(),
+                account.isNotBanned(), // adjust the name of isEnable to isNotBanned
                 true,
                 true,
-                account.isLocked(),
+                account.isNotDeleted(), // adjust the name of IsNonLocked to isNotDeleted
                 getGrantedAuthorities(account));
 
     }
