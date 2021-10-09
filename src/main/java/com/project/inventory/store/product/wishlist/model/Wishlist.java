@@ -29,10 +29,14 @@ public class Wishlist {
     @Column(name = "updated_at", nullable = false, columnDefinition = "DATETIME default current_timestamp on update current_timestamp")
     private Date updatedAt;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY )
+    @OneToOne(fetch = FetchType.LAZY )
     @JoinColumn( name = "product_id" )
     @JsonIgnoreProperties({"inventory.product", "hibernateLazyInitializer"})
     private Product product;
+
+    @Column(name = "account_id", nullable = false)
+    @JsonIgnore
+    private Integer accountId;
 
     public int getId() {
         return id;
@@ -64,6 +68,14 @@ public class Wishlist {
 
     public void setProduct( Product product ) {
         this.product = product;
+    }
+
+    public void setAccountId( Integer accountId ) {
+        this.accountId = accountId;
+    }
+
+    public Integer getAccountId() {
+        return this.accountId;
     }
 
     @Override

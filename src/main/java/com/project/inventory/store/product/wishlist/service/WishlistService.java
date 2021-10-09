@@ -9,6 +9,8 @@ public interface WishlistService {
 
     Page<Wishlist> getWishlist( Integer accountId, String query, Pageable pageable );
 
+    Wishlist getWishlistByProductId( Integer accountId, Integer productId );
+
     void deleteWishlist( int id );
 
 }

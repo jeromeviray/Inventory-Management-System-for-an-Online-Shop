@@ -20,4 +20,10 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Integer> {
             nativeQuery = true )
     Page<Wishlist> findWishlist(@Param( "accountId" ) Integer account_id, String query, Pageable pageable);
 
+    @Query(value = "SELECT w.* " +
+            "FROM customer_product_wishlist as w " +
+            "JOIN products as product ON w.product_id = product.id " +
+            "WHERE product.id = :productId AND account_id = :accountId AND product.product_is_deleted = 0 ",
+            nativeQuery = true)
+    Wishlist findWishlistByProductId(@Param( "accountId" ) Integer account_id, @Param("productId") Integer productId);
 }

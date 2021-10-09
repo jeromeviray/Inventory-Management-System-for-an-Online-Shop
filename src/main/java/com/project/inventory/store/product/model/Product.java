@@ -63,7 +63,6 @@ public class Product implements Serializable {
     @JsonIgnore
     private List<IncomingSupplyItem> incomingSupplyItems;
 
-
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Wishlist> wishlist;

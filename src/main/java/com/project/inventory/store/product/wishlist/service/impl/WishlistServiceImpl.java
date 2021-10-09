@@ -35,6 +35,11 @@ public class WishlistServiceImpl implements WishlistService {
     }
 
     @Override
+    public Wishlist getWishlistByProductId( Integer accountId, Integer productId ) {
+        return wishlistRepository.findWishlistByProductId(accountId, productId);
+    }
+
+    @Override
     public void deleteWishlist( int id ) {
         wishlistRepository.deleteById( id );
     }

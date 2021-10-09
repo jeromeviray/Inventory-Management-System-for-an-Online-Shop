@@ -33,10 +33,15 @@ public class WishlistController {
     @Autowired
     private AuthenticatedUser authenticatedUser;
 
-    @RequestMapping( value = "/save", method = RequestMethod.POST )
-    public ResponseEntity<?> saveWishlist( @RequestBody Wishlist wishlist ) {
+    @RequestMapping( value = "", method = RequestMethod.POST )
+    public ResponseEntity<?> saveWishlist(@RequestBody Product product) {
+        Account account = authenticatedUser.getUserDetails();
+        Product prod = productService.getProductById( product.getId() );
+        Wishlist wishlist = new Wishlist();
+        wishlist.setAccountId(account.getId());
+        wishlist.setProduct(prod);
         wishlistService.saveWishlist( wishlist );
-        return new ResponseEntity<>( HttpStatus.OK );
+        return new ResponseEntity<>(wishlist, HttpStatus.OK );
     }
 
     @RequestMapping( value = "", method = RequestMethod.GET )
@@ -57,9 +62,15 @@ public class WishlistController {
         return new ResponseEntity<>( response, HttpStatus.OK );
     }
 
-    @RequestMapping( value = "/delete/{id}", method = RequestMethod.DELETE )
+    @RequestMapping( value = "/{id}", method = RequestMethod.DELETE )
     public ResponseEntity<?> deleteWishlist( @PathVariable int id ) {
-        wishlistService.deleteWishlist( id );
+        Map<String, Object> response = new HashMap<>();
+        try {
+            wishlistService.deleteWishlist( id );
+        } catch ( Exception e ) {
+            response.put("message", "Server Error. Please try again later.");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST );
+        }
         return new ResponseEntity<>( HttpStatus.OK );
     }
 }
