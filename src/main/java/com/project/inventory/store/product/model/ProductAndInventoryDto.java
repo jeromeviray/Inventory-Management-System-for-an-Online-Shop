@@ -1,6 +1,7 @@
 package com.project.inventory.store.product.model;
 
 import com.project.inventory.store.inventory.model.InventoryDto;
+import com.project.inventory.store.product.comment.model.Comment;
 import com.project.inventory.store.product.wishlist.model.Wishlist;
 
 public class ProductAndInventoryDto {
@@ -31,4 +32,6 @@ public class ProductAndInventoryDto {
     public void setWishlist( Wishlist wishlist ) {
         this.wishlist = wishlist;
     }
+
+
 }
