@@ -31,7 +31,7 @@ public class Wishlist {
 
     @OneToOne(fetch = FetchType.LAZY )
     @JoinColumn( name = "product_id" )
-    @JsonIgnoreProperties({"inventory.product", "hibernateLazyInitializer"})
+    @JsonIgnoreProperties({"inventory", "incomingSupplyItems", "brand", "fileImages", "wishlist", "category", "description", "hibernateLazyInitializer"})
     private Product product;
 
     @Column(name = "account_id", nullable = false)
