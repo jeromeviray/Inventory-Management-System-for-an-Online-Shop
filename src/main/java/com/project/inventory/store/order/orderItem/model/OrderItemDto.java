@@ -1,5 +1,6 @@
 package com.project.inventory.store.order.orderItem.model;
 
+import com.project.inventory.store.product.comment.model.Comment;
 import com.project.inventory.store.product.model.ProductDto;
 
 import java.util.Date;
@@ -10,6 +11,7 @@ public class OrderItemDto {
     private double amount;
     private Date purchasedAt;
     private ProductDto product;
+    private Comment comment;
 
     public int getId() {
         return id;
@@ -49,5 +51,13 @@ public class OrderItemDto {
 
     public void setProduct(ProductDto product) {
         this.product = product;
+    }
+
+    public Comment getComment() {
+        return comment;
+    }
+
+    public void setComment( Comment comment ) {
+        this.comment = comment;
     }
 }

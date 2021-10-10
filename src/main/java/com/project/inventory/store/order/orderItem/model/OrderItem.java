@@ -1,5 +1,7 @@
 package com.project.inventory.store.order.orderItem.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.project.inventory.store.order.orderManagement.model.Order;
 import com.project.inventory.store.product.model.Product;
 import org.hibernate.annotations.CreationTimestamp;
@@ -26,10 +28,12 @@ public class OrderItem {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id", nullable = false)
+    @JsonIgnoreProperties({"inventory", "incomingSupplyItems", "brand", "wishlist", "category", "description", "hibernateLazyInitializer"})
     private Product product;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name="order_id", nullable = false)
+    @JsonIgnore
     private Order order;
 
     public OrderItem() {

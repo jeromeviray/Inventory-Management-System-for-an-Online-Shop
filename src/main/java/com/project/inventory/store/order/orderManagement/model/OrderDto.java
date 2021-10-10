@@ -1,16 +1,16 @@
 package com.project.inventory.store.order.orderManagement.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.inventory.customer.address.model.CustomerAddressDto;
 import com.project.inventory.customer.payment.model.PaymentMethodDto;
 import com.project.inventory.store.order.orderItem.model.OrderItemDto;
 import com.project.inventory.common.permission.model.AccountDto;
+import com.project.inventory.store.product.comment.model.Comment;
 
-import java.util.Date;
 import java.util.List;
 
 public class OrderDto {
 
+    private Integer id;
     private String orderId;
     private OrderStatus orderStatus;
     private double totalAmount;
@@ -20,6 +20,15 @@ public class OrderDto {
     private PaymentMethodDto paymentMethod;
     private CustomerAddressDto customerAddress;
     private List<OrderItemDto> orderItems;
+    private List<Comment> comments;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId( Integer id ) {
+        this.id = id;
+    }
 
     public String getOrderId() {
         return orderId;
@@ -27,6 +36,14 @@ public class OrderDto {
 
     public void setOrderId( String orderId ) {
         this.orderId = orderId;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments( List<Comment> comments ) {
+        this.comments = comments;
     }
 
     public OrderStatus getOrderStatus() {

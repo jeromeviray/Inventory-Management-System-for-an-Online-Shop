@@ -89,7 +89,10 @@
 			<artifactId>spring-messaging</artifactId>
 			<version>5.3.9</version>
 		</dependency>
+<<<<<<< HEAD
 		<!-- send email -->
+=======
+>>>>>>> 2a54f8acc626892836d02757ed391c9a9573e286
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>

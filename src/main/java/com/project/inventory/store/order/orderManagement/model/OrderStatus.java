@@ -5,10 +5,10 @@ import java.io.Serializable;
 public enum OrderStatus implements Serializable {
     PENDING ("PENDING"),
     CONFIRMED ("CONFIRMED"),
-    COMPLETED ("COMPLETED"),
+    PAYMENT_RECEIVED ("PAYMENT_RECEIVED"),
     DELIVERED ("DELIVERED"),
     CANCELLED ("CANCELLED"),
-    CURRIER ("CURRIER"),
+    SHIPPED ("SHIPPED"),
     NONE ("NONE");
 
     String status;
