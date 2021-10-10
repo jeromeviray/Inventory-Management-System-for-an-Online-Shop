@@ -25,13 +25,6 @@ public class StockServiceImpl implements StockService {
     public void addStock( Stock stock, int productId ) {
         try{
             Inventory inventory = inventoryService.getInventoryByProductId( productId );
-            //check if the threshold is less than or equal zero
-            // if true it will throw invalid exception.
-            // before adding new stock
-            // required to add threshold first
-            if(inventory.getThreshold() <= 0) throw new InvalidException("Threshold is Zero. " +
-                    "Please Add Threshold before add new Stock");
-
             stock.setInventory( inventory );
             stock.setStockId( UUID.randomUUID().toString() );
             stockRepository.save( stock );

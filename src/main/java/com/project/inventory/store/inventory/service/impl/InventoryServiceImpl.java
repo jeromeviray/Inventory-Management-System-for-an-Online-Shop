@@ -60,7 +60,7 @@ public class InventoryServiceImpl implements InventoryService {
         InventoryDto inventoryDto = new InventoryDto();
         inventoryDto.setTotalStock( getTotalStocks( inventory.getProduct() ) );
         inventoryDto.setThreshold( inventory.getThreshold() );
-        inventoryDto.setStatus( inventory.getStatus().name() );
+        inventoryDto.setStatus( checkThresholdAndStock( inventoryDto, inventory.getProduct().getId() ).getStatus().name() );
         return inventoryDto;
     }
 

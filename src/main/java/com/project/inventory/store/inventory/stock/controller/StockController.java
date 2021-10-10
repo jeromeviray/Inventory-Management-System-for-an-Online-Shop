@@ -13,9 +13,5 @@ public class StockController {
     @Autowired
     private StockService stockService;
 
-    @RequestMapping( value = "/add/{productId}", method = RequestMethod.POST)
-    public ResponseEntity<?> addStock( @PathVariable int productId, @RequestBody Stock stock ) {
-        stockService.addStock( stock, productId );
-        return new ResponseEntity( HttpStatus.OK );
-    }
+
 }

@@ -60,8 +60,9 @@ public class IncomingSupply {
     @PostPersist
     public void setSupplyReference( ) {
         int startingPoint = 100000;
+        int count = startingPoint + this.id;
         if(this.id != 0){
-            this.supplyReference = "IS-REF-"+startingPoint+this.id;
+            this.supplyReference = "IS-REF-"+count;
         }
     }
 
