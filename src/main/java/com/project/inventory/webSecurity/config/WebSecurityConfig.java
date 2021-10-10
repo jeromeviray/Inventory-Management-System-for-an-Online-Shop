@@ -79,6 +79,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/v1/users/account/token/refresh",
                         "/api/v1/users/account/reset/password" ).permitAll()
                 .antMatchers( HttpMethod.GET, "/api/v1/products/getImages/bytesArrays/**",
+                        "/api/v1/comments",
                         "/api/v1/products/discover",
                         "/api/v1/products/details/**",
                         "/api/v1/products/search",

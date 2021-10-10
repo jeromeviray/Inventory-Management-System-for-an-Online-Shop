@@ -1,20 +1,22 @@
 package com.project.inventory.store.order.orderManagement.controller;
 
 import com.project.inventory.api.payment.PaymongoAPI;
+import com.project.inventory.common.user.model.UserDto;
 import com.project.inventory.store.inventory.service.impl.InventoryServiceImpl;
-import com.project.inventory.store.order.orderManagement.model.Order;
-import com.project.inventory.store.order.orderManagement.model.OrderResponse;
-import com.project.inventory.store.order.orderManagement.model.PlaceOrder;
-import com.project.inventory.store.order.orderManagement.model.OrderDto;
+import com.project.inventory.store.order.orderManagement.model.*;
 import com.project.inventory.store.order.orderManagement.service.OrderManagementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -59,19 +61,38 @@ public class OrderManagementController {
         return new ResponseEntity( orderManagementService.getOrdersByAccountId(), HttpStatus.OK );
     }
 
-    @RequestMapping( value = "/pending", method = RequestMethod.GET )
-    public ResponseEntity<OrderDto> getPendingOrders() {
-        return new ResponseEntity( orderManagementService.getPendingOrders(), HttpStatus.OK );
+    @RequestMapping( value = "/status/{status}", method = RequestMethod.GET )
+    public ResponseEntity<Map> getOrdersByStatus(@PathVariable(value = "status") String status ) {
+        Map response = new HashMap();
+        response.put("orders", orderManagementService.getOrdersByStatus(status));
+        response.put("orderCounts", orderManagementService.getOrderCountByStatus());
+        return new ResponseEntity( response, HttpStatus.OK );
     }
 
-    @RequestMapping( value = "/confirmed", method = RequestMethod.GET )
-    public ResponseEntity<OrderDto> getConfirmedOrders() {
-        return new ResponseEntity( orderManagementService.getConfirmedOrders(), HttpStatus.OK );
-    }
-
-    @RequestMapping( value = "/completed", method = RequestMethod.GET )
-    public ResponseEntity<OrderDto> getCompletedOrders() {
-        return new ResponseEntity( orderManagementService.getCompletedOrders(), HttpStatus.OK );
+    @RequestMapping( value = "/{orderId}/status/{status}", method = RequestMethod.PUT )
+    public ResponseEntity<Map> updateOrdersByStatus(@PathVariable String orderId, @PathVariable(value = "status") String status ) {
+        Order order = orderManagementService.getOrderByOrderId( orderId );
+        OrderStatus stat = OrderStatus.PENDING;
+        switch(status) {
+            case "pending":
+                stat = OrderStatus.PENDING;
+                break;
+            case "confirmed":
+                stat = OrderStatus.CONFIRMED;
+                break;
+            case "shipped":
+                stat = OrderStatus.SHIPPED;
+                break;
+            case "delivered":
+                stat = OrderStatus.DELIVERED;
+                break;
+            case "payment_received":
+                stat = OrderStatus.PAYMENT_RECEIVED;
+                break;
+        }
+        order.setOrderStatus( stat );
+        orderManagementService.saveOrder(order);
+        return new ResponseEntity( HttpStatus.OK );
     }
 
     @RequestMapping(value = "/{orderId}", method = RequestMethod.GET)
@@ -80,4 +101,19 @@ public class OrderManagementController {
                 orderManagementService.getOrderByOrderId( orderId )
         ), HttpStatus.OK);
     }
+
+//    @RequestMapping(value = "/transactions", method = RequestMethod.GET)
+//    public ResponseEntity<?> getPaymentTransaction( @RequestParam(value = "query", defaultValue = "") String query,
+//                                       @RequestParam(value = "page", defaultValue = "0") Integer page,
+//                                       @RequestParam(value = "limit", defaultValue = "10") Integer limit ){
+//        Pageable pageable = PageRequest.of( page, limit );
+//        Page<UserDto> users = orderManagementService.getPaymentTransaction(query, pageable);
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("data", users.getContent());
+//        response.put("currentPage", users.getNumber());
+//        response.put("totalItems", users.getTotalElements());
+//        response.put("totalPages", users.getTotalPages());
+//        return new ResponseEntity(response , HttpStatus.OK );
+//    }
 }

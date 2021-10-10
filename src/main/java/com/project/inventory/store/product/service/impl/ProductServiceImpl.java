@@ -1,5 +1,7 @@
 package com.project.inventory.store.product.service.impl;
 
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.service.AuthenticatedUser;
 import com.project.inventory.exception.invalid.InvalidException;
 import com.project.inventory.exception.notFound.product.ProductNotFound;
 import com.project.inventory.store.inventory.model.Inventory;
@@ -14,6 +16,8 @@ import com.project.inventory.store.product.model.*;
 import com.project.inventory.store.product.repository.ProductRepository;
 import com.project.inventory.store.product.service.FileImageService;
 import com.project.inventory.store.product.service.ProductService;
+import com.project.inventory.store.product.wishlist.model.Wishlist;
+import com.project.inventory.store.product.wishlist.service.WishlistService;
 import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -57,6 +61,11 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private WishlistService wishlistService;
+
+    @Autowired
+    private AuthenticatedUser authenticatedUser;
 
     @Override
     public Product saveProduct( MultipartFile[] productImages,
@@ -196,8 +205,15 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductAndInventoryDto getProductAndInventoryByProductId( int id ) {
-        Product product = getProductById( id );
         ProductAndInventoryDto productAndInventoryDto = new ProductAndInventoryDto();
+        try{
+            Account account = authenticatedUser.getUserDetails();
+            Wishlist wishlist = wishlistService.getWishlistByProductId(account.getId(), id);
+            productAndInventoryDto.setWishlist( wishlist );
+        } catch ( Exception e ) {
+            //
+        }
+        Product product = getProductById( id );
         productAndInventoryDto.setProduct( convertEntityToDto( product ) );
         productAndInventoryDto.setInventory( inventoryService.convertEntityToDto( product.getInventory() ) );
         return productAndInventoryDto;

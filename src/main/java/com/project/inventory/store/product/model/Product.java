@@ -1,10 +1,12 @@
 package com.project.inventory.store.product.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.project.inventory.store.incomingSupply.incomingSupplyItem.model.IncomingSupplyItem;
 import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.product.brand.model.Brand;
 import com.project.inventory.store.product.category.model.Category;
+import com.project.inventory.store.product.wishlist.model.Wishlist;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -47,8 +49,8 @@ public class Product implements Serializable {
     private boolean isDeleted = false;
 
     @OneToOne( mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER )
+    @JsonIgnoreProperties({"product", "hibernateLazyInitializer"})
     private Inventory inventory;
-
 
     @OneToMany( mappedBy = "product", fetch = FetchType.EAGER )
     private List<FileImage> fileImages;
@@ -60,6 +62,10 @@ public class Product implements Serializable {
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<IncomingSupplyItem> incomingSupplyItems;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Wishlist> wishlist;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn( name = "category_id" )
