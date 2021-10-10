@@ -130,7 +130,8 @@ public class OrderManagementServiceImpl implements OrderManagementService {
         if ( permission.equals( "ROLE_SUPER_ADMIN" ) || permission.equals( "ROLE_ADMIN" ) ) {
             counts = orderManagementRepository.getOrderCountGroupBy();
         } else if ( permission.equals( "ROLE_USER" ) || permission.equals( "ROLE_CUSTOMER" ) ) {
-            counts = orderManagementRepository.getCustomerOrderCountGroupBy(account.getId());
+            accountId = account.getId();
+            counts = orderManagementRepository.getCustomerOrderCountGroupBy(accountId);
         } else {
             throw new AccessDeniedException( "ACCESS DENIED" );
         }
@@ -138,6 +139,20 @@ public class OrderManagementServiceImpl implements OrderManagementService {
         Map<String, BigInteger> totals = new HashMap<>();
         for (Object[] result : counts) {
             totals.put(result[0].toString(), ( BigInteger ) result[1]);
+        }
+        if(accountId > 0 ) {
+            BigInteger delivered = totals.get( "DELIVERED" );
+            BigInteger paymentReceived = totals.get("PAYMENT_RECEIVED");
+            BigInteger total = null;
+            if(delivered == null) {
+                delivered = new BigInteger( "0");
+            }
+            if(paymentReceived == null) {
+                paymentReceived = new BigInteger("0");
+            } else {
+                totals.remove( "PAYMENT_RECEIVED" );
+            }
+            totals.put("DELIVERED", paymentReceived.add(delivered));
         }
         return totals;
     }
@@ -200,7 +215,14 @@ public class OrderManagementServiceImpl implements OrderManagementService {
 
     private List<OrderDto> getCustomerOrders( String status, int id ) {
         List<OrderDto> orders = new ArrayList<>();
-        for ( Order savedOrder : orderManagementRepository.findAllByOrderStatusAndAccountId( status, id ) ) {
+        List<String> statuses = new ArrayList<>();
+        statuses.add(status);
+        if( Objects.equals( status, "delivered" ) ) {
+            statuses.add("payment_received");
+        }
+
+        logger.info(statuses.toString());
+        for ( Order savedOrder : orderManagementRepository.findAllByOrderStatusAndAccountId( statuses, id ) ) {
             orders.add( convertEntityToDto( savedOrder ) );
         }
         return orders;

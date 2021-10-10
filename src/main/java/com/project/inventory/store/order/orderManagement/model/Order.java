@@ -1,10 +1,12 @@
 package com.project.inventory.store.order.orderManagement.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.project.inventory.customer.address.model.CustomerAddress;
 import com.project.inventory.customer.payment.model.PaymentMethod;
 import com.project.inventory.store.order.orderItem.model.OrderItem;
 import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.store.product.comment.model.Comment;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -58,6 +60,9 @@ public class Order {
     @OneToMany( mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL )
     private List<OrderItem> orderItems;
 
+    @OneToMany( mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL )
+    @JsonIgnoreProperties({"order"})
+    private List<Comment> comments;
 
     public int getId() {
         return id;
@@ -137,6 +142,14 @@ public class Order {
 
     public void setOrderItems( List<OrderItem> orderItems ) {
         this.orderItems = orderItems;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComment( List<Comment> comments ) {
+        this.comments = comments;
     }
 
     @Override

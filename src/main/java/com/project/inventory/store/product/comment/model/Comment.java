@@ -3,6 +3,8 @@ package com.project.inventory.store.product.comment.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.project.inventory.store.order.orderItem.model.OrderItem;
+import com.project.inventory.store.order.orderManagement.model.Order;
 import com.project.inventory.store.product.model.Product;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -29,7 +31,7 @@ public class Comment {
 
     @OneToOne(fetch = FetchType.LAZY )
     @JoinColumn( name = "product_id" )
-    @JsonIgnoreProperties({"inventory", "hibernateLazyInitializer"})
+    @JsonIgnoreProperties({"inventory", "incomingSupplyItems", "brand", "fileImages", "wishlist", "category", "description", "hibernateLazyInitializer"})
     private Product product;
 
     @Column(name = "account_id", nullable = false)
@@ -48,6 +50,12 @@ public class Comment {
 
     @Column(name = "rating")
     private Integer rating;
+
+    @OneToOne
+    @JoinColumn( name = "order_id" )
+    @JsonIgnore
+    @JsonIgnoreProperties({"comments", "orderItems", "customerAddress",  "paymentMethod", "account"})
+    private Order order;
 
     public int getId() {
         return id;
@@ -119,6 +127,14 @@ public class Comment {
 
     public void setRating( Integer rating ) {
         this.rating = rating;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder( Order order ) {
+        this.order = order;
     }
 
     @Override

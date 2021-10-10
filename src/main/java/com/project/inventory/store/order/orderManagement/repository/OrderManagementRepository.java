@@ -33,8 +33,8 @@ public interface OrderManagementRepository extends JpaRepository<Order, Integer>
     List<Object[]> getOrderCountGroupBy( );
 
     @Modifying
-    @Query( value = "SELECT * FROM orders WHERE order_status =:status AND account_id =:id", nativeQuery = true )
-    List<Order> findAllByOrderStatusAndAccountId( @Param( "status" ) String status,
+    @Query( value = "SELECT * FROM orders WHERE order_status IN (:status) AND account_id =:id", nativeQuery = true )
+    List<Order> findAllByOrderStatusAndAccountId( @Param( "status" ) List<String> status,
                                                   @Param( "id" ) int id );
 
     @Modifying

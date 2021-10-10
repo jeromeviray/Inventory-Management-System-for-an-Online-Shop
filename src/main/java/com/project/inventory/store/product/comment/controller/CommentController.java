@@ -3,6 +3,8 @@ package com.project.inventory.store.product.comment.controller;
 import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.common.permission.service.AuthenticatedUser;
+import com.project.inventory.store.order.orderManagement.model.Order;
+import com.project.inventory.store.order.orderManagement.service.OrderManagementService;
 import com.project.inventory.store.product.comment.model.Comment;
 import com.project.inventory.store.product.comment.service.CommentService;
 import com.project.inventory.store.product.model.Product;
@@ -36,6 +38,9 @@ public class CommentController {
     @Autowired
     private AuthenticatedUser authenticatedUser;
 
+    @Autowired
+    private OrderManagementService orderManagementService;
+
     @RequestMapping( value = "", method = RequestMethod.POST )
     public ResponseEntity<?> saveComment(@RequestBody Comment comment) {
         Account account = authenticatedUser.getUserDetails();
@@ -54,6 +59,29 @@ public class CommentController {
         }
         rp.put("name", username);
         return new ResponseEntity<>(rp, HttpStatus.OK );
+    }
+
+    @RequestMapping( value = "/bulk", method = RequestMethod.POST )
+    public ResponseEntity<?> saveComments(@RequestBody List<Comment> comments) {
+        Account account = authenticatedUser.getUserDetails();
+        List<Map<String, Object>> response = new ArrayList<>();
+        for(Comment comment : comments) {
+            Product prod = productService.getProductById( comment.getProduct().getId() );
+            comment.setAccountId( account.getId() );
+            comment.setProduct( prod );
+            commentService.saveComment( comment );
+            Map<String, Object> rp = new HashMap<>();
+            rp.put("id", comment.getId());
+            rp.put("message", comment.getMessage());
+            rp.put("createdAt", comment.getCreatedAt());
+            String username = account.getUsername();
+            if(comment.getAnonymous()) {
+                username = username.substring( 0, 3 ) + "*******";
+            }
+            rp.put("name", username);
+            response.add( rp );
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK );
     }
 
     @RequestMapping( value = "", method = RequestMethod.GET )
