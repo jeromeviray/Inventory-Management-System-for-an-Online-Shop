@@ -23,9 +23,8 @@ public class User {
     @Column(name = "phone_number", length = 10)
     private int phoneNumber;
 
-    @JsonFormat(pattern = "dd/MM/YYYY")
-    @Column(name = "birth_day")
-    private Date birthDay;
+    @Column(name = "birthday")
+    private String birthday;
 
     @Column(name = "profile_image")
     private String profileImage;
@@ -67,12 +66,12 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public Date getBirthDay() {
-        return birthDay;
+    public String getBirthday() {
+        return birthday;
     }
 
-    public void setBirthDay(Date birthDay) {
-        this.birthDay = birthDay;
+    public void setBirthday( String birthday ) {
+        this.birthday = birthday;
     }
 
     public String getProfileImage() {

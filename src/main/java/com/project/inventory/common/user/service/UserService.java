@@ -8,25 +8,24 @@ import com.project.inventory.common.user.model.UserDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.text.ParseException;
 import java.util.List;
 
 public interface UserService {
 
-    void createUserAccount( UserAccount userAccount );
+    void createUserAccount( UserAccount userAccount ) throws ParseException;
 
     void saveUserInformation( Account account, User user );
 
     void saveUser( User user );
 
-    void updateUserInformation( int id, RequestUserAccount userAccount );
+    void updateUserInformation( int id, RequestUserAccount userAccount ) throws ParseException;
 
     void deleteUserAccount( int id );
 
     List<UserDto> getUsers();
 
-    Page<UserDto> getUsersByCustomerRole( String query, Pageable pageable );
-
-    Page<UserDto> getUsersByAdminOrSuperRole( String query, Pageable pageable );
+    Page<UserDto> getUsersByRole( String query, String role, Pageable pageable );
 
     User getUserInformationById( int id );
 

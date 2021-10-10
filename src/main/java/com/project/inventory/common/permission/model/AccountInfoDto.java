@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.inventory.common.permission.role.model.Role;
 import com.project.inventory.common.permission.role.model.RoleDto;
 
+import javax.persistence.Column;
 import java.util.Date;
 import java.util.Set;
 
@@ -14,8 +15,8 @@ public class AccountInfoDto {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private Date created;
     private Set<RoleDto> roles;
-    private boolean isEnabled;
-    private boolean isLocked;
+    private boolean isNotBanned = true;
+    private boolean isNotDeleted = true;
 
     public int getId() {
         return id;
@@ -57,20 +58,20 @@ public class AccountInfoDto {
         this.roles = roles;
     }
 
-    public boolean isEnabled() {
-        return isEnabled;
+    public boolean isNotBanned() {
+        return isNotBanned;
     }
 
-    public void setEnabled( boolean enabled ) {
-        isEnabled = enabled;
+    public void setNotBanned( boolean notBanned ) {
+        isNotBanned = notBanned;
     }
 
-    public boolean isLocked() {
-        return isLocked;
+    public boolean isNotDeleted() {
+        return isNotDeleted;
     }
 
-    public void setLocked( boolean locked ) {
-        isLocked = locked;
+    public void setNotDeleted( boolean notDeleted ) {
+        isNotDeleted = notDeleted;
     }
 
     @Override

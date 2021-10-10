@@ -39,11 +39,11 @@ public class Account implements Serializable {
     @Column(name = "updated_at", nullable = false)
     private Date updated;
 
-    @Column(name = "is_enabled", columnDefinition = "TINYINT(1) ", nullable = false)
-    private boolean isEnabled = true;
+    @Column(name = "is_not_banned", columnDefinition = "TINYINT(1) default 1", nullable = false)
+    private boolean isNotBanned = true;
 
-    @Column(name = "is_locked", columnDefinition = "TINYINT(1)", nullable = false)
-    private boolean isLocked = true;
+    @Column(name = "is_not_Deleted", columnDefinition = "TINYINT(1) default 1", nullable = false)
+    private boolean isNotDeleted = true;
 
     @Enumerated(EnumType.STRING)
     @Column(name ="auth_provider", nullable = false)
@@ -103,20 +103,20 @@ public class Account implements Serializable {
         this.updated = updated;
     }
 
-    public boolean isEnabled() {
-        return isEnabled;
+    public boolean isNotBanned() {
+        return isNotBanned;
     }
 
-    public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
+    public void setNotBanned( boolean notBanned ) {
+        isNotBanned = notBanned;
     }
 
-    public boolean isLocked() {
-        return isLocked;
+    public boolean isNotDeleted() {
+        return isNotDeleted;
     }
 
-    public void setLocked(boolean locked) {
-        isLocked = locked;
+    public void setNotDeleted( boolean notDeleted ) {
+        isNotDeleted = notDeleted;
     }
 
     public AuthProvider getAuthProvider() {
@@ -135,31 +135,19 @@ public class Account implements Serializable {
         this.roles = roles;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Account)) return false;
-        Account account = (Account) o;
-        return getId() == account.getId() && isEnabled() == account.isEnabled() && isLocked() == account.isLocked() && Objects.equals(getUsername(), account.getUsername()) && Objects.equals(getPassword(), account.getPassword()) && Objects.equals(getEmail(), account.getEmail()) && Objects.equals(getCreated(), account.getCreated()) && Objects.equals(getUpdated(), account.getUpdated()) && Objects.equals(getRoles(), account.getRoles());
-    }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getUsername(), getPassword(), getEmail(), getCreated(), getUpdated(), isEnabled(), isLocked(), getRoles());
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals( Object obj ) {
+        return super.equals( obj );
     }
 
     @Override
     public String toString() {
-        return "Account{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                ", created=" + created +
-                ", updated=" + updated +
-                ", isEnabled=" + isEnabled +
-                ", isLocked=" + isLocked +
-                ", roles=" + roles +
-                '}';
+        return super.toString();
     }
 }

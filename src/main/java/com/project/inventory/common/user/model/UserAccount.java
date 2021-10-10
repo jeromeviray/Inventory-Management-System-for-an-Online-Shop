@@ -6,6 +6,7 @@ public class UserAccount {
     private int phoneNumber;
     private String username;
     private String role;
+    private String birthday;
     private String password;
     private String email;
     private boolean isEnabled;
@@ -56,6 +57,14 @@ public class UserAccount {
 
     public void setRole( String role ) {
         this.role = role;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday( String birthday ) {
+        this.birthday = birthday;
     }
 
     public String getPassword() {

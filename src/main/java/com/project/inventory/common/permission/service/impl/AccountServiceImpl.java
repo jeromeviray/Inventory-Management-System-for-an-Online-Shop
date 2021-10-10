@@ -1,6 +1,5 @@
 package com.project.inventory.common.permission.service.impl;
 
-import com.project.inventory.common.permission.forgotPassword.model.ForgotPassword;
 import com.project.inventory.common.permission.forgotPassword.model.ResetPassword;
 import com.project.inventory.common.permission.forgotPassword.service.ForgotPasswordService;
 import com.project.inventory.common.permission.model.Account;
@@ -129,25 +128,22 @@ public class AccountServiceImpl implements AccountService {
 
     }
 
-    @Override
-    public Boolean isEnabled( Account account ) throws AccountLockedException {
-        if( ! account.isEnabled() ) {
+    public Boolean isNotBanned( Account account ) throws AccountLockedException {
+        if( ! account.isNotBanned() ) {
             throw new AccountLockedException();
         }
         return true;
     }
 
-    @Override
-    public Boolean isLocked( Account account ) throws AccountLockedException {
-        if( ! account.isLocked() ) {
+    public Boolean isNotDeleted( Account account ) throws AccountLockedException {
+        if( ! account.isNotDeleted() ) {
             throw new AccountLockedException();
         }
         return true;
     }
 
-    @Override
-    public Boolean isEnabledAndLocked( Account account ) throws AccountLockedException {
-        if( ! account.isLocked() && ! account.isEnabled() ) {
+    public Boolean isNotBannedAndDeleted( Account account ) throws AccountLockedException {
+        if( ! account.isNotBanned() && ! account.isNotDeleted() ) {
             throw new AccountLockedException();
         }
         return true;
@@ -155,18 +151,15 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void deleteAccount( int id ) {
-        logger.info( "{}", id );
+        logger.info( "Delete Account with Id: {}", id );
         Account account = getAccountById( id );
-        account.setEnabled( false );
-        account.setLocked( false );
+        account.setNotDeleted( false );
         accountRepository.save( account );
     }
 
-    @Override
-    public void disableAccount( int id, boolean disabled ) {
+    public void banAccount( int id ) {
         Account savedAccount = getAccountById( id );
-        savedAccount.setEnabled( disabled );
-
+        savedAccount.setNotBanned( false );
         accountRepository.save( savedAccount );
     }
 
