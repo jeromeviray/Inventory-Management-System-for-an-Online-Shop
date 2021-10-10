@@ -24,4 +24,6 @@ public interface OrderManagementService {
     OrderDto convertEntityToDto( Order order );
 
     Order convertDtoToEntity( OrderDto orderDto );
+
+    void saveOrder(Order order);
 }

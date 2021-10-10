@@ -213,4 +213,9 @@ public class OrderManagementServiceImpl implements OrderManagementService {
         }
         return orders;
     }
+
+    @Override
+    public void saveOrder( Order order ) {
+        orderManagementRepository.save( order );
+    }
 }
