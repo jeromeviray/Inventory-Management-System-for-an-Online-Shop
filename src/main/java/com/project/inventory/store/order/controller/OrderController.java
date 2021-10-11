@@ -1,16 +1,11 @@
-package com.project.inventory.store.order.orderManagement.controller;
+package com.project.inventory.store.order.controller;
 
 import com.project.inventory.api.payment.PaymongoAPI;
-import com.project.inventory.common.user.model.UserDto;
-import com.project.inventory.store.inventory.service.impl.InventoryServiceImpl;
-import com.project.inventory.store.order.orderManagement.model.*;
-import com.project.inventory.store.order.orderManagement.service.OrderManagementService;
+import com.project.inventory.store.order.model.*;
+import com.project.inventory.store.order.service.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,12 +16,12 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestController
-        @RequestMapping( value = "api/v1/orders" )
-public class OrderManagementController {
-    Logger logger = LoggerFactory.getLogger( OrderManagementController.class );
+@RequestMapping( value = "api/v1/orders" )
+class OrderController {
+    Logger logger = LoggerFactory.getLogger( OrderController.class );
 
     @Autowired
-    private OrderManagementService orderManagementService;
+    private OrderService orderService;
 
     private PaymongoAPI paymongoAPI = new PaymongoAPI();
 
@@ -35,7 +30,7 @@ public class OrderManagementController {
         OrderResponse response = new OrderResponse();
         HttpStatus httpStatus = HttpStatus.OK;
         try {
-            Order order = orderManagementService.placeOrder(
+            Order order = orderService.placeOrder(
                     placeOrder.getCustomerAddressId(),
                     placeOrder.getPaymentId(),
                     placeOrder.getCartItems() );
@@ -58,20 +53,20 @@ public class OrderManagementController {
     @PreAuthorize( "hasRole('ROLE_CUSTOMER') or hasRole('ROLE_USER')" )
     @RequestMapping( value = "", method = RequestMethod.GET )
     public ResponseEntity<OrderDto> getOrdersByAccountId() {
-        return new ResponseEntity( orderManagementService.getOrdersByAccountId(), HttpStatus.OK );
+        return new ResponseEntity( orderService.getOrdersByAccountId(), HttpStatus.OK );
     }
 
     @RequestMapping( value = "/status/{status}", method = RequestMethod.GET )
     public ResponseEntity<Map> getOrdersByStatus(@PathVariable(value = "status") String status ) {
         Map response = new HashMap();
-        response.put("orders", orderManagementService.getOrdersByStatus(status));
-        response.put("orderCounts", orderManagementService.getOrderCountByStatus());
+        response.put("orders", orderService.getOrdersByStatus(status));
+        response.put("orderCounts", orderService.getOrderCountByStatus());
         return new ResponseEntity( response, HttpStatus.OK );
     }
 
     @RequestMapping( value = "/{orderId}/status/{status}", method = RequestMethod.PUT )
     public ResponseEntity<Map> updateOrdersByStatus(@PathVariable String orderId, @PathVariable(value = "status") String status ) {
-        Order order = orderManagementService.getOrderByOrderId( orderId );
+        Order order = orderService.getOrderByOrderId( orderId );
         OrderStatus stat = OrderStatus.PENDING;
         switch(status) {
             case "pending":
@@ -91,22 +86,22 @@ public class OrderManagementController {
                 break;
         }
         order.setOrderStatus( stat );
-        orderManagementService.saveOrder(order);
+        orderService.saveOrder(order);
         return new ResponseEntity( HttpStatus.OK );
     }
 
     @RequestMapping(value = "/{orderId}", method = RequestMethod.GET)
     public ResponseEntity<?> getOrder( @PathVariable String orderId ){
-        return new ResponseEntity(orderManagementService.convertEntityToDto(
-                orderManagementService.getOrderByOrderId( orderId )
+        return new ResponseEntity(orderService.convertEntityToDto(
+                orderService.getOrderByOrderId( orderId )
         ), HttpStatus.OK);
     }
 
 
     @RequestMapping(value = "/{orderId}/paid/{status}", method = RequestMethod.PUT)
     public ResponseEntity<?> markOrderAsPaid( @PathVariable String orderId, @PathVariable String status ){
-        return new ResponseEntity(orderManagementService.convertEntityToDto(
-                orderManagementService.getOrderByOrderId( orderId )
+        return new ResponseEntity(orderService.convertEntityToDto(
+                orderService.getOrderByOrderId( orderId )
         ), HttpStatus.OK);
     }
 
@@ -115,7 +110,7 @@ public class OrderManagementController {
 //                                       @RequestParam(value = "page", defaultValue = "0") Integer page,
 //                                       @RequestParam(value = "limit", defaultValue = "10") Integer limit ){
 //        Pageable pageable = PageRequest.of( page, limit );
-//        Page<UserDto> users = orderManagementService.getPaymentTransaction(query, pageable);
+//        Page<UserDto> users = orderService.getPaymentTransaction(query, pageable);
 //
 //        Map<String, Object> response = new HashMap<>();
 //        response.put("data", users.getContent());

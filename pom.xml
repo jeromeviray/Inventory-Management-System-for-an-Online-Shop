@@ -14,6 +14,9 @@
 	<name>inventory</name>
 	<description>Thesis project titled Inventory Management System for an Online Shop</description>
 	<properties>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.release>11</maven.compiler.release>
 		<java.version>11</java.version>
 	</properties>
 	<dependencies>
@@ -89,17 +92,11 @@
 			<artifactId>spring-messaging</artifactId>
 			<version>5.3.9</version>
 		</dependency>
-<<<<<<< HEAD
-		<!-- send email -->
-=======
->>>>>>> 2a54f8acc626892836d02757ed391c9a9573e286
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 	</dependencies>
-
-
 
 	<build>
 		<plugins>

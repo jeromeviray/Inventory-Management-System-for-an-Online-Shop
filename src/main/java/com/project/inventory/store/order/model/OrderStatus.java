@@ -1,4 +1,4 @@
-package com.project.inventory.store.order.orderManagement.model;
+package com.project.inventory.store.order.model;
 
 import java.io.Serializable;
 

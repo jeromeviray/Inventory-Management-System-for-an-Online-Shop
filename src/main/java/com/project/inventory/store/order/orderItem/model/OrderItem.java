@@ -2,13 +2,11 @@ package com.project.inventory.store.order.orderItem.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.project.inventory.store.order.orderManagement.model.Order;
+import com.project.inventory.store.order.model.Order;
 import com.project.inventory.store.product.model.Product;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import javax.transaction.Transactional;
-import java.util.Date;
 import java.util.Objects;
 
 @Entity

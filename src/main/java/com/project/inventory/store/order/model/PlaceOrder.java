@@ -1,4 +1,4 @@
-package com.project.inventory.store.order.orderManagement.model;
+package com.project.inventory.store.order.model;
 
 import com.project.inventory.store.cart.cartItem.model.CartItem;
 

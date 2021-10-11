@@ -1,4 +1,4 @@
-package com.project.inventory.store.order.orderManagement.model;
+package com.project.inventory.store.order.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

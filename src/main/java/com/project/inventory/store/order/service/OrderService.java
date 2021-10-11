@@ -1,14 +1,14 @@
-package com.project.inventory.store.order.orderManagement.service;
+package com.project.inventory.store.order.service;
 
 import com.project.inventory.store.cart.cartItem.model.CartItem;
-import com.project.inventory.store.order.orderManagement.model.Order;
-import com.project.inventory.store.order.orderManagement.model.OrderDto;
+import com.project.inventory.store.order.model.Order;
+import com.project.inventory.store.order.model.OrderDto;
 
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
-public interface OrderManagementService {
+public interface OrderService {
     Order placeOrder( int customerAddressId,
                      int paymentMethodId,
                      List<CartItem> cartItems );
