@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 public interface ProductService {
     Product saveProduct( MultipartFile[] productImages,
@@ -29,7 +30,7 @@ public interface ProductService {
 
     void deleteProduct( int id );
 
-    Page<ProductAndInventoryDto> getProducts( String query, Pageable pageable );
+    Page<ProductAndInventoryDto> getProducts( String query, Pageable pageable ) throws ParseException;
 
     ProductAndInventoryDto getProductAndInventoryByProductId( int id );
 
@@ -43,8 +44,10 @@ public interface ProductService {
 
     byte[] getImage( String image ) throws IOException;
 
-    Page<ProductAndInventoryDto> getProductByCategoryName( String categoryName, String query, Pageable pageable );
+    Page<ProductAndInventoryDto> getProductByCategoryName( String categoryName, String query, Pageable pageable ) throws ParseException;
 
     Page<ProductAndInventoryDto> getProductByStatus(String query, String status, Pageable pageable);
+
+    Page<ProductAndInventoryDto> getProductsWithPromo(String query, String status, Pageable pageable) throws ParseException;
 
 }

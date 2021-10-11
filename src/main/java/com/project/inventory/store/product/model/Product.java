@@ -6,6 +6,7 @@ import com.project.inventory.store.incomingSupply.incomingSupplyItem.model.Incom
 import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.product.brand.model.Brand;
 import com.project.inventory.store.product.category.model.Category;
+import com.project.inventory.store.product.promo.model.Promo;
 import com.project.inventory.store.product.wishlist.model.Wishlist;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -70,6 +71,9 @@ public class Product implements Serializable {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn( name = "category_id" )
     private Category category;
+
+    @OneToOne(mappedBy = "product", fetch = FetchType.EAGER)
+    private Promo promo;
 
     public int getId() {
         return id;
@@ -173,6 +177,22 @@ public class Product implements Serializable {
 
     public void setCategory( Category category ) {
         this.category = category;
+    }
+
+    public List<Wishlist> getWishlist() {
+        return wishlist;
+    }
+
+    public void setWishlist( List<Wishlist> wishlist ) {
+        this.wishlist = wishlist;
+    }
+
+    public Promo getPromo() {
+        return promo;
+    }
+
+    public void setPromo( Promo promo ) {
+        this.promo = promo;
     }
 
     @Override

@@ -77,8 +77,6 @@ public class PromoServiceImpl implements PromoService {
     @Override
     public List<PromoDto> getPromos() throws ParseException {
         List<PromoDto> promos = new ArrayList<>();
-        SimpleDateFormat pattern = new SimpleDateFormat( "dd-MMM-yyyy HH:mm:ss" );
-
         for( Promo promo : promoRepository.findAll() ) {
             promo.setStatus( checkSchedulePromo( promo ) );
 

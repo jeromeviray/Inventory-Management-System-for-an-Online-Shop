@@ -1,7 +1,6 @@
 package com.project.inventory.store.product.repository;
 
 import com.project.inventory.store.product.model.Product;
-import com.project.inventory.store.product.model.ProductDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+
 @Transactional
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
@@ -26,6 +26,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     Optional<Product> findAvailableProductById( @Param( "id" ) int id );
 
     @Query( value = "SELECT * FROM products as p " +
+            "LEFT JOIN product_promos promo " +
+            "ON p.id = promo.product_id " +
             "WHERE (p.product_name LIKE concat('%',:query,'%') " +
             "OR p.barcode LIKE concat('%',:query)) AND p.product_is_deleted = 0",
             nativeQuery = true )
@@ -42,6 +44,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query( value = "SELECT * " +
             "FROM  products product " +
+            "LEFT JOIN product_promos promo " +
+            "ON product.id = promo.product_id " +
             "JOIN product_categories as category " +
             "ON  product.category_id = category.id  " +
             "LEFT JOIN brands brand " +
@@ -52,4 +56,19 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             countQuery = "SELECT count(*) FROM products product WHERE product.product_is_deleted = 0",
             nativeQuery = true )
     Page<Product> findAllProductsByCategoryName( @Param( "categoryName" ) String categoryName, @Param( "query" ) String query, Pageable pageable );
+
+    @Query( value = "SELECT *  from products product " +
+            "JOIN product_promos promo " +
+            "ON product.id = promo.product_id " +
+            "WHERE product.product_name LIKE concat('%', :query, '%') ",
+            nativeQuery = true )
+    Page<Product> findAllProductsWithPromo( @Param( "query" ) String query, Pageable pageable );
+
+    @Query( value = "SELECT *  from products product " +
+            "JOIN product_promos promo " +
+            "ON product.id = promo.product_id " +
+            "WHERE promo.status =:status " +
+            "AND product.product_name LIKE concat('%', :query, '%') ",
+            nativeQuery = true )
+    Page<Product> findAllProductsWithPromoAndStatus( @Param( "query" ) String query, @Param( "status" ) String status, Pageable pageable );
 }

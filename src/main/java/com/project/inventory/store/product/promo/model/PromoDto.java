@@ -1,7 +1,5 @@
 package com.project.inventory.store.product.promo.model;
 
-import com.project.inventory.store.product.model.ProductDto;
-
 public class PromoDto {
     private int id;
     private int quantity;
@@ -10,7 +8,6 @@ public class PromoDto {
     private String startDate;
     private String endDate;
     private String status;
-    private ProductDto product;
 
     public int getId() {
         return id;
@@ -68,14 +65,6 @@ public class PromoDto {
         this.status = status;
     }
 
-    public ProductDto getProduct() {
-        return product;
-    }
-
-    public void setProduct( ProductDto product ) {
-        this.product = product;
-    }
-
     @Override
     public String toString() {
         return "PromoDto{" +
@@ -86,7 +75,6 @@ public class PromoDto {
                 ", startDate='" + startDate + '\'' +
                 ", endDate='" + endDate + '\'' +
                 ", status='" + status + '\'' +
-                ", product=" + product +
                 '}';
     }
 }
