@@ -1,5 +1,6 @@
 package com.project.inventory.store.incomingSupply.service.impl;
 
+import com.project.inventory.exception.invalid.InvalidException;
 import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.store.incomingSupply.incomingSupplyItem.model.IncomingSupplyItem;
 import com.project.inventory.store.incomingSupply.incomingSupplyItem.service.IncomingSupplyItemService;
@@ -8,6 +9,11 @@ import com.project.inventory.store.incomingSupply.model.IncomingSupplyDto;
 import com.project.inventory.store.incomingSupply.model.IncomingSupplyStatus;
 import com.project.inventory.store.incomingSupply.repository.IncomingSupplyRepository;
 import com.project.inventory.store.incomingSupply.service.IncomingSupplyService;
+import com.project.inventory.store.inventory.model.Inventory;
+import com.project.inventory.store.inventory.service.InventoryService;
+import com.project.inventory.store.inventory.stock.model.Stock;
+import com.project.inventory.store.inventory.stock.service.StockService;
+import com.project.inventory.store.product.model.Product;
 import com.project.inventory.store.product.service.ProductService;
 import com.project.inventory.store.supplier.service.SupplierService;
 import org.modelmapper.ModelMapper;
@@ -18,7 +24,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class IncomingSupplyServiceImpl implements IncomingSupplyService {
@@ -35,6 +45,9 @@ public class IncomingSupplyServiceImpl implements IncomingSupplyService {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private StockService stockService;
 
     @Autowired
     private ModelMapper mapper;
@@ -54,29 +67,21 @@ public class IncomingSupplyServiceImpl implements IncomingSupplyService {
     }
 
     @Override
-    public List<IncomingSupply> getIncomingSupplies() {
-        try{
-            return incomingSupplyRepository.findAll();
-        }catch ( Exception e ){
-            throw e;
+    public Map<String, BigInteger> getIncomingSupplyCountByStatus(  ) {
+        List<Object[]> counts = incomingSupplyRepository.findAllAndCountByStatus();
+
+        Map<String, BigInteger> totals = new HashMap<>();
+        for (Object[] result : counts) {
+            totals.put(result[0].toString(), ( BigInteger ) result[1]);
         }
+        return totals;
     }
 
     @Override
-    public Page<IncomingSupply> getIncomingSuppliesByPendingStatus( String query, Pageable pageable ) {
-//        try{
-//            return incomingSupplyRepository.findAllByIncomingSupplyStatus(IncomingSupplyStatus.PENDING.name());
-//        }catch ( Exception e ){
-//            throw e;
-//        }
-        return null;
-    }
-
-    @Override
-    public Page<IncomingSupply> getIncomingSuppliesByDeliveredStatus( String query, Pageable pageable ) {
-        try{
-            return incomingSupplyRepository.findAllByIncomingSupplyStatus(query, IncomingSupplyStatus.DELIVERED.name(), pageable);
-        }catch ( Exception e ){
+    public Page<IncomingSupply> getIncomingSupplies( String query, String status, Pageable pageable ) {
+        try {
+            return incomingSupplyRepository.findAllByIncomingSupplyStatus( query, status, pageable );
+        } catch( Exception e ) {
             throw e;
         }
     }
@@ -106,4 +111,27 @@ public class IncomingSupplyServiceImpl implements IncomingSupplyService {
         }
     }
 
+    @Override
+    public void markIncomingSuppliesDelivered( int id ) {
+        IncomingSupply incomingSupply = getIncomingSupply( id );
+        if(incomingSupply.getIncomingSupplyStatus().equals( IncomingSupplyStatus.PENDING )){
+            for(IncomingSupplyItem item : incomingSupply.getIncomingSupplyItems()){
+                Stock stock = new Stock();
+                stock.setStock( item.getNumberReceived() );
+                stockService.addStock( stock, item.getProduct().getId() );
+            }
+            incomingSupply.setIncomingSupplyStatus( IncomingSupplyStatus.DELIVERED );
+            incomingSupplyRepository.save( incomingSupply );
+        }else{
+            throw new InvalidException("This Supplies already added in Inventory");
+        }
+
+    }
+
+    @Override
+    public void updateIncomingSupply( int id, IncomingSupply incomingSupply ) {
+        IncomingSupply savedIncomingSupply = getIncomingSupply( id );
+        savedIncomingSupply.setSupplier( supplierService.getSupplier( incomingSupply.getSupplier().getId() ) );
+
+    }
 }
