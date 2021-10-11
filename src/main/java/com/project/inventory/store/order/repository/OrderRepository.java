@@ -1,6 +1,8 @@
-package com.project.inventory.store.order.orderManagement.repository;
+package com.project.inventory.store.order.repository;
 
-import com.project.inventory.store.order.orderManagement.model.Order;
+import com.project.inventory.store.order.model.Order;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface OrderManagementRepository extends JpaRepository<Order, Integer> {
+public interface OrderRepository extends JpaRepository<Order, Integer> {
 
 //    @Query( value = "SELECT * FROM order_management WHERE order_status = 'PENDING'", nativeQuery = true )
 //    List<Order> findAllByStatusPending();
@@ -42,4 +44,8 @@ public interface OrderManagementRepository extends JpaRepository<Order, Integer>
     List<Order> findAllByAccountId( @Param( "id" ) int id );
 
     Optional<Order> findByOrderId( String orderId);
+
+    @Query( value = "SELECT * FROM orders ", nativeQuery = true )
+    Page<Order> getPaymentTransactions( Pageable pageable );
+
 }

@@ -1,6 +1,7 @@
 package com.project.inventory.webSecurity.oauth2.cookie;
 
 import com.nimbusds.oauth2.sdk.util.StringUtils;
+import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.webSecurity.oauth2.cookie.utils.CookieUtils;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
@@ -19,7 +20,7 @@ public class HttpCookieOAuth2RequestRepository implements AuthorizationRequestRe
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
         return CookieUtils.getCookie(request, REQUEST_COOKIE_NAME)
                 .map((cookie) -> CookieUtils.deserialize(cookie, OAuth2AuthorizationRequest.class))
-                .orElseThrow();
+                .orElseThrow(() -> new NotFoundException( "Cookie not found." ));
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.project.inventory.store.order.orderManagement.service.impl;
+package com.project.inventory.store.order.service.impl;
 
 import com.project.inventory.common.permission.role.model.Role;
 import com.project.inventory.common.sms.service.Sms;
@@ -12,28 +12,30 @@ import com.project.inventory.customer.payment.service.PaymentMethodService;
 import com.project.inventory.exception.invalid.order.OrderInvalidException;
 import com.project.inventory.store.order.orderItem.model.OrderItem;
 import com.project.inventory.store.order.orderItem.service.OrderItemService;
-import com.project.inventory.store.order.orderManagement.model.OrderStatus;
-import com.project.inventory.store.order.orderManagement.model.Order;
-import com.project.inventory.store.order.orderManagement.model.OrderDto;
-import com.project.inventory.store.order.orderManagement.repository.OrderManagementRepository;
-import com.project.inventory.store.order.orderManagement.service.OrderManagementService;
+import com.project.inventory.store.order.model.OrderStatus;
+import com.project.inventory.store.order.model.Order;
+import com.project.inventory.store.order.model.OrderDto;
 import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.common.permission.service.AuthenticatedUser;
+import com.project.inventory.store.order.repository.OrderRepository;
+import com.project.inventory.store.order.service.OrderService;
 import com.project.inventory.store.product.service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.*;
 
-@Service( value = "shoppingOrderServiceImpl" )
-public class OrderManagementServiceImpl implements OrderManagementService {
-    Logger logger = LoggerFactory.getLogger( OrderManagementServiceImpl.class );
+@Service
+public class OrderServiceImpl implements OrderService {
+    Logger logger = LoggerFactory.getLogger( OrderServiceImpl.class );
 
     @Autowired
     private CustomerAddressService customerAddressService;
@@ -50,7 +52,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     @Autowired
     private ModelMapper mapper;
     @Autowired
-    private OrderManagementRepository orderManagementRepository;
+    private OrderRepository orderRepository;
     @Autowired
     private AuthenticatedUser authenticatedUser;
     @Autowired
@@ -68,7 +70,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
             List<OrderItem> orderItems = new ArrayList<>();
 
             if ( customerAddress != null && paymentMethod != null ) {
-                Order order = orderManagementRepository.save( getAllRequiredInformation( customerAddress,
+                Order order = orderRepository.save( getAllRequiredInformation( customerAddress,
                         paymentMethod,
                         cartItems ) );
                 emptyCart( cartItems );
@@ -100,7 +102,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     public List<OrderDto> getOrdersByAccountId() {
         List<OrderDto> orders = new ArrayList<>();
         Account account = authenticatedUser.getUserDetails();
-        for ( Order savedOrder : orderManagementRepository.findAllByAccountId( account.getId() ) ) {
+        for ( Order savedOrder : orderRepository.findAllByAccountId( account.getId() ) ) {
             orders.add( convertEntityToDto( savedOrder ) );
         }
         return orders;
@@ -133,10 +135,10 @@ public class OrderManagementServiceImpl implements OrderManagementService {
 
         Integer accountId = 0;
         if ( permission.equals( "ROLE_SUPER_ADMIN" ) || permission.equals( "ROLE_ADMIN" ) ) {
-            counts = orderManagementRepository.getOrderCountGroupBy();
+            counts = orderRepository.getOrderCountGroupBy();
         } else if ( permission.equals( "ROLE_USER" ) || permission.equals( "ROLE_CUSTOMER" ) ) {
             accountId = account.getId();
-            counts = orderManagementRepository.getCustomerOrderCountGroupBy(accountId);
+            counts = orderRepository.getCustomerOrderCountGroupBy(accountId);
         } else {
             throw new AccessDeniedException( "ACCESS DENIED" );
         }
@@ -164,7 +166,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
 
     @Override
     public Order getOrderByOrderId( String orderId ) {
-        return  orderManagementRepository.findByOrderId( orderId )
+        return  orderRepository.findByOrderId( orderId )
                 .orElseThrow(() -> new NotFoundException("No Order Found") );
     }
 
@@ -227,7 +229,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
         }
 
         logger.info(statuses.toString());
-        for ( Order savedOrder : orderManagementRepository.findAllByOrderStatusAndAccountId( statuses, id ) ) {
+        for ( Order savedOrder : orderRepository.findAllByOrderStatusAndAccountId( statuses, id ) ) {
             orders.add( convertEntityToDto( savedOrder ) );
         }
         return orders;
@@ -235,7 +237,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
 
     private List<OrderDto> getOrders( String status ) {
         List<OrderDto> orders = new ArrayList<>();
-        for ( Order savedOrder : orderManagementRepository.findAllByOrderStatus( status ) ) {
+        for ( Order savedOrder : orderRepository.findAllByOrderStatus( status ) ) {
             orders.add( convertEntityToDto( savedOrder ) );
         }
         return orders;
@@ -243,6 +245,11 @@ public class OrderManagementServiceImpl implements OrderManagementService {
 
     @Override
     public void saveOrder( Order order ) {
-        orderManagementRepository.save( order );
+        orderRepository.save( order );
+    }
+
+    @Override
+    public Page<Order> getPaymentTransactions( String query, Pageable pageable ) {
+        return orderRepository.getPaymentTransactions( pageable );
     }
 }

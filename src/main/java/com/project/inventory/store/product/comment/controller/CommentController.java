@@ -3,8 +3,7 @@ package com.project.inventory.store.product.comment.controller;
 import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.common.permission.service.AuthenticatedUser;
-import com.project.inventory.store.order.orderManagement.model.Order;
-import com.project.inventory.store.order.orderManagement.service.OrderManagementService;
+import com.project.inventory.store.order.service.OrderService;
 import com.project.inventory.store.product.comment.model.Comment;
 import com.project.inventory.store.product.comment.service.CommentService;
 import com.project.inventory.store.product.model.Product;
@@ -39,7 +38,7 @@ public class CommentController {
     private AuthenticatedUser authenticatedUser;
 
     @Autowired
-    private OrderManagementService orderManagementService;
+    private OrderService orderService;
 
     @RequestMapping( value = "", method = RequestMethod.POST )
     public ResponseEntity<?> saveComment(@RequestBody Comment comment) {
