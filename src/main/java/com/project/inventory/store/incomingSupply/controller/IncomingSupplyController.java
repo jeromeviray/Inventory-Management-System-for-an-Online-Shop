@@ -1,7 +1,9 @@
 package com.project.inventory.store.incomingSupply.controller;
 
+import com.project.inventory.store.incomingSupply.incomingSupplyItem.model.IncomingSupplyItem;
 import com.project.inventory.store.incomingSupply.model.IncomingSupply;
 import com.project.inventory.store.incomingSupply.model.IncomingSupplyDto;
+import com.project.inventory.store.incomingSupply.model.RequestUpdateIncomingSupply;
 import com.project.inventory.store.incomingSupply.service.IncomingSupplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -42,7 +44,7 @@ public class IncomingSupplyController {
         Page<IncomingSupply> incomingSupplies = incomingSupplyService.getIncomingSupplies( query, status, pageable );
         //convert incoming supply entity to dto
         List<IncomingSupplyDto> incomingSuppliesDto = new ArrayList<>();
-        for( IncomingSupply incomingSupply : incomingSupplies.getContent() ) {
+        for ( IncomingSupply incomingSupply : incomingSupplies.getContent() ) {
             incomingSuppliesDto.add( incomingSupplyService.convertEntityToDto( incomingSupply ) );
         }
         response.put( "data", incomingSuppliesDto );
@@ -60,11 +62,15 @@ public class IncomingSupplyController {
     public ResponseEntity<?> getIncomingSupply( @PathVariable int id ) {
         return new ResponseEntity( incomingSupplyService.convertEntityToDto( incomingSupplyService.getIncomingSupply( id ) ), HttpStatus.OK );
     }
-    @RequestMapping( value = "/update/{id}", method = RequestMethod.GET )
+
+    @RequestMapping( value = "/update/{id}", method = RequestMethod.PUT )
     @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN') or hasRole('ROLE_ADMIN')" )
-    public ResponseEntity<?> updateIncomingSupply( @PathVariable int id, @RequestBody IncomingSupply incomingSupply ) {
+    public ResponseEntity<?> updateIncomingSupply( @PathVariable int id,
+                                                   @RequestBody RequestUpdateIncomingSupply requestUpdateIncomingSupply ) {
+        incomingSupplyService.updateIncomingSupply( id, requestUpdateIncomingSupply.getIncomingSupply(), requestUpdateIncomingSupply.getRemovedItems() );
         return new ResponseEntity( HttpStatus.OK );
     }
+
     @RequestMapping( value = "/delivered", method = RequestMethod.PUT )
     @PreAuthorize( "hasRole('ROLE_SUPER_ADMIN') or hasRole('ROLE_ADMIN')" )
     public ResponseEntity<?> markIncomingSupplyAsDelivered( @RequestParam( value = "id", defaultValue = "0", required = true ) int id ) {

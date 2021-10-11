@@ -15,4 +15,6 @@ public interface IncomingSupplyItemService {
     List<IncomingSupplyItem> getIncomingSupplyItems();
 
     IncomingSupplyItem getIncomingSupplyItem( int id );
+
+    IncomingSupplyItem checkIfExist( int id );
 }

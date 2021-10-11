@@ -4,6 +4,7 @@ import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.store.incomingSupply.incomingSupplyItem.model.IncomingSupplyItem;
 import com.project.inventory.store.incomingSupply.incomingSupplyItem.repository.IncomingSupplyItemRepository;
 import com.project.inventory.store.incomingSupply.incomingSupplyItem.service.IncomingSupplyItemService;
+import com.project.inventory.store.product.service.ProductService;
 import jdk.jfr.Frequency;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,8 @@ public class IncomingSupplyItemServiceImpl implements IncomingSupplyItemService 
 
     @Autowired
     private IncomingSupplyItemRepository incomingSupplyItemRepository;
+    @Autowired
+    private ProductService productService;
 
     @Override
     public void saveIncomingSupplyItem( IncomingSupplyItem incomingSupplyItem ) {
@@ -32,7 +35,7 @@ public class IncomingSupplyItemServiceImpl implements IncomingSupplyItemService 
     public void deleteIncomingSupplyItem( int id ) {
         try {
             logger.info( String.format( "Delete Incoming Item. %s", id ) );
-            incomingSupplyItemRepository.delete( getIncomingSupplyItem( id ) );
+            incomingSupplyItemRepository.deleteIncomingSupplyItem( getIncomingSupplyItem( id ).getId() );
         }catch ( Exception e ){
             throw e;
         }
@@ -45,7 +48,7 @@ public class IncomingSupplyItemServiceImpl implements IncomingSupplyItemService 
 
             IncomingSupplyItem savedIncomingSupplyItem = getIncomingSupplyItem( id );
             savedIncomingSupplyItem.setNumberReceived( incomingSupplyItem.getNumberReceived() );
-            savedIncomingSupplyItem.setProduct( incomingSupplyItem.getProduct() );
+            savedIncomingSupplyItem.setProduct( productService.getProductById( incomingSupplyItem.getProduct().getId() ) );
 
             return incomingSupplyItemRepository.save( savedIncomingSupplyItem );
         }catch ( Exception e ){
@@ -66,5 +69,10 @@ public class IncomingSupplyItemServiceImpl implements IncomingSupplyItemService 
     public IncomingSupplyItem getIncomingSupplyItem( int id ) {
         return incomingSupplyItemRepository.findById( id )
                 .orElseThrow(() -> new NotFoundException("Incoming Supply Item not Found. "+id) );
+    }
+
+    @Override
+    public IncomingSupplyItem checkIfExist( int id ) {
+        return incomingSupplyItemRepository.checkIfExist( id );
     }
 }

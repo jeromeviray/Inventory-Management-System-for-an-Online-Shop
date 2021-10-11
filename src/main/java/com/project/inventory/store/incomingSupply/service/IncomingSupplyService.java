@@ -1,5 +1,6 @@
 package com.project.inventory.store.incomingSupply.service;
 
+import com.project.inventory.store.incomingSupply.incomingSupplyItem.model.IncomingSupplyItem;
 import com.project.inventory.store.incomingSupply.model.IncomingSupply;
 import com.project.inventory.store.incomingSupply.model.IncomingSupplyDto;
 import org.springframework.data.domain.Page;
@@ -25,5 +26,5 @@ public interface IncomingSupplyService {
 
     void markIncomingSuppliesDelivered(int id);
 
-    void updateIncomingSupply(int id, IncomingSupply incomingSupply);
+    void updateIncomingSupply( int id, IncomingSupply incomingSupply, List<IncomingSupplyItem> incomingSupplyItems );
 }
