@@ -47,7 +47,7 @@ public class Order {
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss a")
     @UpdateTimestamp
-    @Column( name = "paid_at", nullable = false, columnDefinition = "DATETIME default null" )
+    @Column( name = "paidAt", nullable = false, columnDefinition = "DATETIME default null" )
     private Date paid_at;
 
 

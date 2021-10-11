@@ -109,13 +109,13 @@ class OrderController {
     @RequestMapping(value = "/{orderId}/paid/{status}", method = RequestMethod.PUT)
     public ResponseEntity<?> markOrderAsPaid( @PathVariable String orderId, @PathVariable String status ){
         Order order = orderService.getOrderByOrderId( orderId );
-        order.setPaymentStatus( new Integer("1") );
+        order.setPaymentStatus( 1 );
         order.setPaid_at( new Date() );
         orderService.saveOrder( order );
         return new ResponseEntity(order, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/payments", method = RequestMethod.PUT)
+    @RequestMapping(value = "/payments", method = RequestMethod.GET)
     public ResponseEntity<?> getPaymentTransactions(@RequestParam( value = "query", defaultValue = "", required = false ) String query,
                                                     @RequestParam( value = "page", defaultValue = "0" ) Integer page,
                                                     @RequestParam( value = "limit", defaultValue = "0" ) Integer limit){
@@ -128,7 +128,7 @@ class OrderController {
         response.put( "currentPage", orders.getNumber() );
         response.put( "totalItems", orders.getTotalElements() );
         response.put( "totalPages", orders.getTotalPages() );
-        return new ResponseEntity(orders, HttpStatus.OK);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
 //    @RequestMapping(value = "/transactions", method = RequestMethod.GET)
