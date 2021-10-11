@@ -6,11 +6,15 @@ import com.project.inventory.store.order.service.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -82,10 +86,14 @@ class OrderController {
                 stat = OrderStatus.DELIVERED;
                 break;
             case "payment_received":
-                stat = OrderStatus.PAYMENT_RECEIVED;
-                break;
+
         }
-        order.setOrderStatus( stat );
+        if(status == "payment_received") {
+            order.setPaymentStatus( new Integer("1") );
+            order.setPaid_at( new Date() );
+        } else {
+            order.setOrderStatus( stat );
+        }
         orderService.saveOrder(order);
         return new ResponseEntity( HttpStatus.OK );
     }
@@ -100,9 +108,27 @@ class OrderController {
 
     @RequestMapping(value = "/{orderId}/paid/{status}", method = RequestMethod.PUT)
     public ResponseEntity<?> markOrderAsPaid( @PathVariable String orderId, @PathVariable String status ){
-        return new ResponseEntity(orderService.convertEntityToDto(
-                orderService.getOrderByOrderId( orderId )
-        ), HttpStatus.OK);
+        Order order = orderService.getOrderByOrderId( orderId );
+        order.setPaymentStatus( new Integer("1") );
+        order.setPaid_at( new Date() );
+        orderService.saveOrder( order );
+        return new ResponseEntity(order, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/payments", method = RequestMethod.PUT)
+    public ResponseEntity<?> getPaymentTransactions(@RequestParam( value = "query", defaultValue = "", required = false ) String query,
+                                                    @RequestParam( value = "page", defaultValue = "0" ) Integer page,
+                                                    @RequestParam( value = "limit", defaultValue = "0" ) Integer limit){
+        Map<String, Object> response = new HashMap<>();
+
+        Pageable pageable = PageRequest.of( page, limit );
+
+        Page<Order> orders = orderService.getPaymentTransactions(query, pageable);
+        response.put( "data", orders.getContent() );
+        response.put( "currentPage", orders.getNumber() );
+        response.put( "totalItems", orders.getTotalElements() );
+        response.put( "totalPages", orders.getTotalPages() );
+        return new ResponseEntity(orders, HttpStatus.OK);
     }
 
 //    @RequestMapping(value = "/transactions", method = RequestMethod.GET)

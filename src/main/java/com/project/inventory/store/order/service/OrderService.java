@@ -3,6 +3,8 @@ package com.project.inventory.store.order.service;
 import com.project.inventory.store.cart.cartItem.model.CartItem;
 import com.project.inventory.store.order.model.Order;
 import com.project.inventory.store.order.model.OrderDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -14,6 +16,8 @@ public interface OrderService {
                      List<CartItem> cartItems );
 
     List<OrderDto> getOrdersByStatus(String status);
+
+    Page<Order> getPaymentTransactions( String query, Pageable pageable);
 
     Map<String, BigInteger> getOrderCountByStatus();
 

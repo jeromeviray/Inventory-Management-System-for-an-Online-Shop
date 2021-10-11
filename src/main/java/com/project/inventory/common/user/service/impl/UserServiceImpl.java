@@ -9,6 +9,7 @@ import com.project.inventory.common.user.model.UserAccount;
 import com.project.inventory.common.user.model.UserDto;
 import com.project.inventory.common.user.repository.UserRepository;
 import com.project.inventory.common.user.service.UserService;
+import com.project.inventory.exception.notFound.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,13 +101,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserInformationById( int id ) {
         return userRepository.findById( id )
-                .orElseThrow();
+                .orElseThrow(() -> new NotFoundException( "User not found." ));
     }
 
     @Override
     public User getUserInformationByAccountId( int accountId ) {
         return userRepository.findByAccountId( accountId )
-                .orElseThrow();
+                .orElseThrow( () -> new NotFoundException( "User not found." ) );
     }
 
     @Override

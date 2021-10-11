@@ -45,6 +45,12 @@ public class Order {
     @Column( name = "delivered_at", nullable = false, columnDefinition = "DATETIME default current_timestamp on update current_timestamp" )
     private Date deliveredAt;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss a")
+    @UpdateTimestamp
+    @Column( name = "paid_at", nullable = false, columnDefinition = "DATETIME default null" )
+    private Date paid_at;
+
+
     @ManyToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     @JoinColumn( name = "account_id", nullable = false )
     private Account account;
@@ -63,6 +69,15 @@ public class Order {
     @OneToMany( mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL )
     @JsonIgnoreProperties({"order"})
     private List<Comment> comments;
+
+    @Column( name = "payment_status", columnDefinition = "INTEGER DEFAULT '0'" )
+    Integer paymentStatus;
+
+    @Column( name = "tracking_url", columnDefinition = "VARCHAR(45) DEFAULT NULL" )
+    String trackingUrl;
+
+    @Column( name = "tracking_number", columnDefinition = "VARCHAR(45) DEFAULT NULL" )
+    String trackingNumber;
 
     public int getId() {
         return id;
@@ -148,8 +163,40 @@ public class Order {
         return comments;
     }
 
-    public void setComment( List<Comment> comments ) {
+    public void setComments( List<Comment> comments ) {
         this.comments = comments;
+    }
+
+    public Date getPaid_at() {
+        return paid_at;
+    }
+
+    public void setPaid_at( Date paid_at ) {
+        this.paid_at = paid_at;
+    }
+
+    public Integer getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus( Integer paymentStatus ) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public String getTrackingUrl() {
+        return trackingUrl;
+    }
+
+    public void setTrackingUrl( String trackingUrl ) {
+        this.trackingUrl = trackingUrl;
+    }
+
+    public String getTrackingNumber() {
+        return trackingNumber;
+    }
+
+    public void setTrackingNumber( String trackingNumber ) {
+        this.trackingNumber = trackingNumber;
     }
 
     @Override

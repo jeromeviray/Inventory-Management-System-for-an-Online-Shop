@@ -5,7 +5,6 @@ import com.project.inventory.store.incomingSupply.incomingSupplyItem.model.Incom
 import com.project.inventory.store.incomingSupply.incomingSupplyItem.repository.IncomingSupplyItemRepository;
 import com.project.inventory.store.incomingSupply.incomingSupplyItem.service.IncomingSupplyItemService;
 import com.project.inventory.store.product.service.ProductService;
-import jdk.jfr.Frequency;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
