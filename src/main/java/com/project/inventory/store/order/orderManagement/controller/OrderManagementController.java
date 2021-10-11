@@ -102,6 +102,14 @@ public class OrderManagementController {
         ), HttpStatus.OK);
     }
 
+
+    @RequestMapping(value = "/{orderId}/paid/{status}", method = RequestMethod.PUT)
+    public ResponseEntity<?> markOrderAsPaid( @PathVariable String orderId, @PathVariable String status ){
+        return new ResponseEntity(orderManagementService.convertEntityToDto(
+                orderManagementService.getOrderByOrderId( orderId )
+        ), HttpStatus.OK);
+    }
+
 //    @RequestMapping(value = "/transactions", method = RequestMethod.GET)
 //    public ResponseEntity<?> getPaymentTransaction( @RequestParam(value = "query", defaultValue = "") String query,
 //                                       @RequestParam(value = "page", defaultValue = "0") Integer page,
