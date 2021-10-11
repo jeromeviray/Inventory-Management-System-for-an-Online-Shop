@@ -1,6 +1,7 @@
 package com.project.inventory.store.order.orderManagement.service.impl;
 
 import com.project.inventory.common.permission.role.model.Role;
+import com.project.inventory.common.sms.service.Sms;
 import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.store.cart.cartItem.model.CartItem;
 import com.project.inventory.store.cart.cartItem.service.CartItemService;
@@ -52,6 +53,8 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     private OrderManagementRepository orderManagementRepository;
     @Autowired
     private AuthenticatedUser authenticatedUser;
+    @Autowired
+    private Sms sms;
 
     @Override
     public Order placeOrder( int customerAddressId, int paymentId, List<CartItem> cartItems ) {
@@ -80,6 +83,8 @@ public class OrderManagementServiceImpl implements OrderManagementService {
 
                 }
                 orderItemService.saveOrderItem( orderItems );
+                String message = "Your Order has been placed. Order id is "+order.getOrderId();
+                sms.sendSms( "+639387193843",message );
                 return order;
             } else {
                 logger.info( "Error has been occurs: " );

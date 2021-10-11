@@ -1,6 +1,5 @@
 package com.project.inventory.store.product.service;
 
-import com.project.inventory.store.product.model.FileImage;
 import com.project.inventory.store.product.model.Product;
 import com.project.inventory.store.product.model.ProductAndInventoryDto;
 import com.project.inventory.store.product.model.ProductDto;
@@ -9,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 public interface ProductService {
     Product saveProduct( MultipartFile[] productImages,
@@ -31,8 +29,6 @@ public interface ProductService {
 
     void deleteProduct( int id );
 
-//    List<Product> getAllAvailableProducts();
-
     Page<ProductAndInventoryDto> getProducts( String query, Pageable pageable );
 
     ProductAndInventoryDto getProductAndInventoryByProductId( int id );
@@ -44,13 +40,11 @@ public interface ProductService {
     ProductDto convertEntityToDto( Product product );
 
     Product convertDtoToEntity( ProductDto productDto );
-//
-//    int getTotalStocks( Product product );
 
     byte[] getImage( String image ) throws IOException;
 
-    //
-//    List<Product> searchProductByBarcodeOrProductName(String query);
     Page<ProductAndInventoryDto> getProductByCategoryName( String categoryName, String query, Pageable pageable );
+
+    Page<ProductAndInventoryDto> getProductByStatus(String query, String status, Pageable pageable);
 
 }

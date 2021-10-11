@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 
 @Service(value = "smsImpl")
 public class SmsImpl implements Sms {
-   public static final String ACCOUNT_SID = "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
-   public static final String AUTH_TOKEN = "your_auth_token";
-   public static final String FROM = "FROM";
+   public static final String ACCOUNT_SID = "ACf756c0b3173a674655ac1ceb14f4a355";
+   public static final String AUTH_TOKEN = "d0b3bdc8b824ec0a859b45a5b4fad540";
+   public static final String FROM = "+63458144695";
 
    Logger logger = LoggerFactory.getLogger( SmsImpl.class);
 

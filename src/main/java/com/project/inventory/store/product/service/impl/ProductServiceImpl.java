@@ -39,6 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 @Service( value = "productServiceImpl" )
@@ -268,10 +269,29 @@ public class ProductServiceImpl implements ProductService {
             throw e;
         }
     }
-//    @Override
-//    public List<Product> searchProductByBarcodeOrProductName( String query ) {
-//        return productRepository.findAll(query);
-//    }
+
+    @Override
+    public Page<ProductAndInventoryDto> getProductByStatus( String query, String status, Pageable pageable ) {
+        try {
+            List<ProductAndInventoryDto> productRecordByPages = new ArrayList<>();
+            Page<Product> products;
+            if( !Objects.equals( status, "" ) ) {
+                products = productRepository.findAllProductsByStatus( query, status, pageable );
+            } else {
+                products = productRepository.findAll( query, pageable );
+            }
+            for ( Product product : products.getContent() ) {
+                ProductAndInventoryDto productAndInventory = new ProductAndInventoryDto();
+                InventoryDto inventory = inventoryService.convertEntityToDto( product.getInventory() );
+                productAndInventory.setProduct( convertEntityToDto( product ) );
+                productAndInventory.setInventory( inventory );
+                productRecordByPages.add( productAndInventory );
+            }
+            return new PageImpl<>( productRecordByPages, pageable, products.getTotalElements() );
+        } catch ( Exception e ) {
+            throw e;
+        }
+    }
 
     public List<FileImage> getFileImages( MultipartFile[] files, Product product ) throws IOException {
 

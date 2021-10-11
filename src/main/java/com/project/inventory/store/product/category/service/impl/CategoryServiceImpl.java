@@ -78,7 +78,6 @@ public class CategoryServiceImpl implements CategoryService {
     public Page<CategoriesWithTotalProductsDto> getCategoriesWithTotalProducts( String query, Pageable pageable ) {
         try {
             Page<CategoriesWithTotalProductsDto> categories = categoryRepository.findAll(query, pageable);
-            logger.info( "{}", categoryRepository.findAll(query, pageable) );
             List<CategoriesWithTotalProductsDto> categoryRecordsByPage = new ArrayList<>();
             for(CategoriesWithTotalProductsDto categoriesWithTotalProductsDto : categories.getContent()){
                 categoryRecordsByPage.add( categoriesWithTotalProductsDto );

@@ -177,7 +177,7 @@ public class ProductController {
         return new ResponseEntity<>( response, HttpStatus.OK );
     }
 
-    @RequestMapping( value = "category/{categoryName}", method = RequestMethod.GET )
+    @RequestMapping( value = "/category/{categoryName}", method = RequestMethod.GET )
     public ResponseEntity<?> getProductByCategoryName( @PathVariable String categoryName,
                                                        @RequestParam( value = "query", defaultValue = "", required = false ) String query,
                                                        @RequestParam( value = "page", defaultValue = "0" ) Integer page,
@@ -187,6 +187,28 @@ public class ProductController {
 
         Pageable pageable = PageRequest.of( page, limit );
         Page<ProductAndInventoryDto> products = productService.getProductByCategoryName( categoryName, query, pageable );
+        List<ProductAndInventoryDto> productDto = new ArrayList<>();
+        for ( ProductAndInventoryDto productAndInventoryDto : products.getContent() ) {
+            productDto.add( productAndInventoryDto );
+        }
+        response.put( "data", productDto );
+        response.put( "currentPage", products.getNumber() );
+        response.put( "totalItems", products.getTotalElements() );
+        response.put( "totalPages", products.getTotalPages() );
+
+        return new ResponseEntity<>( response, HttpStatus.OK );
+    }
+
+    @PreAuthorize( "hasRole('ROLE_ADMIN') OR hasRole('ROLE_SUPER_ADMIN')" )
+    @RequestMapping(value = "/status", method = RequestMethod.GET)
+    public ResponseEntity<?> getProductByStatus( @RequestParam( value = "status", defaultValue = "", required = false ) String status,
+                                                 @RequestParam( value = "query", defaultValue = "", required = false ) String query,
+                                                 @RequestParam( value = "page", defaultValue = "0" ) Integer page,
+                                                 @RequestParam( value = "limit", defaultValue = "10" ) Integer limit ) {
+        Map<String, Object> response = new HashMap<>();
+
+        Pageable pageable = PageRequest.of( page, limit );
+        Page<ProductAndInventoryDto> products = productService.getProductByStatus( query, status, pageable );
         List<ProductAndInventoryDto> productDto = new ArrayList<>();
         for ( ProductAndInventoryDto productAndInventoryDto : products.getContent() ) {
             productDto.add( productAndInventoryDto );

@@ -7,10 +7,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-
+@Transactional
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query( value = "SELECT * FROM products WHERE product_is_deleted = 0 AND id =:id", nativeQuery = true )
@@ -29,12 +30,15 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             "OR p.barcode LIKE concat('%',:query)) AND p.product_is_deleted = 0",
             nativeQuery = true )
     Page<Product> findAll( @Param( "query" ) String query, Pageable pageable );
-//
-//    @Query( value = " SELECT * FROM products product " +
-//            "WHERE (product.product_name LIKE concat('%',:query,'%') " +
-//            "OR product.barcode LIKE concat('%',:query)) AND product.product_is_deleted = 0",
-//            nativeQuery = true )
-//    List<Product> searchProductByBarcodeOrName( @Param( "query" ) String query );
+
+    @Query( value = "SELECT * " +
+            "FROM products p " +
+            "LEFT JOIN inventories i " +
+            "ON p.id = i.product_id " +
+            "WHERE (p.product_is_deleted = 0 AND i.inventory_status =:status) AND (p.product_name LIKE concat('%',:query,'%') " +
+            "OR p.barcode LIKE concat('%',:query))",
+            nativeQuery = true )
+    Page<Product> findAllProductsByStatus( @Param( "query" ) String query, @Param( "status" ) String status, Pageable pageable );
 
     @Query( value = "SELECT * " +
             "FROM  products product " +
@@ -44,8 +48,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             "ON product.brand_id = brand.id " +
             "WHERE product.product_is_deleted = 0 " +
             "AND category.category_name =:categoryName " +
-            "AND (product.product_name LIKE concat('%', :query, '%') OR brand.brand_name LIKE concat('%', :query, '%'))" ,
+            "AND (product.product_name LIKE concat('%', :query, '%') OR brand.brand_name LIKE concat('%', :query, '%'))",
             countQuery = "SELECT count(*) FROM products product WHERE product.product_is_deleted = 0",
             nativeQuery = true )
-    Page<Product> findAllProductsByCategoryName(@Param( "categoryName" ) String categoryName, @Param("query") String query, Pageable pageable);
+    Page<Product> findAllProductsByCategoryName( @Param( "categoryName" ) String categoryName, @Param( "query" ) String query, Pageable pageable );
 }
