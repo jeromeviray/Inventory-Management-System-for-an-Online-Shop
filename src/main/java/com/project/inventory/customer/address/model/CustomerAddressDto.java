@@ -4,7 +4,7 @@ public class CustomerAddressDto {
     private int id;
     private String firstName;
     private String lastName;
-    private int phoneNumber;
+    private String phoneNumber;
     private int postalCode;
     private String region;
     private String city;
@@ -37,11 +37,11 @@ public class CustomerAddressDto {
         this.lastName = lastName;
     }
 
-    public int getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber( String phoneNumber ) {
         this.phoneNumber = phoneNumber;
     }
 

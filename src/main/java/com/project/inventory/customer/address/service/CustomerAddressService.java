@@ -7,12 +7,19 @@ import java.util.List;
 
 public interface CustomerAddressService {
 
-    CustomerAddress saveCustomerAddress(CustomerAddress customerAddress);
+    CustomerAddress saveCustomerAddress( CustomerAddress customerAddress );
+
     List<CustomerAddressDto> getCustomerAddresses();
-    CustomerAddressDto getCustomerAddress(int id);
-    CustomerAddressDto getCustomerAddressByAccountId(int accountId);
-    CustomerAddress updateCustomerAddress(int id, CustomerAddress customerAddress);
-    void deleteCustomerAddress(int id);
-    CustomerAddressDto convertEntityToDto(CustomerAddress customerAddress);
-    CustomerAddress convertDtoToEntity(CustomerAddressDto customerAddressDto);
+
+    CustomerAddressDto getCustomerAddress( int id );
+
+    CustomerAddressDto getCustomerAddressByAccountId( int accountId );
+
+    CustomerAddress updateCustomerAddress( int id, CustomerAddress customerAddress );
+
+    void deleteCustomerAddress( int id );
+
+    CustomerAddressDto convertEntityToDto( CustomerAddress customerAddress );
+
+    CustomerAddress convertDtoToEntity( CustomerAddressDto customerAddressDto );
 }

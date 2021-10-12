@@ -7,7 +7,7 @@ import javax.transaction.Transactional;
 import java.util.Objects;
 
 @Entity
-@Table(name = "addresses")
+@Table(name = "customer_addresses")
 @Transactional
 public class CustomerAddress {
 
@@ -22,7 +22,7 @@ public class CustomerAddress {
     private String lastName;
 
     @Column(name = "phoneNumber", nullable = false)
-    private int phoneNumber;
+    private String phoneNumber;
 
     @Column(name = "postalCode", nullable = false, columnDefinition = "int(7)")
     private int postalCode;
@@ -73,11 +73,11 @@ public class CustomerAddress {
         this.lastName = lastName;
     }
 
-    public int getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber( String phoneNumber ) {
         this.phoneNumber = phoneNumber;
     }
 
