@@ -13,15 +13,6 @@ import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Integer> {
 
-//    @Query( value = "SELECT * FROM order_management WHERE order_status = 'PENDING'", nativeQuery = true )
-//    List<Order> findAllByStatusPending();
-//
-//    @Query( value = "SELECT * FROM order_management WHERE order_status = 'CONFIRMED'", nativeQuery = true )
-//    List<Order> findAllByStatusConfirmed();
-//
-//    @Query( value = "SELECT * FROM order_management WHERE order_status = 'COMPLETED'", nativeQuery = true )
-//    List<Order> findAllByStatusCompleted();
-
     @Modifying
     @Query( value = "SELECT * FROM orders WHERE order_status =:status", nativeQuery = true )
     List<Order> findAllByOrderStatus( @Param( "status" ) String status );
@@ -32,7 +23,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     @Modifying
     @Query( value = "SELECT order_status, COUNT(*) as totalCount FROM orders  GROUP BY order_status", nativeQuery = true )
-    List<Object[]> getOrderCountGroupBy( );
+    List<Object[]> getOrderCountGroupBy();
 
     @Modifying
     @Query( value = "SELECT * FROM orders WHERE order_status IN (:status) AND account_id =:id", nativeQuery = true )
@@ -43,9 +34,20 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query( value = "SELECT * FROM orders WHERE account_id =:id", nativeQuery = true )
     List<Order> findAllByAccountId( @Param( "id" ) int id );
 
-    Optional<Order> findByOrderId( String orderId);
+    Optional<Order> findByOrderId( String orderId );
 
     @Query( value = "SELECT * FROM orders ", nativeQuery = true )
     Page<Order> getPaymentTransactions( Pageable pageable );
+
+    @Query(value = "SELECT product.id, product.product_name, product.product_price,product.barcode, count(product.id) as totalSold FROM inventory_system.order_items item\n" +
+            "JOIN inventory_system.products product " +
+            "ON item.product_id = product.id " +
+            "JOIN inventory_system.orders o " +
+            "ON item.order_id = o.id " +
+            "WHERE o.order_status = 'PAYMENT_RECEIVED' " +
+            "AND (product.product_name LIKE concat('%',:query,'%') OR product.barcode LIKE concat('%',:query,'%')) " +
+            "GROUP BY product.id " +
+            "ORDER BY totalSold", nativeQuery = true)
+    Page<Object[]> getProductsAndTotalSold(@Param("query") String query, Pageable pageable);
 
 }
