@@ -37,4 +37,9 @@ public class CommentServiceImpl implements CommentService {
     public void deleteComment( int id ) {
         commentRepository.deleteById( id );
     }
+
+    @Override
+    public Integer getProductRating( Integer productId ) {
+        return commentRepository.getProductRating( productId );
+    }
 }

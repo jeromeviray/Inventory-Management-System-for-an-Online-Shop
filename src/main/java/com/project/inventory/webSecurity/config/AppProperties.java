@@ -9,6 +9,8 @@ import java.util.List;
 public class AppProperties {
     private final OAuth2 oauth2 = new OAuth2();
 
+    private String hostName;
+
     public static final class OAuth2 {
         private List<String> authorizedRedirectUris = new ArrayList<>();
 
@@ -20,6 +22,14 @@ public class AppProperties {
             this.authorizedRedirectUris = authorizedRedirectUris;
             return this;
         }
+    }
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName( String hostName ) {
+        this.hostName = hostName;
     }
 
     public OAuth2 getOauth2() {

@@ -12,21 +12,28 @@ public class Promo {
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY )
     private int id;
+
     @Column( name = "quantity" )
     private int quantity;
+
     @Column( name = "sold_quantity" )
     private int soldQuantity;
+
     @Column( name = "percentage" )
     private int percentage;
+
     @JsonFormat(pattern = "dd-MMM-yyyy HH:mm:ss")
     @Column( name = "start_date" )
     private Date startDate;
+
     @JsonFormat(pattern = "dd-MMM-yyyy HH:mm:ss")
     @Column( name = "end_date" )
     private Date endDate;
+
     @Enumerated(EnumType.STRING)
     @Column( name = "status" )
     private PromoStatus status;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id", unique = true)
     private Product product;

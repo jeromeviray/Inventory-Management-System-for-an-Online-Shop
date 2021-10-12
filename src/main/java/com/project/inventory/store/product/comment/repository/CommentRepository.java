@@ -19,4 +19,8 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
             "WHERE product.id = :productId AND account_id = :accountId AND product.product_is_deleted = 0 ",
             nativeQuery = true)
     Comment findCommentByProductId( @Param( "accountId" ) Integer account_id, @Param("productId") Integer productId);
+
+    @Query(value = "SELECT CEIL(SUM(rating)/5) as rating FROM product_comments as w WHERE product_id = :productId",
+            nativeQuery = true)
+    Integer getProductRating(@Param("productId") Integer productId);
 }

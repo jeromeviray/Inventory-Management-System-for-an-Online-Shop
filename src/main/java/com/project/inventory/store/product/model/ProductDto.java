@@ -15,6 +15,7 @@ public class ProductDto {
     private BrandDto brand;
     private CategoryDto category;
     private List<FileImageDto> fileImages;
+    private Integer rating;
 
     public int getId() {
         return id;
@@ -78,6 +79,14 @@ public class ProductDto {
 
     public void setFileImages( List<FileImageDto> fileImages ) {
         this.fileImages = fileImages;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating( Integer rating ) {
+        this.rating = rating;
     }
 
     @Override

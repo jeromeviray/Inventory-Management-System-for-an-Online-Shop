@@ -2,6 +2,7 @@ package com.project.inventory.store.product.wishlist.controller;
 
 import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.service.AuthenticatedUser;
+import com.project.inventory.store.product.comment.service.CommentService;
 import com.project.inventory.store.product.model.Product;
 import com.project.inventory.store.product.model.ProductAndInventoryDto;
 import com.project.inventory.store.product.service.ProductService;
@@ -33,6 +34,9 @@ public class WishlistController {
     @Autowired
     private AuthenticatedUser authenticatedUser;
 
+    @Autowired
+    private CommentService commentService;
+
     @RequestMapping( value = "", method = RequestMethod.POST )
     public ResponseEntity<?> saveWishlist(@RequestBody Product product) {
         Account account = authenticatedUser.getUserDetails();
@@ -54,6 +58,9 @@ public class WishlistController {
         Account account = authenticatedUser.getUserDetails();
 
         Page<Wishlist> wishlist = wishlistService.getWishlist( account.getId(), query, pageable );
+        for(Wishlist wishlist1 : wishlist.getContent()) {
+            wishlist1.getProduct().setRating( commentService.getProductRating( wishlist1.getProduct().getId() ) );
+        }
         response.put("data", wishlist.getContent());
         response.put("currentPage", wishlist.getNumber());
         response.put("totalItems", wishlist.getTotalElements());

@@ -207,13 +207,7 @@ public class OrderServiceImpl implements OrderService {
 
         for ( CartItemDto cartItem : cartItems ) {
             Product product = productService.getProductById( cartItem.getProduct().getProduct().getId() );
-            if(product.getPromo() != null){
-                Promo promo = product.getPromo();
 
-                if(promo.getStatus().equals( PromoStatus.ONGOING )){
-                    promoService.setSoldItems( promo.getId(), cartItem.getQuantity() );
-                }
-            }
             double discount = promoService.getDiscount( product );
             double price = product.getPrice() - discount;
             double amount = cartItem.getQuantity() * price;
