@@ -1,5 +1,6 @@
 package com.project.inventory.store.cart.cartItem.model;
 
+import com.project.inventory.store.product.model.ProductAndInventoryDto;
 import com.project.inventory.store.product.model.ProductDto;
 
 public class CartItemDto {
@@ -9,7 +10,7 @@ public class CartItemDto {
     private double amount;
 //    @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss a")
     private String addedAt;
-    private ProductDto product;
+    private ProductAndInventoryDto product;
 
 
     public int getId() {
@@ -44,11 +45,17 @@ public class CartItemDto {
         this.addedAt = addedAt;
     }
 
-    public ProductDto getProduct() {
+
+    public ProductAndInventoryDto getProduct() {
         return product;
     }
 
-    public void setProduct(ProductDto product) {
+    public void setProduct( ProductAndInventoryDto product ) {
         this.product = product;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

@@ -32,7 +32,7 @@ public interface ProductService {
 
     Page<ProductAndInventoryDto> getProducts( String query, Pageable pageable ) throws ParseException;
 
-    ProductAndInventoryDto getProductAndInventoryByProductId( int id );
+    ProductAndInventoryDto getProductAndInventoryByProductId( int id ) throws ParseException;
 
     Product getProductById( int id );
 

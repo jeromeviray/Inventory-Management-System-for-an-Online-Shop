@@ -1,6 +1,7 @@
 package com.project.inventory.store.product.service.impl;
 
 import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.common.permission.service.AuthenticatedUser;
 import com.project.inventory.exception.invalid.InvalidException;
 import com.project.inventory.exception.notFound.product.ProductNotFound;
@@ -28,6 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,7 +68,8 @@ public class ProductServiceImpl implements ProductService {
     private BrandService brandService;
     @Autowired
     private CategoryService categoryService;
-
+    @Autowired
+    private AccountService accountService;
     @Autowired
     private WishlistService wishlistService;
 
@@ -103,9 +108,9 @@ public class ProductServiceImpl implements ProductService {
 
             // after saving product and inventory
             // the image of the product will save also
-            if( productImages != null ) {
-                for( FileImage fileImage : getFileImages( productImages, savedProduct ) ) {
-                    if( savedProduct != null ) {
+            if ( productImages != null ) {
+                for ( FileImage fileImage : getFileImages( productImages, savedProduct ) ) {
+                    if ( savedProduct != null ) {
                         fileImage.setProduct( savedProduct );
                         fileImages.add( fileImage );
                     }
@@ -115,7 +120,7 @@ public class ProductServiceImpl implements ProductService {
 
             return savedProduct;
 
-        } catch( InvalidException | IOException e ) {
+        } catch ( InvalidException | IOException e ) {
             throw new InvalidException( "Unsuccessfully saved. Please Try Again!" );
         }
     }
@@ -140,7 +145,6 @@ public class ProductServiceImpl implements ProductService {
                                   String brandName, String categoryName,
                                   String[] removedImages
     ) throws Exception {
-        logger.info( "{}", id );
         Category category = categoryService.getCategoryByCategoryName( categoryName );
         Brand brand = brandService.getBrandByBrandName( brandName );
         Product product = getProductById( id );
@@ -153,11 +157,11 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory( category );
         Product savedProduct = productRepository.save( product );
         //remove the image in directory and database
-        if( removedImages != null ) {
-            for( String removedImage : removedImages ) {
+        if ( removedImages != null ) {
+            for ( String removedImage : removedImages ) {
                 logger.info( "{}", removedImage );
                 FileImage fileImage = fileImageService.getFileImageByFileNameAndProductId( removedImage, savedProduct.getId() );
-                if( fileImage != null ) {
+                if ( fileImage != null ) {
                     Path path = Paths.get( rootFile + product.getId(), removedImage );
                     fileImageService.deleteFileImage( fileImage, path, product.getId() );
                 }
@@ -165,8 +169,8 @@ public class ProductServiceImpl implements ProductService {
         }
         // add the new Images
         List<FileImage> fileImages = new ArrayList<>();
-        if( productImages != null ) {
-            for( FileImage fileImage : getFileImages( productImages, savedProduct ) ) {
+        if ( productImages != null ) {
+            for ( FileImage fileImage : getFileImages( productImages, savedProduct ) ) {
                 fileImage.setProduct( savedProduct );
                 fileImages.add( fileImage );
             }
@@ -186,28 +190,110 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductAndInventoryDto> getProducts( String query, Pageable pageable ) throws ParseException {
+
         try {
             List<ProductAndInventoryDto> productRecordByPages = new ArrayList<>();
             Page<Product> products = productRepository.findAll( query, pageable );
-            for( Product product : products.getContent() ) {
-                ProductAndInventoryDto productAndInventory = new ProductAndInventoryDto();
-                InventoryDto inventory = inventoryService.convertEntityToDto( product.getInventory() );
-                productAndInventory.setProduct( convertEntityToDto( product ) );
-                productAndInventory.setInventory( inventory );
-                if( product.getPromo() != null ) {
-                    Promo promo = product.getPromo();
-                    promo.setStatus( promoService.checkSchedulePromo( promo ) );
-                    promoService.updatePromo( promo.getId(), promo );
-                    productAndInventory.setPromo( promoService.convertEntityToDto( promo ) );
-                }
+
+            for ( Product product : products.getContent() ) {
+                ProductAndInventoryDto productAndInventory = getProductAndInventoryByProductId( product.getId() );
+//                InventoryDto inventory = inventoryService.convertEntityToDto( product.getInventory() );
+//                productAndInventory.setProduct( convertEntityToDto( product ) );
+//                productAndInventory.setInventory( inventory );
+//
+//                if ( product.getPromo() != null ) {
+//                    Promo promo = product.getPromo();
+//                    promo.setStatus( promoService.checkSchedulePromo( promo ) );
+//                    promoService.updatePromo( promo.getId(), promo );
+//                    productAndInventory.setPromo( promoService.convertEntityToDto( promo ) );
+//                }
                 productRecordByPages.add( productAndInventory );
             }
             return new PageImpl<>( productRecordByPages, pageable, products.getTotalElements() );
-        } catch( Exception e ) {
+        } catch ( Exception e ) {
+            throw e;
+        }
+    }
+    @Override
+    public Page<ProductAndInventoryDto> getProductByCategoryName( String categoryName, String query, Pageable pageable ) throws ParseException {
+        try {
+            List<ProductAndInventoryDto> productRecordByPages = new ArrayList<>();
+            Page<Product> products = productRepository.findAllProductsByCategoryName( categoryName, query, pageable );
+            for ( Product product : products.getContent() ) {
+                ProductAndInventoryDto productAndInventory = getProductAndInventoryByProductId( product.getId() );
+//                InventoryDto inventory = inventoryService.convertEntityToDto( product.getInventory() );
+//                productAndInventory.setProduct( convertEntityToDto( product ) );
+//                productAndInventory.setInventory( inventory );
+//                try {
+//                    Account account = authenticatedUser.getUserDetails();
+//                    logger.info( "{}", account.getId() );
+//                    Wishlist wishlist = wishlistService.getWishlistByProductId( account.getId(), product.getId() );
+//                    productAndInventory.setWishlist( wishlist );
+//                } catch ( Exception e ) {
+//                    ///
+//                }
+//                if ( product.getPromo() != null ) {
+//                    Promo promo = product.getPromo();
+//                    promo.setStatus( promoService.checkSchedulePromo( promo ) );
+//                    promoService.updatePromo( promo.getId(), promo );
+//                    productAndInventory.setPromo( promoService.convertEntityToDto( promo ) );
+//                }
+                productRecordByPages.add( productAndInventory );
+            }
+            return new PageImpl<>( productRecordByPages, pageable, products.getTotalElements() );
+        } catch ( Exception e ) {
             throw e;
         }
     }
 
+    @Override
+    public Page<ProductAndInventoryDto> getProductByStatus( String query, String status, Pageable pageable ) {
+        try {
+            List<ProductAndInventoryDto> productRecordByPages = new ArrayList<>();
+            Page<Product> products;
+            if ( !Objects.equals( status, "" ) ) {
+                products = productRepository.findAllProductsByStatus( query, status, pageable );
+            } else {
+                products = productRepository.findAll( query, pageable );
+            }
+            for ( Product product : products.getContent() ) {
+                ProductAndInventoryDto productAndInventory = new ProductAndInventoryDto();
+                InventoryDto inventory = inventoryService.convertEntityToDto( product.getInventory() );
+                productAndInventory.setProduct( convertEntityToDto( product ) );
+                productAndInventory.setInventory( inventory );
+                productRecordByPages.add( productAndInventory );
+            }
+            return new PageImpl<>( productRecordByPages, pageable, products.getTotalElements() );
+        } catch ( Exception e ) {
+            throw e;
+        }
+    }
+
+    @Override
+    public Page<ProductAndInventoryDto> getProductsWithPromo( String query, String status, Pageable pageable ) throws ParseException {
+        try {
+            List<ProductAndInventoryDto> productRecordByPages = new ArrayList<>();
+            Page<Product> products;
+            if ( !Objects.equals( status, "" ) ) {
+                products = productRepository.findAllProductsWithPromoAndStatus( query, status, pageable );
+            } else {
+                products = productRepository.findAllProductsWithPromo( query, pageable );
+            }
+            for ( Product product : products.getContent() ) {
+                ProductAndInventoryDto productAndInventory = new ProductAndInventoryDto();
+                productAndInventory.setProduct( convertEntityToDto( product ) );
+                productAndInventory.setInventory( inventoryService.convertEntityToDto( product.getInventory() ) );
+                Promo promo = product.getPromo();
+                promo.setStatus( promoService.checkSchedulePromo( promo ) );
+                promoService.updatePromo( promo.getId(), promo );
+                productAndInventory.setPromo( promoService.convertEntityToDto( promo ) );
+                productRecordByPages.add( productAndInventory );
+            }
+            return new PageImpl<>( productRecordByPages, pageable, products.getTotalElements() );
+        } catch ( Exception e ) {
+            throw e;
+        }
+    }
     @Override
     public Product getProductById( int id ) {
 
@@ -217,16 +303,25 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductAndInventoryDto getProductAndInventoryByProductId( int id ) {
+    public ProductAndInventoryDto getProductAndInventoryByProductId( int id ) throws ParseException {
         ProductAndInventoryDto productAndInventoryDto = new ProductAndInventoryDto();
+        Product product = getProductById( id );
         try {
             Account account = authenticatedUser.getUserDetails();
             Wishlist wishlist = wishlistService.getWishlistByProductId( account.getId(), id );
-            productAndInventoryDto.setWishlist( wishlist );
-        } catch( Exception e ) {
-            //
+            if ( wishlist != null ) {
+                productAndInventoryDto.setWishlist( wishlist );
+            }
+        } catch ( Exception e ) {
+            ///
         }
-        Product product = getProductById( id );
+
+        Promo promo = promoService.getPromoByProductId( product.getId(), "ONGOING" );
+        if ( promo != null ) {
+            promo.setStatus( promoService.checkSchedulePromo( promo ) );
+            promoService.updatePromo( promo.getId(), promo );
+            productAndInventoryDto.setPromo( promoService.convertEntityToDto( promo ) );
+        }
         productAndInventoryDto.setProduct( convertEntityToDto( product ) );
         productAndInventoryDto.setInventory( inventoryService.convertEntityToDto( product.getInventory() ) );
         return productAndInventoryDto;
@@ -258,81 +353,7 @@ public class ProductServiceImpl implements ProductService {
         try {
             InputStream readImage = servletContext.getResourceAsStream( "WEB-INF/inventory-management-system-reactjs/public/images/products/" + image );
             return IOUtils.toByteArray( readImage );
-        } catch( Exception e ) {
-            throw e;
-        }
-    }
-
-    @Override
-    public Page<ProductAndInventoryDto> getProductByCategoryName( String categoryName, String query, Pageable pageable ) throws ParseException {
-        try {
-            List<ProductAndInventoryDto> productRecordByPages = new ArrayList<>();
-            Page<Product> products = productRepository.findAllProductsByCategoryName( categoryName, query, pageable );
-            for( Product product : products.getContent() ) {
-                ProductAndInventoryDto productAndInventory = new ProductAndInventoryDto();
-                InventoryDto inventory = inventoryService.convertEntityToDto( product.getInventory() );
-                productAndInventory.setProduct( convertEntityToDto( product ) );
-                productAndInventory.setInventory( inventory );
-                if( product.getPromo() != null ) {
-                    Promo promo = product.getPromo();
-                    promo.setStatus( promoService.checkSchedulePromo( promo ) );
-                    promoService.updatePromo( promo.getId(), promo );
-                    productAndInventory.setPromo( promoService.convertEntityToDto( promo ) );
-                }
-                productRecordByPages.add( productAndInventory );
-            }
-            return new PageImpl<>( productRecordByPages, pageable, products.getTotalElements() );
-        } catch( Exception e ) {
-            throw e;
-        }
-    }
-
-    @Override
-    public Page<ProductAndInventoryDto> getProductByStatus( String query, String status, Pageable pageable ) {
-        try {
-            List<ProductAndInventoryDto> productRecordByPages = new ArrayList<>();
-            Page<Product> products;
-            if( ! Objects.equals( status, "" ) ) {
-                products = productRepository.findAllProductsByStatus( query, status, pageable );
-            } else {
-                products = productRepository.findAll( query, pageable );
-            }
-            for( Product product : products.getContent() ) {
-                ProductAndInventoryDto productAndInventory = new ProductAndInventoryDto();
-                InventoryDto inventory = inventoryService.convertEntityToDto( product.getInventory() );
-                productAndInventory.setProduct( convertEntityToDto( product ) );
-                productAndInventory.setInventory( inventory );
-                productRecordByPages.add( productAndInventory );
-            }
-            return new PageImpl<>( productRecordByPages, pageable, products.getTotalElements() );
-        } catch( Exception e ) {
-            throw e;
-        }
-    }
-
-    @Override
-    public Page<ProductAndInventoryDto> getProductsWithPromo( String query, String status, Pageable pageable ) throws ParseException {
-        try {
-            List<ProductAndInventoryDto> productRecordByPages = new ArrayList<>();
-            logger.info( "{}",status );
-            Page<Product> products;
-            if( ! Objects.equals( status, "" ) ) {
-                products = productRepository.findAllProductsWithPromoAndStatus( query, status, pageable );
-            } else {
-                products = productRepository.findAllProductsWithPromo( query, pageable );
-            }
-            for( Product product : products.getContent() ) {
-                ProductAndInventoryDto productAndInventory = new ProductAndInventoryDto();
-                productAndInventory.setProduct( convertEntityToDto( product ) );
-                productAndInventory.setInventory( inventoryService.convertEntityToDto( product.getInventory() ) );
-                Promo promo = product.getPromo();
-                promo.setStatus( promoService.checkSchedulePromo( promo ) );
-                promoService.updatePromo( promo.getId(), promo );
-                productAndInventory.setPromo( promoService.convertEntityToDto( promo ) );
-                productRecordByPages.add( productAndInventory );
-            }
-            return new PageImpl<>( productRecordByPages, pageable, products.getTotalElements() );
-        } catch( Exception e ) {
+        } catch ( Exception e ) {
             throw e;
         }
     }
@@ -341,18 +362,18 @@ public class ProductServiceImpl implements ProductService {
 
         File directory = new File( rootFile + product.getId() );
         //folder for each product images
-        if( ! directory.exists() ) {
+        if ( !directory.exists() ) {
             directory.mkdir();
         }
         List<FileImage> fileImageList = new ArrayList<>();
         // reading all the image file and getting the details of the image
-        for( MultipartFile file : files ) {
+        for ( MultipartFile file : files ) {
             String imageName = "PR_" + generateStrings() + "_" + file.getOriginalFilename();
             Path path = Paths.get( rootFile + product.getId(), imageName );
 //            String filename = file.getOriginalFilename();
             try {
                 Files.write( path, file.getBytes() );
-            } catch( IOException e ) {
+            } catch ( IOException e ) {
                 e.printStackTrace();
                 throw new MultipartException( "You got an Error men" );
             }
@@ -367,7 +388,7 @@ public class ProductServiceImpl implements ProductService {
 
     private List<FileImageDto> getFileImageDto( List<FileImage> fileImages ) {
         List<FileImageDto> fileImageDto = new ArrayList<>();
-        for( FileImage fileImage : fileImages ) {
+        for ( FileImage fileImage : fileImages ) {
             fileImageDto.add( fileImageService.convertEntityToDto( fileImage ) );
         }
         return fileImageDto;
@@ -377,7 +398,7 @@ public class ProductServiceImpl implements ProductService {
         String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijk";
         Random rnd = new Random();
         StringBuilder randomString = new StringBuilder( 5 );
-        for( int i = 0; i < 5; i++ ) {
+        for ( int i = 0; i < 5; i++ ) {
             randomString.append( chars.charAt( rnd.nextInt( chars.length() ) ) );
         }
         return randomString.toString();

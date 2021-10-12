@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
+
 @RestController
 @RequestMapping(value = "api/v1/cart")
 public class CartController {
@@ -23,7 +25,7 @@ public class CartController {
     private AuthenticatedUser authenticatedUser;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<Cart> getCart(){
+    public ResponseEntity<Cart> getCart() throws ParseException {
         Account account = authenticatedUser.getUserDetails();
         return new ResponseEntity(cartService.getCartByAccountIdDto(account.getId()), HttpStatus.ACCEPTED);
     }

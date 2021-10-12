@@ -4,6 +4,7 @@ import com.project.inventory.store.cart.cartItem.model.CartItem;
 import com.project.inventory.store.cart.model.Cart;
 import com.project.inventory.store.cart.model.CartDto;
 
+import java.text.ParseException;
 import java.util.List;
 
 public interface CartService {
@@ -13,7 +14,7 @@ public interface CartService {
 
     Cart getCartByAccountId( int accountId );
 
-    CartDto getCartByAccountIdDto( int accountId );
+    CartDto getCartByAccountIdDto( int accountId ) throws ParseException;
 
     Cart getCartById( int id );
 

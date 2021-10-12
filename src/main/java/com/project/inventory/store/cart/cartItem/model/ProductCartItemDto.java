@@ -1,12 +1,14 @@
-package com.project.inventory.store.product.model;
+package com.project.inventory.store.cart.cartItem.model;
 
+import com.project.inventory.store.inventory.model.InventoryDto;
 import com.project.inventory.store.product.brand.model.BrandDto;
 import com.project.inventory.store.product.category.model.CategoryDto;
+import com.project.inventory.store.product.model.FileImageDto;
+import com.project.inventory.store.product.promo.model.PromoDto;
 
 import java.util.List;
 
-public class ProductDto {
-
+public class ProductCartItemDto {
     private int id;
     private String productName;
     private String productDescription;
@@ -15,7 +17,8 @@ public class ProductDto {
     private BrandDto brand;
     private CategoryDto category;
     private List<FileImageDto> fileImages;
-    private Integer rating;
+    private PromoDto promo;
+    private InventoryDto inventory;
 
     public int getId() {
         return id;
@@ -81,12 +84,20 @@ public class ProductDto {
         this.fileImages = fileImages;
     }
 
-    public Integer getRating() {
-        return rating;
+    public PromoDto getPromo() {
+        return promo;
     }
 
-    public void setRating( Integer rating ) {
-        this.rating = rating;
+    public void setPromo( PromoDto promo ) {
+        this.promo = promo;
+    }
+
+    public InventoryDto getInventory() {
+        return inventory;
+    }
+
+    public void setInventory( InventoryDto inventory ) {
+        this.inventory = inventory;
     }
 
     @Override

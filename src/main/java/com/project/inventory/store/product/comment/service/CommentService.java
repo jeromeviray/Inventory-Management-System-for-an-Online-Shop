@@ -13,4 +13,6 @@ public interface CommentService {
 
     void deleteComment( int id );
 
+    Integer getProductRating(Integer productId);
+
 }

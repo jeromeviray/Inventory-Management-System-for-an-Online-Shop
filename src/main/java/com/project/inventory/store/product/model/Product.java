@@ -50,14 +50,16 @@ public class Product implements Serializable {
     private boolean isDeleted = false;
 
     @OneToOne( mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER )
-    @JsonIgnoreProperties({"product", "hibernateLazyInitializer"})
+    @JsonIgnoreProperties({"product", "stock", "hibernateLazyInitializer"})
     private Inventory inventory;
 
     @OneToMany( mappedBy = "product", fetch = FetchType.EAGER )
+    @JsonIgnoreProperties({"product", "hibernateLazyInitializer"})
     private List<FileImage> fileImages;
 
     @ManyToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     @JoinColumn( name = "brand_id" )
+    @JsonIgnoreProperties({"product", "hibernateLazyInitializer"})
     private Brand brand;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
@@ -70,10 +72,14 @@ public class Product implements Serializable {
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn( name = "category_id" )
+    @JsonIgnoreProperties({"product", "hibernateLazyInitializer"})
     private Category category;
 
     @OneToOne(mappedBy = "product", fetch = FetchType.EAGER)
+    @JsonIgnoreProperties({"product", "hibernateLazyInitializer"})
     private Promo promo;
+
+    private Integer rating;
 
     public int getId() {
         return id;
@@ -193,6 +199,14 @@ public class Product implements Serializable {
 
     public void setPromo( Promo promo ) {
         this.promo = promo;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating( Integer rating ) {
+        this.rating = rating;
     }
 
     @Override

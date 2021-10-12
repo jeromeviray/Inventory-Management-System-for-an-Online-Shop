@@ -4,10 +4,12 @@ import com.project.inventory.store.inventory.model.InventoryDto;
 import com.project.inventory.store.inventory.service.InventoryService;
 import com.project.inventory.store.product.brand.service.BrandService;
 import com.project.inventory.store.product.category.service.CategoryService;
+import com.project.inventory.store.product.comment.service.CommentService;
 import com.project.inventory.store.product.model.Product;
 import com.project.inventory.store.product.model.ProductAndInventoryDto;
 import com.project.inventory.store.product.model.ProductDto;
 import com.project.inventory.store.product.service.ProductService;
+import com.project.inventory.store.product.wishlist.model.Wishlist;
 import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -49,6 +51,9 @@ public class ProductController {
     private ServletContext servletContext;
     @Autowired
     private ModelMapper mapper;
+
+    @Autowired
+    private CommentService commentService;
 
     @PreAuthorize( "hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')" )
     @RequestMapping( value = "/save", method = RequestMethod.POST, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE } )
@@ -120,7 +125,9 @@ public class ProductController {
 
         Pageable pageable = PageRequest.of( page, limit );
         Page<ProductAndInventoryDto> products = productService.getProducts( query, pageable );
-
+        for(ProductAndInventoryDto product : products.getContent()) {
+            product.getProduct().setRating( commentService.getProductRating( product.getProduct().getId() ) );
+        }
         response.put( "data", products.getContent() );
         response.put( "currentPage", products.getNumber() );
         response.put( "totalItems", products.getTotalElements() );
@@ -130,15 +137,17 @@ public class ProductController {
     }
 
     @RequestMapping( value = "/{id}", method = RequestMethod.GET )
-    public ResponseEntity<?> getProductById( @PathVariable int id ) throws IOException {
-
-        return new ResponseEntity( productService.getProductAndInventoryByProductId( id ), HttpStatus.OK );
+    public ResponseEntity<?> getProductById( @PathVariable int id ) throws IOException, ParseException {
+        ProductAndInventoryDto productAndInventoryDto = productService.getProductAndInventoryByProductId( id );
+        productAndInventoryDto.getProduct().setRating( commentService.getProductRating( productAndInventoryDto.getProduct().getId() ) );
+        return new ResponseEntity( productAndInventoryDto, HttpStatus.OK );
     }
 
     @RequestMapping( value = "/details/{id}", method = RequestMethod.GET )
-    public ResponseEntity<?> getProductSummaryDetails( @PathVariable int id ) throws IOException {
-
-        return ResponseEntity.ok( productService.getProductAndInventoryByProductId( id ) );
+    public ResponseEntity<?> getProductSummaryDetails( @PathVariable int id ) throws IOException, ParseException {
+        ProductAndInventoryDto productAndInventoryDto = productService.getProductAndInventoryByProductId( id );
+        productAndInventoryDto.getProduct().setRating( commentService.getProductRating( productAndInventoryDto.getProduct().getId() ) );
+        return ResponseEntity.ok( productAndInventoryDto );
     }
 
     @RequestMapping( value = "/discover", method = RequestMethod.GET )
@@ -149,7 +158,9 @@ public class ProductController {
 
         Pageable pageable = PageRequest.of( page, limit );
         Page<ProductAndInventoryDto> products = productService.getProducts( query, pageable );
-
+        for(ProductAndInventoryDto product : products.getContent()) {
+            product.getProduct().setRating( commentService.getProductRating( product.getProduct().getId() ) );
+        }
         response.put( "data", products.getContent() );
         response.put( "currentPage", products.getNumber() );
         response.put( "totalItems", products.getTotalElements() );
@@ -168,6 +179,7 @@ public class ProductController {
         Page<ProductAndInventoryDto> products = productService.getProducts( query, pageable );
         List<ProductDto> productDto = new ArrayList<>();
         for ( ProductAndInventoryDto productAndInventoryDto : products.getContent() ) {
+            productAndInventoryDto.getProduct().setRating( commentService.getProductRating( productAndInventoryDto.getProduct().getId() ) );
             productDto.add( productAndInventoryDto.getProduct() );
         }
         response.put( "data", productDto );
@@ -188,11 +200,10 @@ public class ProductController {
 
         Pageable pageable = PageRequest.of( page, limit );
         Page<ProductAndInventoryDto> products = productService.getProductByCategoryName( categoryName, query, pageable );
-        List<ProductAndInventoryDto> productDto = new ArrayList<>();
         for ( ProductAndInventoryDto productAndInventoryDto : products.getContent() ) {
-            productDto.add( productAndInventoryDto );
+            productAndInventoryDto.getProduct().setRating( commentService.getProductRating( productAndInventoryDto.getProduct().getId() ) );
         }
-        response.put( "data", productDto );
+        response.put( "data", products.getContent() );
         response.put( "currentPage", products.getNumber() );
         response.put( "totalItems", products.getTotalElements() );
         response.put( "totalPages", products.getTotalPages() );
@@ -210,11 +221,10 @@ public class ProductController {
 
         Pageable pageable = PageRequest.of( page, limit );
         Page<ProductAndInventoryDto> products = productService.getProductByStatus( query, status, pageable );
-        List<ProductAndInventoryDto> productDto = new ArrayList<>();
         for ( ProductAndInventoryDto productAndInventoryDto : products.getContent() ) {
-            productDto.add( productAndInventoryDto );
+            productAndInventoryDto.getProduct().setRating( commentService.getProductRating( productAndInventoryDto.getProduct().getId() ) );
         }
-        response.put( "data", productDto );
+        response.put( "data", products.getContent() );
         response.put( "currentPage", products.getNumber() );
         response.put( "totalItems", products.getTotalElements() );
         response.put( "totalPages", products.getTotalPages() );
@@ -230,11 +240,10 @@ public class ProductController {
 
         Pageable pageable = PageRequest.of( page, limit );
         Page<ProductAndInventoryDto> products = productService.getProductsWithPromo( query, status, pageable );
-        List<ProductAndInventoryDto> productDto = new ArrayList<>();
         for ( ProductAndInventoryDto productAndInventoryDto : products.getContent() ) {
-            productDto.add( productAndInventoryDto );
+            productAndInventoryDto.getProduct().setRating( commentService.getProductRating( productAndInventoryDto.getProduct().getId() ) );
         }
-        response.put( "data", productDto );
+        response.put( "data", products.getContent() );
         response.put( "currentPage", products.getNumber() );
         response.put( "totalItems", products.getTotalElements() );
         response.put( "totalPages", products.getTotalPages() );

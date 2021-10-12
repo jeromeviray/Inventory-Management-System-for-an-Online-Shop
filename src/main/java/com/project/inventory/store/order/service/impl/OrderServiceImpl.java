@@ -4,6 +4,7 @@ import com.project.inventory.common.permission.role.model.Role;
 import com.project.inventory.common.sms.service.Sms;
 import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.store.cart.cartItem.model.CartItem;
+import com.project.inventory.store.cart.cartItem.model.CartItemDto;
 import com.project.inventory.store.cart.cartItem.service.CartItemService;
 import com.project.inventory.customer.address.model.CustomerAddress;
 import com.project.inventory.customer.address.service.CustomerAddressService;
@@ -20,6 +21,10 @@ import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.common.permission.service.AuthenticatedUser;
 import com.project.inventory.store.order.repository.OrderRepository;
 import com.project.inventory.store.order.service.OrderService;
+import com.project.inventory.store.product.model.Product;
+import com.project.inventory.store.product.promo.model.Promo;
+import com.project.inventory.store.product.promo.model.PromoStatus;
+import com.project.inventory.store.product.promo.service.PromoService;
 import com.project.inventory.store.product.service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -57,9 +62,11 @@ public class OrderServiceImpl implements OrderService {
     private AuthenticatedUser authenticatedUser;
     @Autowired
     private Sms sms;
+    @Autowired
+    private PromoService promoService;
 
     @Override
-    public Order placeOrder( int customerAddressId, int paymentId, List<CartItem> cartItems ) {
+    public Order placeOrder( int customerAddressId, int paymentId, List<CartItemDto> cartItems ) {
         try {
             //get customer address
             CustomerAddress customerAddress = getCustomerAddress( customerAddressId );
@@ -73,20 +80,31 @@ public class OrderServiceImpl implements OrderService {
                 Order order = orderRepository.save( getAllRequiredInformation( customerAddress,
                         paymentMethod,
                         cartItems ) );
-                emptyCart( cartItems );
-                for ( CartItem cartItem : cartItems ) {
+                for ( CartItemDto cartItem : cartItems ) {
+                    Product product = productService.getProductById( cartItem.getProduct().getProduct().getId() );
 
+                    if(product.getPromo() != null){
+                        Promo promo = product.getPromo();
+                        if(promo.getStatus().equals( PromoStatus.ONGOING )){
+                            promoService.setSoldItems( promo.getId(), cartItem.getQuantity() );
+                        }
+                    }
+                    double discount = promoService.getDiscount( product );
+                    double price = product.getPrice() - discount;
+                    double amount = cartItem.getQuantity() * price;
                     OrderItem orderItem = new OrderItem( cartItem.getQuantity(),
-                            cartItem.getAmount(),
-                            productService.getProductById( cartItem.getProduct().getId() ),
+                            amount,
+                            product,
                             order );
 
                     orderItems.add( orderItem );
 
                 }
                 orderItemService.saveOrderItem( orderItems );
-                String message = "Your Order has been placed. Order id is "+order.getOrderId();
-                sms.sendSms( "+639387193843",message );
+                emptyCart( cartItems );
+
+                    String message = "Your Order has been placed. Order id is "+order.getOrderId();
+                    sms.sendSms( "+639387193843",message );
                 return order;
             } else {
                 logger.info( "Error has been occurs: " );
@@ -180,15 +198,20 @@ public class OrderServiceImpl implements OrderService {
         return mapper.map( orderDto, Order.class );
     }
 
-    public Order getAllRequiredInformation( CustomerAddress customerAddress, PaymentMethod paymentMethod, List<CartItem> cartItems ) {
+    public Order getAllRequiredInformation( CustomerAddress customerAddress, PaymentMethod paymentMethod, List<CartItemDto> cartItems ) {
         double totalAmount = 0.0;
         Order order = new Order();
         Account account = accountService.getAccountById( authenticatedUser.getUserDetails().getId() );
         UUID uuid = UUID.randomUUID();
         String orderId = uuid.toString();
 
-        for ( CartItem cartItem : cartItems ) {
-            totalAmount += cartItem.getAmount();
+        for ( CartItemDto cartItem : cartItems ) {
+            Product product = productService.getProductById( cartItem.getProduct().getProduct().getId() );
+
+            double discount = promoService.getDiscount( product );
+            double price = product.getPrice() - discount;
+            double amount = cartItem.getQuantity() * price;
+            totalAmount += amount;
         }
 
         order.setOrderId( orderId );
@@ -200,7 +223,7 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
-    public void emptyCart( List<CartItem> cartItems ) {
+    public void emptyCart( List<CartItemDto> cartItems ) {
         cartItemService.removeItems( cartItems );
     }
 
@@ -252,4 +275,5 @@ public class OrderServiceImpl implements OrderService {
     public Page<Order> getPaymentTransactions( String query, Pageable pageable ) {
         return orderRepository.getPaymentTransactions( pageable );
     }
+
 }

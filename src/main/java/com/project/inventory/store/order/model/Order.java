@@ -79,6 +79,9 @@ public class Order {
     @Column( name = "tracking_number", columnDefinition = "VARCHAR(45) DEFAULT NULL" )
     String trackingNumber;
 
+    @Column( name = "external_reference", columnDefinition = "VARCHAR(255) DEFAULT NULL" )
+    String externalReference;
+
     public int getId() {
         return id;
     }
@@ -197,6 +200,14 @@ public class Order {
 
     public void setTrackingNumber( String trackingNumber ) {
         this.trackingNumber = trackingNumber;
+    }
+
+    public String getExternalReference() {
+        return externalReference;
+    }
+
+    public void setExternalReference( String externalReference ) {
+        this.externalReference = externalReference;
     }
 
     @Override

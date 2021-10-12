@@ -4,7 +4,7 @@ import com.project.inventory.common.permission.model.Account;
 import org.springframework.security.core.Authentication;
 
 public interface AuthenticatedUser {
-    public Authentication getAuthentication();
+    Authentication getAuthentication();
 
-    public Account getUserDetails();
+    Account getUserDetails();
 }

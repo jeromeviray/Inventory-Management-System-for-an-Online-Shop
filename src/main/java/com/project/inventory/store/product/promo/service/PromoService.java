@@ -1,5 +1,6 @@
 package com.project.inventory.store.product.promo.service;
 
+import com.project.inventory.store.product.model.Product;
 import com.project.inventory.store.product.promo.model.Promo;
 import com.project.inventory.store.product.promo.model.PromoDto;
 import com.project.inventory.store.product.promo.model.PromoRequest;
@@ -18,11 +19,17 @@ public interface PromoService {
 
     List<PromoDto> getPromos() throws ParseException;
 
-    Promo getPromo(int id);
+    Promo getPromo( int id );
 
-    PromoDto convertEntityToDto(Promo promo);
+    Promo getPromoByProductId( int productId, String status );
 
-    PromoStatus checkSchedulePromo(Promo promo) throws ParseException;
+    PromoDto convertEntityToDto( Promo promo );
 
-    Promo getPromoByProductIdAndStatusOngoingOrStatusUnscheduled(int productId);
+    PromoStatus checkSchedulePromo( Promo promo ) throws ParseException;
+
+    Promo getPromoByProductIdAndStatusOngoingOrStatusUnscheduled( int productId );
+
+    double getDiscount( Product product );
+
+    void setSoldItems(int promoId, int quantity);
 }
