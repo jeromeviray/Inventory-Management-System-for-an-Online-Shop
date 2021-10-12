@@ -15,4 +15,7 @@ public interface PromoRepository extends JpaRepository<Promo, Integer> {
     @Query(value = "SELECT * FROM product_promos WHERE product_id =:productId " +
             " and (status = 'ONGOING' OR status = 'UNSCHEDULED')", nativeQuery = true)
     Promo findByProductIdAndStatusOngoingOrUnscheduled( @Param( "productId" ) int id);
+
+    @Query(value = "SELECT * FROM product_promos WHERE product_id =:productId AND status =:status ", nativeQuery = true)
+    Promo findPromoByProductId(@Param("productId") int productId, @Param( "status" ) String status);
 }

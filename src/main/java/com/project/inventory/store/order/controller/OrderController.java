@@ -50,6 +50,7 @@ class OrderController {
             httpStatus = HttpStatus.BAD_REQUEST;
             response.setSuccess( false );
             response.setMessage( e.getMessage() );
+            throw e;
         }
         return new ResponseEntity( response, httpStatus );
     }

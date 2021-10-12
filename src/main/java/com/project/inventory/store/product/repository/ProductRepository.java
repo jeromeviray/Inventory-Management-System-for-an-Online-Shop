@@ -17,8 +17,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query( value = "SELECT * FROM products WHERE product_is_deleted = 0 AND id =:id", nativeQuery = true )
     Optional<Product> findById( @Param( "id" ) int id );
 
-//    Product findById(int id);
-
     @Query( value = "SELECT * FROM products WHERE product_is_deleted = 0", nativeQuery = true )
     List<Product> findAllAvailableProducts();
 

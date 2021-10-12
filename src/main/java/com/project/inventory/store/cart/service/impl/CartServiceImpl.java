@@ -5,17 +5,28 @@ import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.exception.notFound.cart.CartNotFound;
 import com.project.inventory.store.cart.cartItem.model.CartItem;
+import com.project.inventory.store.cart.cartItem.model.CartItemDto;
+import com.project.inventory.store.cart.cartItem.model.ProductCartItemDto;
 import com.project.inventory.store.cart.cartItem.service.impl.CartItemServiceImpl;
 import com.project.inventory.store.cart.model.Cart;
 import com.project.inventory.store.cart.model.CartDto;
 import com.project.inventory.store.cart.repository.CartRepository;
 import com.project.inventory.store.cart.service.CartService;
+import com.project.inventory.store.inventory.model.Inventory;
+import com.project.inventory.store.inventory.model.InventoryDto;
+import com.project.inventory.store.inventory.service.InventoryService;
+import com.project.inventory.store.product.model.ProductAndInventoryDto;
+import com.project.inventory.store.product.promo.model.Promo;
+import com.project.inventory.store.product.promo.service.PromoService;
+import com.project.inventory.store.product.service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,9 +41,14 @@ public class CartServiceImpl implements CartService {
     private AccountService accountService;
     @Autowired
     private CartItemServiceImpl cartItemServiceimpl;
-
+    @Autowired
+    private InventoryService inventoryService;
     @Autowired
     private ModelMapper mapper;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private PromoService promoService;
 
     @Override
     public Cart getCartByCartIdAndAccountId( int cartId, int accountId ) {
@@ -57,15 +73,39 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart getCartByAccountId( int accountId ) {
-        logger.info( "{}", "Account id" + accountId );
         return cartRepository.findByAccountId( accountId );
     }
 
     @Override
-    public CartDto getCartByAccountIdDto( int accountId ) {
+    public CartDto getCartByAccountIdDto( int accountId ) throws ParseException {
         Cart cart = cartRepository.findByAccountId( accountId );
-//        if ( cart.equals( null )) throw new CartNotFound( String.format( "Cart Not Found" ) );
-        return convertEntityToDto( cart );
+        List<CartItemDto> cartItems = new ArrayList<>();
+        for ( CartItem item : cart.getCartItems() ) {
+            CartItemDto cartItem = new CartItemDto();
+            cartItem.setId( item.getId() );
+            cartItem.setAmount( item.getAmount() );
+            cartItem.setAddedAt( new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format( item.getAddedAt() ) );
+            cartItem.setQuantity( item.getQuantity() );
+            InventoryDto inventory = inventoryService.convertEntityToDto(
+                    inventoryService.getInventoryByProductId(
+                            item.getProduct().getId() ) );
+            ProductAndInventoryDto product = new ProductAndInventoryDto();
+            product.setInventory( inventory );
+            product.setProduct( productService.convertEntityToDto( item.getProduct() ) );
+            if ( item.getProduct().getPromo() != null ) {
+                Promo promo = item.getProduct().getPromo();
+                promo.setStatus( promoService.checkSchedulePromo( promo ) );
+                promoService.updatePromo( promo.getId(), promo );
+                product.setPromo( promoService.convertEntityToDto( promo ) );
+            }
+            cartItem.setProduct( product );
+            cartItems.add( cartItem );
+        }
+        CartDto cartDto = new CartDto();
+        cartDto.setCartId( cart.getId() );
+        cartDto.setAccountId( accountId );
+        cartDto.setCartItems( cartItems );
+        return cartDto;
     }
 
     @Override
@@ -90,17 +130,6 @@ public class CartServiceImpl implements CartService {
     // converting entity to dto
     @Override
     public CartDto convertEntityToDto( Cart cart ) {
-//        System.out.println(cart);
-//        CartDto cartDto = new CartDto();
-//        List<CartItemDto> cartItemsDto = new ArrayList<>();
-//
-//        cartDto.setCartId( cart.getId() );
-//        cartDto.setAccountId( cart.getAccount().getId() );
-//
-//        for ( CartItem cartItem : cart.getCartItems() ) {
-//            cartItemsDto.add( cartItemServiceimpl.convertEntityToDto( cartItem ) );
-//        }
-//        cartDto.setCartItemsDto( cartItemsDto );
         return mapper.map( cart, CartDto.class );
     }
 

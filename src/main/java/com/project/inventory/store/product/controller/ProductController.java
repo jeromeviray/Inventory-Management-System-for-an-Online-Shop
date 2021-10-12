@@ -130,13 +130,13 @@ public class ProductController {
     }
 
     @RequestMapping( value = "/{id}", method = RequestMethod.GET )
-    public ResponseEntity<?> getProductById( @PathVariable int id ) throws IOException {
+    public ResponseEntity<?> getProductById( @PathVariable int id ) throws IOException, ParseException {
 
         return new ResponseEntity( productService.getProductAndInventoryByProductId( id ), HttpStatus.OK );
     }
 
     @RequestMapping( value = "/details/{id}", method = RequestMethod.GET )
-    public ResponseEntity<?> getProductSummaryDetails( @PathVariable int id ) throws IOException {
+    public ResponseEntity<?> getProductSummaryDetails( @PathVariable int id ) throws IOException, ParseException {
 
         return ResponseEntity.ok( productService.getProductAndInventoryByProductId( id ) );
     }

@@ -12,6 +12,8 @@ public class UserDto {
     private int phoneNumber;
     private String birthday;
     private AccountInfoDto account;
+    private String profileImage;
+
 //    private Collection<CustomerAddressDto> customerAddresses;
 
     public int getId() {
@@ -60,6 +62,14 @@ public class UserDto {
 
     public void setAccount(AccountInfoDto account) {
         this.account = account;
+    }
+
+    public String getProfileImage() {   
+        return profileImage;
+    }
+
+    public void setProfileImage( String profileImage ) {
+        this.profileImage = profileImage;
     }
 
     @Override

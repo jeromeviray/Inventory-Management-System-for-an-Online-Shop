@@ -92,6 +92,11 @@ public class PromoServiceImpl implements PromoService {
     }
 
     @Override
+    public Promo getPromoByProductId( int productId, String status ) {
+        return promoRepository.findPromoByProductId(productId, status);
+    }
+
+    @Override
     public PromoDto convertEntityToDto( Promo promo ) {
         return mapper.map( promo, PromoDto.class );
     }
@@ -119,5 +124,27 @@ public class PromoServiceImpl implements PromoService {
     @Override
     public Promo getPromoByProductIdAndStatusOngoingOrStatusUnscheduled( int productId ) {
         return promoRepository.findByProductIdAndStatusOngoingOrUnscheduled(productId);
+    }
+    @Override
+    public double getDiscount(Product product) {
+        Promo promo = product.getPromo();
+        int percentage = 0;
+        double discount = 0.0;
+        if ( promo != null ) {
+            if ( promo.getStatus().name().equals( "ONGOING" ) ) {
+                percentage = promo.getPercentage();
+                discount = (product.getPrice() * percentage) / 100;
+            }
+        }
+        return discount;
+    }
+
+    @Override
+    public void setSoldItems( int promoId, int quantity ) {
+        Promo promo = getPromo( promoId );
+
+        promo.setSoldQuantity( promo.getSoldQuantity()+quantity );
+        promo.setQuantity( promo.getQuantity() - quantity );
+        promoRepository.save( promo );
     }
 }
