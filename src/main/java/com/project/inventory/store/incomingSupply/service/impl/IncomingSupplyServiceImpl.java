@@ -15,6 +15,7 @@ import com.project.inventory.store.inventory.stock.model.Stock;
 import com.project.inventory.store.inventory.stock.service.StockService;
 import com.project.inventory.store.product.model.Product;
 import com.project.inventory.store.product.service.ProductService;
+import com.project.inventory.store.supplier.model.Supplier;
 import com.project.inventory.store.supplier.service.SupplierService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -54,10 +55,14 @@ public class IncomingSupplyServiceImpl implements IncomingSupplyService {
 
     @Override
     public void saveIncomingSupply( IncomingSupply incomingSupplyRequest ) {
+        Supplier supplier = supplierService.getSupplierById( incomingSupplyRequest.getSupplier().getId() );
+
         try {
             IncomingSupply incomingSupply = new IncomingSupply();
             incomingSupply.setIncomingSupplyStatus( IncomingSupplyStatus.PENDING );
-            incomingSupply.setSupplier( supplierService.getSupplier( incomingSupplyRequest.getSupplier().getId() ) );
+            if(supplier != null){
+                incomingSupply.setSupplier( supplier);
+            }
             //saved incoming supply and pass to the incoming supply item
             IncomingSupply savedIncomingSupply = incomingSupplyRepository.save( incomingSupply );
             saveIncomingSupplyItems( incomingSupplyRequest.getIncomingSupplyItems(), savedIncomingSupply );

@@ -43,7 +43,7 @@ public class IncomingSupply {
     private List<IncomingSupplyItem> incomingSupplyItems;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "supply_id", nullable = false, updatable = false)
+    @JoinColumn(name = "supply_id")
     private Supplier supplier;
 
     public int getId() {

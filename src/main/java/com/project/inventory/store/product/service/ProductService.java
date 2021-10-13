@@ -14,7 +14,7 @@ public interface ProductService {
     Product saveProduct( MultipartFile[] productImages,
                          String productName,
                          double productPrice,
-                         int barcode,
+                         String barcode,
                          Object productDescription,
                          String brandName,
                          String categoryName );
@@ -22,7 +22,7 @@ public interface ProductService {
     Product updateProduct( int id, MultipartFile[] productImages,
                            String productName,
                            double productPrice,
-                           int barcode,
+                           String barcode,
                            Object productDescription,
                            String brandName,
                            String categoryName,

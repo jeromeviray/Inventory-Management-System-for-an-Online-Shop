@@ -67,6 +67,11 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
+    public Supplier getSupplierById( int id ) {
+        return supplierRepository.findBySupplierId( id );
+    }
+
+    @Override
     public SupplierDto convertEntityToDto( Supplier supplier ) {
         return mapper.map( supplier, SupplierDto.class );
     }

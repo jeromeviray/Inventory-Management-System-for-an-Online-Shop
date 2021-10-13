@@ -21,4 +21,6 @@ public interface SupplierService {
 
     SupplierDto convertEntityToDto(Supplier supplier);
 
+    Supplier getSupplierById(int id);
+
 }

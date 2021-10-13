@@ -11,7 +11,7 @@ public class ProductDto {
     private String productName;
     private String productDescription;
     private double productPrice;
-    private int barcode;
+    private String barcode;
     private BrandDto brand;
     private CategoryDto category;
     private List<FileImageDto> fileImages;
@@ -49,11 +49,11 @@ public class ProductDto {
         this.productPrice = productPrice;
     }
 
-    public int getBarcode() {
+    public String getBarcode() {
         return barcode;
     }
 
-    public void setBarcode( int barcode ) {
+    public void setBarcode( String barcode ) {
         this.barcode = barcode;
     }
 

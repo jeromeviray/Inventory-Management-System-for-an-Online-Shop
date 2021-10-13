@@ -60,7 +60,7 @@ public class ProductController {
     public ResponseEntity<?> saveProduct( @RequestPart( value = "productImages[]", required = false ) MultipartFile[] productImages,
                                           @RequestParam( "productName" ) String productName,
                                           @RequestParam( "productPrice" ) double productPrice,
-                                          @RequestParam( "barcode" ) int barcode,
+                                          @RequestParam( "barcode" ) String barcode,
                                           @RequestParam( "productDescription" ) Object productDescription,
                                           @RequestParam( "brandName" ) String brandName,
                                           @RequestParam( "categoryName" ) String categoryName ) {
@@ -92,7 +92,7 @@ public class ProductController {
                                             @RequestPart( value = "productImages[]", required = false ) MultipartFile[] productImages,
                                             @RequestParam( "productName" ) String productName,
                                             @RequestParam( "productPrice" ) double productPrice,
-                                            @RequestParam( "barcode" ) int barcode,
+                                            @RequestParam( "barcode" ) String barcode,
                                             @RequestParam( "productDescription" ) Object productDescription,
                                             @RequestParam( "brandName" ) String brandName,
                                             @RequestParam( "categoryName" ) String categoryName,

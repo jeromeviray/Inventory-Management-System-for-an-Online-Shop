@@ -83,11 +83,11 @@ public class ProductServiceImpl implements ProductService {
     public Product saveProduct( MultipartFile[] productImages,
                                 String productName,
                                 double productPrice,
-                                int barcode,
+                                String barcode,
                                 Object productDescription,
                                 String brandName,
                                 String categoryName ) {
-
+        logger.info( "{}", barcode );
         Product product = new Product();
         product.setName( productName );
         product.setPrice( productPrice );
@@ -140,7 +140,7 @@ public class ProductServiceImpl implements ProductService {
                                   MultipartFile[] productImages,
                                   String productName,
                                   double productPrice,
-                                  int barcode,
+                                  String barcode,
                                   Object productDescription,
                                   String brandName, String categoryName,
                                   String[] removedImages

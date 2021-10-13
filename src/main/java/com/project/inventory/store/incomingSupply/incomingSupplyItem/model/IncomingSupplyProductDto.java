@@ -3,7 +3,7 @@ package com.project.inventory.store.incomingSupply.incomingSupplyItem.model;
 public class IncomingSupplyProductDto {
     private int id;
     private String name;
-    private int barcode;
+    private String barcode;
     private double price;
 
     public int getId() {
@@ -22,11 +22,11 @@ public class IncomingSupplyProductDto {
         this.name = name;
     }
 
-    public int getBarcode() {
+    public String getBarcode() {
         return barcode;
     }
 
-    public void setBarcode( int barcode ) {
+    public void setBarcode( String barcode ) {
         this.barcode = barcode;
     }
 

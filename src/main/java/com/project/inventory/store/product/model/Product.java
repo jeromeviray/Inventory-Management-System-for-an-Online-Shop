@@ -35,8 +35,8 @@ public class Product implements Serializable {
     @Column( name = "product_price", nullable = false )
     private double price;
 
-    @Column( name = "barcode", nullable = false, unique = true, updatable = false )
-    private int barcode;
+    @Column( name = "barcode",unique = true, updatable = false, columnDefinition = "TEXT"  )
+    private String barcode;
 
     @Column( name = "created_at", updatable = false, nullable = false, columnDefinition = "DATETIME default current_timestamp" )
     @CreationTimestamp
@@ -113,11 +113,11 @@ public class Product implements Serializable {
         this.price = price;
     }
 
-    public int getBarcode() {
+    public String getBarcode() {
         return barcode;
     }
 
-    public void setBarcode( int barcode ) {
+    public void setBarcode( String barcode ) {
         this.barcode = barcode;
     }
 

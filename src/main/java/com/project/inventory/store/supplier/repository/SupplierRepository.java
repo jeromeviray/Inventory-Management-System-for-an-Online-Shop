@@ -13,4 +13,7 @@ public interface SupplierRepository extends JpaRepository<Supplier, Integer> {
             countQuery = "SELECT count(*) FROM suppliers WHERE is_deleted = 0",
             nativeQuery = true )
     Page<Supplier> findAll( @Param( "query" ) String query, Pageable pageable );
+
+    @Query(value = "SELECT * FROM suppliers WHERE id=:id", nativeQuery = true)
+    Supplier findBySupplierId(@Param( "id" ) int id);
 }
