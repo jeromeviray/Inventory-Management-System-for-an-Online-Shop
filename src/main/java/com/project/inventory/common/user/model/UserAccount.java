@@ -3,7 +3,7 @@ package com.project.inventory.common.user.model;
 public class UserAccount {
     private String firstName;
     private String lastName;
-    private int phoneNumber;
+    private String phoneNumber;
     private String username;
     private String role;
     private String birthday;
@@ -27,11 +27,11 @@ public class UserAccount {
         this.lastName = lastName;
     }
 
-    public int getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber( int phoneNumber ) {
+    public void setPhoneNumber( String phoneNumber ) {
         this.phoneNumber = phoneNumber;
     }
 

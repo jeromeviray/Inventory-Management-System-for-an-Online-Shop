@@ -20,8 +20,8 @@ public class User {
     @Column(name = "last_name", length = 50)
     private String lastName;
 
-    @Column(name = "phone_number", length = 10)
-    private int phoneNumber;
+    @Column(name = "phone_number", columnDefinition = "VARCHAR(15)")
+    private String phoneNumber;
 
     @Column(name = "birthday")
     private String birthday;
@@ -58,11 +58,11 @@ public class User {
         this.lastName = lastName;
     }
 
-    public Integer getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(Integer phoneNumber) {
+    public void setPhoneNumber( String phoneNumber ) {
         this.phoneNumber = phoneNumber;
     }
 
