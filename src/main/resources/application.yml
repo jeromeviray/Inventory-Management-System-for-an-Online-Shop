@@ -52,8 +52,6 @@ app:
     # We're not using cookies because they won't work well in mobile clients.
     authorizedRedirectUris:
       - https://d3dw1h6vufmuro.cloudfront.net/oauth2/redirect
-      - myandroidapp://oauth2/redirect
-      - myiosapp://oauth2/redirect
   hostName: https://d3dw1h6vufmuro.cloudfront.net
 #logging:
 #  level:
