@@ -1,4 +1,4 @@
-package com.project.inventory.common.permission.forgotPassword.model;
+package com.project.inventory.common.permission.verificationCode.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.inventory.common.permission.model.Account;
@@ -7,8 +7,8 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name ="account_forgot_password")
-public class ForgotPassword {
+@Table(name ="verification_codes")
+public class VerificationCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

@@ -7,6 +7,7 @@ import com.project.inventory.common.permission.role.model.RoleType;
 import com.project.inventory.common.permission.role.service.RoleService;
 import com.project.inventory.common.user.model.User;
 import com.project.inventory.common.user.service.UserService;
+import com.project.inventory.store.website.service.StoreInformationService;
 import com.project.inventory.webSecurity.oauth2.AccountPrinciple;
 import com.project.inventory.webSecurity.oauth2.AuthProvider;
 import org.slf4j.Logger;
@@ -37,6 +38,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private RoleService roleService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private StoreInformationService storeInformationService;
 
     @Override
     public OAuth2User loadUser( OAuth2UserRequest userRequest ) throws OAuth2AuthenticationException {
@@ -101,6 +104,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             account.setUsername( username );
             account.setEmail( oAuth2UserInfo.getEmail() );
             account.setRoles( authority );
+            account.setStoreInformation( storeInformationService.getStoreInformation() );
+
             Account savedAccount = accountRepository.save( account );
             User user = new User();
             user.setFirstName( ( String ) googleResponse.get( "given_name" ) );

@@ -8,6 +8,7 @@ import com.project.inventory.store.product.brand.model.Brand;
 import com.project.inventory.store.product.category.model.Category;
 import com.project.inventory.store.product.promo.model.Promo;
 import com.project.inventory.store.product.wishlist.model.Wishlist;
+import com.project.inventory.store.website.model.StoreInformation;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -35,7 +36,7 @@ public class Product implements Serializable {
     @Column( name = "product_price", nullable = false )
     private double price;
 
-    @Column( name = "barcode",unique = true, updatable = false, columnDefinition = "TEXT"  )
+    @Column( name = "barcode",unique = true, updatable = false, columnDefinition = "VARCHAR(30)"  )
     private String barcode;
 
     @Column( name = "created_at", updatable = false, nullable = false, columnDefinition = "DATETIME default current_timestamp" )
@@ -80,6 +81,10 @@ public class Product implements Serializable {
     private Promo promo;
 
     private Integer rating;
+
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private StoreInformation storeInformation;
 
     public int getId() {
         return id;
@@ -207,6 +212,10 @@ public class Product implements Serializable {
 
     public void setRating( Integer rating ) {
         this.rating = rating;
+    }
+
+    public void setStoreInformation( StoreInformation storeInformation ) {
+        this.storeInformation = storeInformation;
     }
 
     @Override

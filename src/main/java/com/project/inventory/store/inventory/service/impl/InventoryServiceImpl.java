@@ -90,6 +90,14 @@ public class InventoryServiceImpl implements InventoryService {
         return inventoryRepository.save( inventory );
     }
 
+    @Override
+    public void updateThreshold( int productId, int threshold ) {
+        Inventory inventory = getInventoryByProductId( productId );
+        inventory.setThreshold( threshold );
+
+        inventoryRepository.save( inventory );
+    }
+
     private GetProductDto convertProductEntityToDto( Product product ) {
         return mapper.map( product, GetProductDto.class );
     }

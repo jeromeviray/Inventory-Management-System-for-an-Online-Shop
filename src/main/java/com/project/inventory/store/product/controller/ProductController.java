@@ -63,6 +63,7 @@ public class ProductController {
                                           @RequestParam( "barcode" ) String barcode,
                                           @RequestParam( "productDescription" ) Object productDescription,
                                           @RequestParam( "brandName" ) String brandName,
+                                          @RequestParam( value = "threshold", required = false, defaultValue = "" ) int threshold,
                                           @RequestParam( "categoryName" ) String categoryName ) {
 
         productService.saveProduct(
@@ -72,7 +73,8 @@ public class ProductController {
                 barcode,
                 productDescription,
                 brandName,
-                categoryName );
+                categoryName,
+                threshold);
         return new ResponseEntity( HttpStatus.OK );
 
     }
@@ -96,6 +98,7 @@ public class ProductController {
                                             @RequestParam( "productDescription" ) Object productDescription,
                                             @RequestParam( "brandName" ) String brandName,
                                             @RequestParam( "categoryName" ) String categoryName,
+                                            @RequestParam( value = "threshold", required = false, defaultValue = "" ) int threshold,
                                             @RequestParam( value = "removedImages[]", required = false ) String[] removeImages ) throws Exception {
         return ResponseEntity.ok( productService
                 .updateProduct( id,
@@ -106,6 +109,7 @@ public class ProductController {
                         productDescription,
                         brandName,
                         categoryName,
+                        threshold,
                         removeImages ) );
     }
 
@@ -125,7 +129,7 @@ public class ProductController {
 
         Pageable pageable = PageRequest.of( page, limit );
         Page<ProductAndInventoryDto> products = productService.getProducts( query, pageable );
-        for(ProductAndInventoryDto product : products.getContent()) {
+        for ( ProductAndInventoryDto product : products.getContent() ) {
             product.getProduct().setRating( commentService.getProductRating( product.getProduct().getId() ) );
         }
         response.put( "data", products.getContent() );
@@ -158,7 +162,7 @@ public class ProductController {
 
         Pageable pageable = PageRequest.of( page, limit );
         Page<ProductAndInventoryDto> products = productService.getProducts( query, pageable );
-        for(ProductAndInventoryDto product : products.getContent()) {
+        for ( ProductAndInventoryDto product : products.getContent() ) {
             product.getProduct().setRating( commentService.getProductRating( product.getProduct().getId() ) );
         }
         response.put( "data", products.getContent() );
@@ -212,11 +216,11 @@ public class ProductController {
     }
 
     @PreAuthorize( "hasRole('ROLE_ADMIN') OR hasRole('ROLE_SUPER_ADMIN')" )
-    @RequestMapping(value = "/status", method = RequestMethod.GET)
+    @RequestMapping( value = "/status", method = RequestMethod.GET )
     public ResponseEntity<?> getProductsByStatus( @RequestParam( value = "status", defaultValue = "", required = false ) String status,
-                                                 @RequestParam( value = "query", defaultValue = "", required = false ) String query,
-                                                 @RequestParam( value = "page", defaultValue = "0" ) Integer page,
-                                                 @RequestParam( value = "limit", defaultValue = "10" ) Integer limit ) {
+                                                  @RequestParam( value = "query", defaultValue = "", required = false ) String query,
+                                                  @RequestParam( value = "page", defaultValue = "0" ) Integer page,
+                                                  @RequestParam( value = "limit", defaultValue = "10" ) Integer limit ) {
         Map<String, Object> response = new HashMap<>();
 
         Pageable pageable = PageRequest.of( page, limit );
@@ -231,11 +235,12 @@ public class ProductController {
 
         return new ResponseEntity<>( response, HttpStatus.OK );
     }
-    @RequestMapping(value = "/promo", method = RequestMethod.GET)
+
+    @RequestMapping( value = "/promo", method = RequestMethod.GET )
     public ResponseEntity<?> getProductsWithPromo( @RequestParam( value = "status", defaultValue = "", required = false ) String status,
-                                                 @RequestParam( value = "query", defaultValue = "", required = false ) String query,
-                                                 @RequestParam( value = "page", defaultValue = "0" ) Integer page,
-                                                 @RequestParam( value = "limit", defaultValue = "10" ) Integer limit ) throws ParseException {
+                                                   @RequestParam( value = "query", defaultValue = "", required = false ) String query,
+                                                   @RequestParam( value = "page", defaultValue = "0" ) Integer page,
+                                                   @RequestParam( value = "limit", defaultValue = "10" ) Integer limit ) throws ParseException {
         Map<String, Object> response = new HashMap<>();
 
         Pageable pageable = PageRequest.of( page, limit );

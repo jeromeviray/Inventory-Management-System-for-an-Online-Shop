@@ -19,22 +19,23 @@ import java.util.Date;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @Component
-    public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint, Serializable {
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationEntryPointImpl.class);
+public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint, Serializable {
+    private static final Logger logger = LoggerFactory.getLogger( AuthenticationEntryPointImpl.class );
     private static final long serialVersionUID = -8970718410437077606L;
+
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
-        logger.info("{}", e.getMessage());
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+    public void commence( HttpServletRequest request, HttpServletResponse response, AuthenticationException e ) throws IOException, ServletException {
+        logger.info( "{}", e.getMessage() );
+        response.setStatus( HttpStatus.UNAUTHORIZED.value() );
         response.setContentType( APPLICATION_JSON_VALUE );
 
-        ApiError error = new ApiError(new Date(),
+        ApiError error = new ApiError( new Date(),
                 HttpStatus.UNAUTHORIZED.value(),
                 HttpStatus.UNAUTHORIZED,
                 e.getMessage(),
-                request.getServletPath());
+                request.getServletPath() );
 
         ObjectMapper mapper = new ObjectMapper();
-        response.getWriter().write(mapper.writeValueAsString(error));
+        response.getWriter().write( mapper.writeValueAsString( error ) );
     }
 }

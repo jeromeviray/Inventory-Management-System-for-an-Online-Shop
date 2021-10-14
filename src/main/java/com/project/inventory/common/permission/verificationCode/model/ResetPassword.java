@@ -1,4 +1,4 @@
-package com.project.inventory.common.permission.forgotPassword.model;
+package com.project.inventory.common.permission.verificationCode.model;
 
 public class ResetPassword {
     private int accountId;

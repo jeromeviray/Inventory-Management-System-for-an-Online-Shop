@@ -1,6 +1,8 @@
 package com.project.inventory.common.permission.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.inventory.common.permission.role.model.Role;
+import com.project.inventory.store.website.model.StoreInformation;
 import com.project.inventory.webSecurity.oauth2.AuthProvider;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -54,6 +56,11 @@ public class Account implements Serializable {
                 joinColumns = { @JoinColumn ( name = "account_id")},
                 inverseJoinColumns = { @JoinColumn (name = "role_id")})
     private Set<Role> roles = new HashSet<>();
+
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    @JsonIgnore
+    private StoreInformation storeInformation;
 
     public int getId() {
         return id;
@@ -135,6 +142,9 @@ public class Account implements Serializable {
         this.roles = roles;
     }
 
+    public void setStoreInformation( StoreInformation storeInformation ) {
+        this.storeInformation = storeInformation;
+    }
 
     @Override
     public int hashCode() {

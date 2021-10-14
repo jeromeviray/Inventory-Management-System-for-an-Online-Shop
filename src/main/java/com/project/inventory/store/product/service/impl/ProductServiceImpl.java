@@ -21,6 +21,7 @@ import com.project.inventory.store.product.service.FileImageService;
 import com.project.inventory.store.product.service.ProductService;
 import com.project.inventory.store.product.wishlist.model.Wishlist;
 import com.project.inventory.store.product.wishlist.service.WishlistService;
+import com.project.inventory.store.website.service.StoreInformationService;
 import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -78,6 +79,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private PromoService promoService;
+    @Autowired
+    private StoreInformationService storeInformationService;
 
     @Override
     public Product saveProduct( MultipartFile[] productImages,
@@ -86,7 +89,8 @@ public class ProductServiceImpl implements ProductService {
                                 String barcode,
                                 Object productDescription,
                                 String brandName,
-                                String categoryName ) {
+                                String categoryName,
+                                int threshold) {
         logger.info( "{}", barcode );
         Product product = new Product();
         product.setName( productName );
@@ -95,6 +99,7 @@ public class ProductServiceImpl implements ProductService {
         product.setBarcode( barcode );
         product.setBrand( brandService.getBrandByBrandName( brandName ) );
         product.setCategory( categoryService.getCategoryByCategoryName( categoryName ) );
+        product.setStoreInformation( storeInformationService.getStoreInformation() );
         try {
 
             List<FileImage> fileImages = new ArrayList<>();
@@ -104,7 +109,7 @@ public class ProductServiceImpl implements ProductService {
             Product savedProduct = productRepository.save( product );
             // after saving product, at same time the inventory save
             // a long with new product saved
-            saveProductInventory( savedProduct );
+            saveProductInventory( savedProduct, threshold );
 
             // after saving product and inventory
             // the image of the product will save also
@@ -125,11 +130,11 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    public void saveProductInventory( Product product ) {
+    public void saveProductInventory( Product product, int threshold ) {
         // it will save the product in inventory when creating a product
         Inventory inventory = new Inventory();
         inventory.setProduct( product );
-        inventory.setThreshold( 0 );
+        inventory.setThreshold( threshold );
         inventory.setStatus( StockStatus.LOW );
         inventoryService.saveInventory( inventory );
     }
@@ -143,6 +148,7 @@ public class ProductServiceImpl implements ProductService {
                                   String barcode,
                                   Object productDescription,
                                   String brandName, String categoryName,
+                                  int threshold,
                                   String[] removedImages
     ) throws Exception {
         Category category = categoryService.getCategoryByCategoryName( categoryName );
@@ -156,6 +162,7 @@ public class ProductServiceImpl implements ProductService {
         product.setBrand( brand );
         product.setCategory( category );
         Product savedProduct = productRepository.save( product );
+        inventoryService.updateThreshold( product.getId(), threshold);
         //remove the image in directory and database
         if ( removedImages != null ) {
             for ( String removedImage : removedImages ) {
@@ -176,7 +183,7 @@ public class ProductServiceImpl implements ProductService {
             }
             fileImageService.saveFileImages( fileImages );
         }
-        return null;
+        return savedProduct;
     }
 
     @Override

@@ -7,6 +7,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.regex.Pattern;
+
 @Service
 public class MailServiceImpl implements MailService {
     @Autowired
@@ -14,16 +16,27 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void sendEmail( String to, String subject, String text ) {
-      try {
-          SimpleMailMessage msg = new SimpleMailMessage();
+        try {
+            SimpleMailMessage msg = new SimpleMailMessage();
 
-          msg.setTo( to );
-          msg.setSubject( subject );
-          msg.setText(text);
+            msg.setTo( to );
+            msg.setSubject( subject );
+            msg.setText( text );
 
-          javaMailSender.send( msg );
-      }catch( MailSendException e ){
-          throw e;
-      }
+            javaMailSender.send( msg );
+        } catch ( MailSendException e ) {
+            throw e;
+        }
+    }
+
+    @Override
+    public Boolean validateEmail( String email ) {
+
+        String emailRegex ="^[a-z0-9](\\.?[a-z0-9]){5,}@g(oogle)?mail\\.com$";
+
+        Pattern pat = Pattern.compile( emailRegex );
+        if ( email == null )
+            return false;
+        return pat.matcher( email ).matches();
     }
 }

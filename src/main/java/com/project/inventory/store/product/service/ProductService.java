@@ -17,7 +17,8 @@ public interface ProductService {
                          String barcode,
                          Object productDescription,
                          String brandName,
-                         String categoryName );
+                         String categoryName,
+                         int threshold);
 
     Product updateProduct( int id, MultipartFile[] productImages,
                            String productName,
@@ -26,6 +27,7 @@ public interface ProductService {
                            Object productDescription,
                            String brandName,
                            String categoryName,
+                           int threshold,
                            String[] removeImages ) throws Exception;
 
     void deleteProduct( int id );

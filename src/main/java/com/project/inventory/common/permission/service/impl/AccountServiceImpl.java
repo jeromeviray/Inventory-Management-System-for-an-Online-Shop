@@ -1,7 +1,7 @@
 package com.project.inventory.common.permission.service.impl;
 
-import com.project.inventory.common.permission.forgotPassword.model.ResetPassword;
-import com.project.inventory.common.permission.forgotPassword.service.ForgotPasswordService;
+import com.project.inventory.common.permission.verificationCode.model.ResetPassword;
+import com.project.inventory.common.permission.verificationCode.service.VerificationCodeService;
 import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.model.AccountDto;
 import com.project.inventory.common.permission.model.ChangePassword;
@@ -10,12 +10,15 @@ import com.project.inventory.common.permission.role.model.Role;
 import com.project.inventory.common.permission.role.model.RoleType;
 import com.project.inventory.common.permission.role.service.RoleService;
 import com.project.inventory.common.permission.service.AccountService;
+import com.project.inventory.common.service.CommonService;
 import com.project.inventory.common.user.model.RequestUserAccount;
 import com.project.inventory.common.user.model.User;
 import com.project.inventory.common.user.model.UserAccount;
 import com.project.inventory.common.user.service.UserService;
 import com.project.inventory.exception.invalid.InvalidException;
 import com.project.inventory.exception.notFound.NotFoundException;
+import com.project.inventory.mail.service.MailService;
+import com.project.inventory.store.website.service.StoreInformationService;
 import com.project.inventory.webSecurity.oauth2.AuthProvider;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -42,7 +45,13 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private ModelMapper mapper;
     @Autowired
-    private ForgotPasswordService forgotPasswordService;
+    private VerificationCodeService verificationCodeService;
+    @Autowired
+    private StoreInformationService storeInformationService;
+    @Autowired
+    private MailService mailService;
+    @Autowired
+    private CommonService commonService;
 
     @Override
     public Account getAccountById( int accountId ) throws NotFoundException {
@@ -52,42 +61,61 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void saveUserAccount( UserAccount userAccount ) {
-        Account account = new Account();
+        if ( mailService.validateEmail( userAccount.getEmail() ) ) {
+            try {
+                //save user role
+                Role role = roleService.getRoleByRoleName( RoleType.CUSTOMER );
+                Set<Role> authority = new HashSet<>();
+                authority.add( role );
+                // save account
+                Account account = new Account();
+                account.setUsername( userAccount.getUsername() );
+                account.setAuthProvider( AuthProvider.local );
+                account.setEmail( userAccount.getEmail() );
+                account.setPassword( passwordEncoder.encode( userAccount.getPassword() ) );
+                account.setStoreInformation( storeInformationService.getStoreInformation() );
+                account.setRoles( authority );
+                account.setNotBanned( false );
+                Account savedAccount = accountRepository.save( account );
 
-        account.setUsername( userAccount.getUsername() );
-        account.setAuthProvider( AuthProvider.local );
-        account.setEmail( userAccount.getEmail() );
-        account.setPassword( passwordEncoder.encode( userAccount.getPassword() ) );
-        Role role = roleService.getRoleByRoleName( RoleType.CUSTOMER );
-        Set<Role> authority = new HashSet<>();
-        authority.add( role );
+                //save user information account
+                User user = new User();
+                user.setFirstName( userAccount.getFirstName() );
+                user.setLastName( userAccount.getLastName() );
+                user.setPhoneNumber( userAccount.getPhoneNumber() );
 
-        account.setRoles( authority );
+                userService.saveUserInformation( savedAccount, user );
 
-        Account savedAccount = accountRepository.save( account );
-        User user = new User();
-        user.setFirstName( userAccount.getFirstName() );
-        user.setLastName( userAccount.getLastName() );
-        user.setPhoneNumber( userAccount.getPhoneNumber() );
-
-        userService.saveUserInformation( savedAccount, user );
+                //send verification code after saving the account
+                verificationCodeService.sendVerificationCode( account );
+            } catch ( Exception e ) {
+                throw new InvalidException( e.getMessage() );
+            }
+        } else {
+            throw new InvalidException( "Your Email is Invalid Format." );
+        }
     }
 
     @Override
     public Account saveEmployeeAccount( String username, String password, String email, RoleType roleType ) {
-        Account account = new Account();
-        account.setAuthProvider( AuthProvider.local );
-        account.setUsername( username );
-        account.setPassword( passwordEncoder.encode( password ) );
-        account.setEmail( email );
+        if ( mailService.validateEmail( email ) ) {
+            Account account = new Account();
+            account.setAuthProvider( AuthProvider.local );
+            account.setUsername( username );
+            account.setPassword( passwordEncoder.encode( password ) );
+            account.setEmail( email );
+            account.setStoreInformation( storeInformationService.getStoreInformation() );
 
-        Role getRole = roleService.getRoleByRoleName( roleType );
-        Set<Role> authority = new HashSet<>();
-        authority.add( getRole );
+            Role getRole = roleService.getRoleByRoleName( roleType );
+            Set<Role> authority = new HashSet<>();
+            authority.add( getRole );
 
-        account.setRoles( authority );
+            account.setRoles( authority );
 
-        return accountRepository.save( account );
+            return accountRepository.save( account );
+        } else {
+            throw new InvalidException( "Your Email is Invalid Format." );
+        }
     }
 
     @Override
@@ -98,9 +126,9 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void changePassword( ChangePassword changePassword ) {
         Account account = getAccountById( changePassword.getId() );
-        if( ! comparePassword( account, changePassword.getCurrentPassword() ) ) {
+        if ( !comparePassword( account, changePassword.getCurrentPassword() ) ) {
             throw new InvalidException( "Mismatch Current Password. Please Try Again!" );
-        } else if( ! changePassword.getPassword().equals( changePassword.getConfirmPassword() ) ) {
+        } else if ( !changePassword.getPassword().equals( changePassword.getConfirmPassword() ) ) {
             throw new InvalidException( "Not match New Password. Please Try Again!" );
         }
         account.setPassword( passwordEncoder.encode( changePassword.getPassword() ) );
@@ -129,21 +157,21 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public Boolean isNotBanned( Account account ) throws AccountLockedException {
-        if( ! account.isNotBanned() ) {
+        if ( !account.isNotBanned() ) {
             throw new AccountLockedException();
         }
         return true;
     }
 
     public Boolean isNotDeleted( Account account ) throws AccountLockedException {
-        if( ! account.isNotDeleted() ) {
+        if ( !account.isNotDeleted() ) {
             throw new AccountLockedException();
         }
         return true;
     }
 
     public Boolean isNotBannedAndDeleted( Account account ) throws AccountLockedException {
-        if( ! account.isNotBanned() && ! account.isNotDeleted() ) {
+        if ( !account.isNotBanned() && !account.isNotDeleted() ) {
             throw new AccountLockedException();
         }
         return true;
@@ -183,11 +211,18 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void resetPassword( ResetPassword resetPassword ) {
-        if( ! resetPassword.getPassword().equals( resetPassword.getConfirmPassword() ) )
+        if ( !resetPassword.getPassword().equals( resetPassword.getConfirmPassword() ) )
             throw new InvalidException( "Not match New Password. Please Try Again!" );
-        forgotPasswordService.deleteToken( resetPassword.getToken() );
+        verificationCodeService.deleteToken( resetPassword.getToken() );
         Account account = getAccountById( resetPassword.getAccountId() );
         account.setPassword( passwordEncoder.encode( resetPassword.getPassword() ) );
+        accountRepository.save( account );
+    }
+
+    @Override
+    public void verifyAccount( int accountId ) {
+        Account account = getAccountById( accountId );
+        account.setNotBanned( true );
         accountRepository.save( account );
     }
 }

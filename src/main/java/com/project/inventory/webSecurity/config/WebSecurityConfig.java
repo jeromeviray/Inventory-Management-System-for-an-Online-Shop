@@ -87,7 +87,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/v1/products/search",
                         "/api/v1/products/category/**",
                         "/api/v1/categories/list",
-                        "/api/v1/account/password/forgot/**").permitAll()
+                        "/api/v1/account/password/forgot/**",
+                        "/api/v1/account/verification/*").permitAll()
                 .antMatchers( "/oauth2/**" ).permitAll();
         http.authorizeRequests().anyRequest().authenticated();
         // Set unauthorized and access denied requests exception handler
@@ -117,7 +118,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler( auth2AuthenticationFailureHandler );
         //add filter
         http.addFilter( new CustomAuthenticationFilter( authenticationManagerBean() ) );
-        http.addFilterBefore( new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class );
+        http.addFilterBefore( new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class ).logout();
     }
 
     @Bean

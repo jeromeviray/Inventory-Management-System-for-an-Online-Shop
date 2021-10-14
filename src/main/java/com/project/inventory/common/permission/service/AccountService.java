@@ -1,6 +1,6 @@
 package com.project.inventory.common.permission.service;
 
-import com.project.inventory.common.permission.forgotPassword.model.ResetPassword;
+import com.project.inventory.common.permission.verificationCode.model.ResetPassword;
 import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.model.AccountDto;
 import com.project.inventory.common.permission.model.ChangePassword;
@@ -42,4 +42,6 @@ public interface AccountService {
     Account updateAccount( int id, RequestUserAccount account );
 
     void resetPassword( ResetPassword resetPassword );
+
+    void verifyAccount(int accountId);
 }
