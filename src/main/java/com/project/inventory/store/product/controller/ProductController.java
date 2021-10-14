@@ -83,7 +83,7 @@ public class ProductController {
     public ResponseEntity<?> getImage( @PathVariable String path,
                                        @PathVariable String image ) throws IOException {
 
-        InputStream readImage = servletContext.getResourceAsStream( "WEB-INF/inventory-management-system-reactjs/public/images/products/" + path + "/" + image );
+        InputStream readImage = servletContext.getResourceAsStream( "WEB-INF/reactjs/public/images/products/" + path + "/" + image );
 
         return new ResponseEntity( IOUtils.toByteArray( readImage ), HttpStatus.OK );
     }

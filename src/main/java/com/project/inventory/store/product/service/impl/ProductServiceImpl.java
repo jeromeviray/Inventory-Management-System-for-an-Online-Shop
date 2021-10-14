@@ -53,7 +53,7 @@ import java.util.Random;
 @Service( value = "productServiceImpl" )
 public class ProductServiceImpl implements ProductService {
     private final String rootFile = System.getProperty( "user.dir" ) +
-            "/src/main/webapp/WEB-INF/inventory-management-system-reactjs/public/images/products/";
+            "/src/main/webapp/WEB-INF/reactjs/public/images/products/";
     Logger logger = LoggerFactory.getLogger( ProductServiceImpl.class );
     @Autowired
     private ProductRepository productRepository;
@@ -358,7 +358,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public byte[] getImage( String image ) throws IOException {
         try {
-            InputStream readImage = servletContext.getResourceAsStream( "WEB-INF/inventory-management-system-reactjs/public/images/products/" + image );
+            InputStream readImage = servletContext.getResourceAsStream( "WEB-INF/reactjs/public/images/products/" + image );
             return IOUtils.toByteArray( readImage );
         } catch ( Exception e ) {
             throw e;
@@ -366,7 +366,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public List<FileImage> getFileImages( MultipartFile[] files, Product product ) throws IOException {
-
+        logger.info( "{}", rootFile );
         File directory = new File( rootFile + product.getId() );
         //folder for each product images
         if ( !directory.exists() ) {
@@ -382,7 +382,7 @@ public class ProductServiceImpl implements ProductService {
                 Files.write( path, file.getBytes() );
             } catch ( IOException e ) {
                 e.printStackTrace();
-                throw new MultipartException( "You got an Error men" );
+                throw new MultipartException( "Error occur "+e.getMessage() );
             }
             FileImage fileImage = new FileImage();
             fileImage.setFileName( imageName );

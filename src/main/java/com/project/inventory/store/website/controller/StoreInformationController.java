@@ -22,8 +22,11 @@ public class StoreInformationController {
                                                    @RequestParam( "storeName" ) String storeName,
                                                    @RequestParam( "domainName" ) String domainName,
                                                    @RequestParam( "location" ) String location,
-                                                   @RequestParam( "description" ) Object description ) throws IOException {
-        storeInformationService.saveStoreInformation( logoImage, storeName, domainName, location, description );
+                                                   @RequestParam( "description" ) Object description,
+                                                   @RequestParam( "contact" ) String contactNumber,
+                                                   @RequestParam( "email" ) String email ) throws IOException {
+
+        storeInformationService.saveStoreInformation( logoImage, storeName, domainName, location, description, contactNumber, email );
         return new ResponseEntity<>( HttpStatus.OK );
     }
 
@@ -35,7 +38,9 @@ public class StoreInformationController {
                                                      @RequestParam( "domainName" ) String domainName,
                                                      @RequestParam( "location" ) String location,
                                                      @RequestParam( "description" ) Object description,
-                                                     @RequestParam( "removeLogo" ) String removeLogo ) throws IOException {
+                                                     @RequestParam( "removeLogo" ) String removeLogo,
+                                                     @RequestParam( "contact" ) String contactNumber,
+                                                     @RequestParam( "email" ) String email ) throws IOException {
 
         return new ResponseEntity<>(
                 storeInformationService.updateStoreInformation(
@@ -45,10 +50,12 @@ public class StoreInformationController {
                         domainName,
                         location,
                         description,
-                        removeLogo ), HttpStatus.OK );
+                        removeLogo,
+                        contactNumber,
+                        email ), HttpStatus.OK );
     }
 
-    @RequestMapping( value = "", method = RequestMethod.POST )
+    @RequestMapping( value = "", method = RequestMethod.GET )
     public ResponseEntity<?> getStoreInformation() throws IOException {
 
         return new ResponseEntity<>( storeInformationService.getStoreInformation(), HttpStatus.OK );

@@ -24,15 +24,23 @@ public class StoreInformation {
     @Column( name = "description" )
     private String description;
 
+    @Column(name = "contact_number", columnDefinition = "VARCHAR(15)")
+    private String contactNumber;
+
+    @Column(name = "email", columnDefinition = "VARCHAR(60)")
+    private String email;
+
     public StoreInformation() {
     }
 
-    public StoreInformation( String storeName, String domainName, String logo, String location, String description ) {
+    public StoreInformation( String storeName, String domainName, String logo, String location, String description, String contactNumber, String email ) {
         this.storeName = storeName;
         this.domainName = domainName;
         this.logo = logo;
         this.location = location;
         this.description = description;
+        this.contactNumber = contactNumber;
+        this.email = email;
     }
 
     public int getId() {
@@ -81,6 +89,22 @@ public class StoreInformation {
 
     public void setDescription( String description ) {
         this.description = description;
+    }
+
+    public String getContactNumber() {
+        return contactNumber;
+    }
+
+    public void setContactNumber( String contactNumber ) {
+        this.contactNumber = contactNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail( String email ) {
+        this.email = email;
     }
 
     @Override

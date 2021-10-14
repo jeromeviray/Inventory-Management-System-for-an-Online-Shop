@@ -10,14 +10,18 @@ public interface StoreInformationService {
                                String storeName,
                                String domainName,
                                String location,
-                               Object description  ) throws IOException;
+                               Object description,
+                               String contactNumber,
+                               String email ) throws IOException;
 
     StoreInformation updateStoreInformation( int id,  MultipartFile logoImage,
                                              String storeName,
                                              String domainName,
                                              String location,
                                              Object description,
-                                             String removeLogo ) throws IOException;
+                                             String removeLogo,
+                                             String contactNumber,
+                                             String email ) throws IOException;
 
     StoreInformation getStoreInformation();
 
