@@ -3,6 +3,7 @@ package com.project.inventory.store.product.service.impl;
 import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.common.permission.service.AuthenticatedUser;
+import com.project.inventory.exception.ForbiddenException;
 import com.project.inventory.exception.invalid.InvalidException;
 import com.project.inventory.exception.notFound.product.ProductNotFound;
 import com.project.inventory.store.inventory.model.Inventory;
@@ -201,9 +202,11 @@ public class ProductServiceImpl implements ProductService {
         try {
             List<ProductAndInventoryDto> productRecordByPages = new ArrayList<>();
             Page<Product> products = productRepository.findAll( query, pageable );
-
+//            Account account = getUserAccount();
+//            logger.info( "{}", account.getId() );
             for ( Product product : products.getContent() ) {
                 ProductAndInventoryDto productAndInventory = getProductAndInventoryByProductId( product.getId() );
+//                ProductAndInventoryDto productAndInventory = new ProductAndInventoryDto();
 //                InventoryDto inventory = inventoryService.convertEntityToDto( product.getInventory() );
 //                productAndInventory.setProduct( convertEntityToDto( product ) );
 //                productAndInventory.setInventory( inventory );
@@ -223,6 +226,7 @@ public class ProductServiceImpl implements ProductService {
     }
     @Override
     public Page<ProductAndInventoryDto> getProductByCategoryName( String categoryName, String query, Pageable pageable ) throws ParseException {
+
         try {
             List<ProductAndInventoryDto> productRecordByPages = new ArrayList<>();
             Page<Product> products = productRepository.findAllProductsByCategoryName( categoryName, query, pageable );
@@ -231,14 +235,12 @@ public class ProductServiceImpl implements ProductService {
 //                InventoryDto inventory = inventoryService.convertEntityToDto( product.getInventory() );
 //                productAndInventory.setProduct( convertEntityToDto( product ) );
 //                productAndInventory.setInventory( inventory );
-//                try {
-//                    Account account = authenticatedUser.getUserDetails();
-//                    logger.info( "{}", account.getId() );
-//                    Wishlist wishlist = wishlistService.getWishlistByProductId( account.getId(), product.getId() );
-//                    productAndInventory.setWishlist( wishlist );
-//                } catch ( Exception e ) {
-//                    ///
-//                }
+////                try {
+////                    Wishlist wishlist = wishlistService.getWishlistByProductId( account.getId(), product.getId() );
+////                    productAndInventory.setWishlist( wishlist );
+////                } catch ( Exception e ) {
+////                    ///
+////                }
 //                if ( product.getPromo() != null ) {
 //                    Promo promo = product.getPromo();
 //                    promo.setStatus( promoService.checkSchedulePromo( promo ) );
@@ -410,4 +412,5 @@ public class ProductServiceImpl implements ProductService {
         }
         return randomString.toString();
     }
+
 }

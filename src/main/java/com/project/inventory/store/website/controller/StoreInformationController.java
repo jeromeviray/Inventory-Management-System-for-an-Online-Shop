@@ -20,13 +20,13 @@ public class StoreInformationController {
     @RequestMapping( value = "/save", method = RequestMethod.POST )
     public ResponseEntity<?> saveStoreInformation( @RequestPart( value = "logoImage", required = false ) MultipartFile logoImage,
                                                    @RequestParam( "storeName" ) String storeName,
-                                                   @RequestParam( "domainName" ) String domainName,
+                                                   @RequestParam( "acronym" ) String acronym,
                                                    @RequestParam( "location" ) String location,
                                                    @RequestParam( "description" ) Object description,
                                                    @RequestParam( "contact" ) String contactNumber,
                                                    @RequestParam( "email" ) String email ) throws IOException {
 
-        storeInformationService.saveStoreInformation( logoImage, storeName, domainName, location, description, contactNumber, email );
+        storeInformationService.saveStoreInformation( logoImage, storeName, acronym, location, description, contactNumber, email );
         return new ResponseEntity<>( HttpStatus.OK );
     }
 
@@ -35,7 +35,7 @@ public class StoreInformationController {
     public ResponseEntity<?> updateStoreInformation( @PathVariable int id,
                                                      @RequestPart( value = "logoImage", required = false ) MultipartFile logoImage,
                                                      @RequestParam( "storeName" ) String storeName,
-                                                     @RequestParam( "domainName" ) String domainName,
+                                                     @RequestParam( "acronym" ) String acronym,
                                                      @RequestParam( "location" ) String location,
                                                      @RequestParam( "description" ) Object description,
                                                      @RequestParam( "removeLogo" ) String removeLogo,
@@ -47,7 +47,7 @@ public class StoreInformationController {
                         id,
                         logoImage,
                         storeName,
-                        domainName,
+                        acronym,
                         location,
                         description,
                         removeLogo,

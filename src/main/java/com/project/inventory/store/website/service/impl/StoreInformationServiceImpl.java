@@ -30,7 +30,7 @@ public class StoreInformationServiceImpl implements StoreInformationService {
     @Override
     public void saveStoreInformation( MultipartFile logoImage,
                                       String storeName,
-                                      String domainName,
+                                      String acronym,
                                       String location,
                                       Object description,
                                       String contactNumber,
@@ -38,7 +38,7 @@ public class StoreInformationServiceImpl implements StoreInformationService {
 
         StoreInformation storeInformation = new StoreInformation();
         storeInformation.setStoreName( storeName );
-        storeInformation.setDomainName( domainName );
+        storeInformation.setAcronym( acronym );
         storeInformation.setLocation( location );
         storeInformation.setDescription( ( String ) description );
         storeInformation.setContactNumber( contactNumber );
@@ -54,7 +54,7 @@ public class StoreInformationServiceImpl implements StoreInformationService {
     public StoreInformation updateStoreInformation( int id,
                                                     MultipartFile logoImage,
                                                     String storeName,
-                                                    String domainName,
+                                                    String acronym,
                                                     String location,
                                                     Object description,
                                                     String removeLogo,
@@ -63,7 +63,7 @@ public class StoreInformationServiceImpl implements StoreInformationService {
 //        return null;
         StoreInformation saveStoreInformation = getStoreInformationById( id );
         saveStoreInformation.setStoreName( storeName );
-        saveStoreInformation.setDomainName( domainName );
+        saveStoreInformation.setAcronym( acronym );
         saveStoreInformation.setLocation( location );
         saveStoreInformation.setDescription( ( String ) description );
         saveStoreInformation.setContactNumber( contactNumber );

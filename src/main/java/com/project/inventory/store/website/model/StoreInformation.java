@@ -12,8 +12,8 @@ public class StoreInformation {
     @Column( name = "store_name" )
     private String storeName;
 
-    @Column( name = "domain_name" )
-    private String domainName;
+    @Column( name = "acronym", columnDefinition = "CHAR(10)" )
+    private String acronym;
 
     @Column( name = "logo" )
     private String logo;
@@ -24,18 +24,18 @@ public class StoreInformation {
     @Column( name = "description" )
     private String description;
 
-    @Column(name = "contact_number", columnDefinition = "VARCHAR(15)")
+    @Column( name = "contact_number", columnDefinition = "VARCHAR(15)" )
     private String contactNumber;
 
-    @Column(name = "email", columnDefinition = "VARCHAR(60)")
+    @Column( name = "email", columnDefinition = "VARCHAR(60)" )
     private String email;
 
     public StoreInformation() {
     }
 
-    public StoreInformation( String storeName, String domainName, String logo, String location, String description, String contactNumber, String email ) {
+    public StoreInformation( String storeName, String acronym, String logo, String location, String description, String contactNumber, String email ) {
         this.storeName = storeName;
-        this.domainName = domainName;
+        this.acronym = acronym;
         this.logo = logo;
         this.location = location;
         this.description = description;
@@ -59,12 +59,12 @@ public class StoreInformation {
         this.storeName = storeName;
     }
 
-    public String getDomainName() {
-        return domainName;
+    public String getAcronym() {
+        return acronym;
     }
 
-    public void setDomainName( String domainName ) {
-        this.domainName = domainName;
+    public void setAcronym( String acronym ) {
+        this.acronym = acronym;
     }
 
     public String getLogo() {

@@ -1,5 +1,7 @@
 package com.project.inventory.store.product.controller;
 
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.service.AuthenticatedUser;
 import com.project.inventory.store.inventory.model.InventoryDto;
 import com.project.inventory.store.inventory.service.InventoryService;
 import com.project.inventory.store.product.brand.service.BrandService;
@@ -22,6 +24,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,7 +55,8 @@ public class ProductController {
     private ServletContext servletContext;
     @Autowired
     private ModelMapper mapper;
-
+    @Autowired
+    private AuthenticatedUser authenticatedUser;
     @Autowired
     private CommentService commentService;
 
@@ -203,7 +208,7 @@ public class ProductController {
         Map<String, Object> response = new HashMap<>();
 
         Pageable pageable = PageRequest.of( page, limit );
-        Page<ProductAndInventoryDto> products = productService.getProductByCategoryName( categoryName, query, pageable );
+        Page<ProductAndInventoryDto> products = productService.getProductByCategoryName( categoryName, query, pageable  );
         for ( ProductAndInventoryDto productAndInventoryDto : products.getContent() ) {
             productAndInventoryDto.getProduct().setRating( commentService.getProductRating( productAndInventoryDto.getProduct().getId() ) );
         }

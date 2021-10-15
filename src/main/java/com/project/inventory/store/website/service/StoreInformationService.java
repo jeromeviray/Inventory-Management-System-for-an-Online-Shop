@@ -8,7 +8,7 @@ import java.io.IOException;
 public interface StoreInformationService {
     void saveStoreInformation( MultipartFile logoImage,
                                String storeName,
-                               String domainName,
+                               String acronym,
                                String location,
                                Object description,
                                String contactNumber,
@@ -16,7 +16,7 @@ public interface StoreInformationService {
 
     StoreInformation updateStoreInformation( int id,  MultipartFile logoImage,
                                              String storeName,
-                                             String domainName,
+                                             String acronym,
                                              String location,
                                              Object description,
                                              String removeLogo,
