@@ -29,7 +29,7 @@ import java.util.function.Function;
 public class JwtProviderImpl implements JwtProvider {
     Logger logger = LoggerFactory.getLogger( JwtProviderImpl.class );
 
-    private static final Date accessTokenExpiresAt = new Date( System.currentTimeMillis() + 1440 * 60 * 1000 ); // 1hr 3600000 or 10*60*1000 10 minutes duration
+    private static final Date accessTokenExpiresAt = new Date( System.currentTimeMillis() + (3600000 * 24) ); // 1hr 3600000 or 10*60*1000 10 minutes duration
 
     private static final Date refreshTokenExpiresAt = new Date( System.currentTimeMillis() + 604800000 );
 
@@ -96,7 +96,7 @@ public class JwtProviderImpl implements JwtProvider {
                 .setClaims( claims )
                 .setSubject( username )
                 .setIssuedAt( new Date( System.currentTimeMillis() ) )
-                .setExpiration( new Date( System.currentTimeMillis() + 10 * 60 * 1000 ) )
+                .setExpiration( accessTokenExpiresAt )
                 .signWith( SignatureAlgorithm.HS512, SECRET_KEY ).compact();
     }
 
