@@ -5,9 +5,11 @@ import com.project.inventory.common.dashboard.model.Totals;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Map;
+
 public interface DashboardService {
 
-    Totals getTotals();
+    Map<String, Object> getTotals( int year);
 
     Page<ProductsWithTotalSold> getProductsAndCountTotalSold( String query, Pageable pageable );
 }

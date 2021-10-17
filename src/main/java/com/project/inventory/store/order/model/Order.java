@@ -40,12 +40,13 @@ public class Order {
     @Column( name = "ordered_at", nullable = false, columnDefinition = "DATETIME default current_timestamp" )
     private Date orderedAt;
 
+    @UpdateTimestamp
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss a")
     @Column( name = "delivered_at", nullable = false, columnDefinition = "DATETIME default current_timestamp on update current_timestamp" )
     private Date deliveredAt;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss a")
-    @Column( name = "paid_at", nullable = false, columnDefinition = "DATETIME default null")
+    @Column( name = "paid_at",  columnDefinition = "DATETIME default null")
     private Date paid_at;
 
     @ManyToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
@@ -67,7 +68,7 @@ public class Order {
     @JsonIgnoreProperties({"order"})
     private List<Comment> comments;
 
-    @Column( name = "payment_status", columnDefinition = "INTEGER DEFAULT '0'" )
+    @Column( name = "payment_status", columnDefinition = "INTEGER DEFAULT 0" )
     Integer paymentStatus;
 
     @Column( name = "tracking_url", columnDefinition = "VARCHAR(45) DEFAULT NULL" )

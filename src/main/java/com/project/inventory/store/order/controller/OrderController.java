@@ -101,7 +101,8 @@ class OrderController {
                 stat = OrderStatus.DELIVERED;
                 break;
         }
-        if(status == "payment_received") {
+        logger.info("{}", status );
+        if(status.equals( "payment_received" ) ) {
             order.setPaymentStatus( 1 );
             order.setPaid_at( new Date() );
         } else {
