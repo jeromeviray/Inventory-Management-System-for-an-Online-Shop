@@ -1,12 +1,12 @@
 package com.project.inventory.store.website.controller;
 
+import com.project.inventory.store.website.model.StoreInformation;
 import com.project.inventory.store.website.service.StoreInformationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -18,41 +18,31 @@ public class StoreInformationController {
 
     @PreAuthorize( "hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')" )
     @RequestMapping( value = "/save", method = RequestMethod.POST )
-    public ResponseEntity<?> saveStoreInformation( @RequestPart( value = "logoImage", required = false ) MultipartFile logoImage,
-                                                   @RequestParam( "storeName" ) String storeName,
+    public ResponseEntity<?> saveStoreInformation( @RequestParam( "storeName" ) String storeName,
                                                    @RequestParam( "acronym" ) String acronym,
                                                    @RequestParam( "location" ) String location,
                                                    @RequestParam( "description" ) Object description,
                                                    @RequestParam( "contact" ) String contactNumber,
                                                    @RequestParam( "email" ) String email ) throws IOException {
 
-        storeInformationService.saveStoreInformation( logoImage, storeName, acronym, location, description, contactNumber, email );
+        storeInformationService.saveStoreInformation( storeName, acronym, location, description, contactNumber, email );
         return new ResponseEntity<>( HttpStatus.OK );
     }
 
     @PreAuthorize( "hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')" )
-    @RequestMapping( value = "/update/{id}", method = RequestMethod.POST )
+    @RequestMapping( value = "/update/{id}", method = RequestMethod.PUT )
     public ResponseEntity<?> updateStoreInformation( @PathVariable int id,
-                                                     @RequestPart( value = "logoImage", required = false ) MultipartFile logoImage,
-                                                     @RequestParam( "storeName" ) String storeName,
-                                                     @RequestParam( "acronym" ) String acronym,
-                                                     @RequestParam( "location" ) String location,
-                                                     @RequestParam( "description" ) Object description,
-                                                     @RequestParam( "removeLogo" ) String removeLogo,
-                                                     @RequestParam( "contact" ) String contactNumber,
-                                                     @RequestParam( "email" ) String email ) throws IOException {
+                                                     @RequestBody StoreInformation storeInformation ) throws IOException {
 
         return new ResponseEntity<>(
                 storeInformationService.updateStoreInformation(
                         id,
-                        logoImage,
-                        storeName,
-                        acronym,
-                        location,
-                        description,
-                        removeLogo,
-                        contactNumber,
-                        email ), HttpStatus.OK );
+                        storeInformation.getStoreName(),
+                        storeInformation.getAcronym(),
+                        storeInformation.getLocation(),
+                        storeInformation.getDescription(),
+                        storeInformation.getContactNumber(),
+                        storeInformation.getEmail() ), HttpStatus.OK );
     }
 
     @RequestMapping( value = "", method = RequestMethod.GET )

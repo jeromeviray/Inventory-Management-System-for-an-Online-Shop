@@ -28,8 +28,7 @@ public class StoreInformationServiceImpl implements StoreInformationService {
     private CommonService commonService;
 
     @Override
-    public void saveStoreInformation( MultipartFile logoImage,
-                                      String storeName,
+    public void saveStoreInformation(  String storeName,
                                       String acronym,
                                       String location,
                                       Object description,
@@ -43,21 +42,17 @@ public class StoreInformationServiceImpl implements StoreInformationService {
         storeInformation.setDescription( ( String ) description );
         storeInformation.setContactNumber( contactNumber );
         storeInformation.setEmail( email );
-        if( logoImage != null ) {
-            storeInformation.setLogo( getFileImage( logoImage ) );
-        }
+
         informationRepository.save( storeInformation );
 
     }
 
     @Override
     public StoreInformation updateStoreInformation( int id,
-                                                    MultipartFile logoImage,
                                                     String storeName,
                                                     String acronym,
                                                     String location,
                                                     Object description,
-                                                    String removeLogo,
                                                     String contactNumber,
                                                     String email ) throws IOException {
 //        return null;
@@ -68,12 +63,7 @@ public class StoreInformationServiceImpl implements StoreInformationService {
         saveStoreInformation.setDescription( ( String ) description );
         saveStoreInformation.setContactNumber( contactNumber );
         saveStoreInformation.setEmail( email );
-        if( ! removeLogo.equals( "" ) ) {
-            deleteLogoImage( saveStoreInformation.getLogo() );
-        }
-        if( logoImage != null ) {
-            saveStoreInformation.setLogo( getFileImage( logoImage ) );
-        }
+
         return informationRepository.save( saveStoreInformation );
 
 

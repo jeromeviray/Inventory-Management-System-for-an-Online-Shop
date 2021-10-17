@@ -6,20 +6,18 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 public interface StoreInformationService {
-    void saveStoreInformation( MultipartFile logoImage,
-                               String storeName,
+    void saveStoreInformation( String storeName,
                                String acronym,
                                String location,
                                Object description,
                                String contactNumber,
                                String email ) throws IOException;
 
-    StoreInformation updateStoreInformation( int id,  MultipartFile logoImage,
+    StoreInformation updateStoreInformation( int id,
                                              String storeName,
                                              String acronym,
                                              String location,
                                              Object description,
-                                             String removeLogo,
                                              String contactNumber,
                                              String email ) throws IOException;
 
