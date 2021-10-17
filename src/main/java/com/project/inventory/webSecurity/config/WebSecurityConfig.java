@@ -73,7 +73,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //public endpoint
         http.authorizeRequests()
                 .antMatchers("/websocket/**").permitAll()
-                .antMatchers( "/oauth2/**" ).permitAll()
                 .antMatchers( HttpMethod.POST,
                         "/api/v1/account/login",
                         "/api/v1/users/account/register",
@@ -83,7 +82,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/v1/products/getImages/bytesArrays/**",
                         "/api/v1/comments",
                         "/api/v1/products/discover",
-                        "/api/v1/products/popular",
                         "/api/v1/products/promo",
                         "/api/v1/products/details/**",
                         "/api/v1/products/search",
@@ -91,8 +89,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/v1/products/category/**",
                         "/api/v1/categories/list",
                         "/api/v1/account/password/forgot/**",
-                        "/api/v1/account/verification/*").permitAll();
-
+                        "/api/v1/account/verification/*").permitAll()
+                .antMatchers( "/oauth2/**" ).permitAll();
         http.authorizeRequests().anyRequest().authenticated();
         // Set unauthorized and access denied requests exception handler
         http.exceptionHandling()
