@@ -16,8 +16,12 @@
 #spring.security.oauth2.client.registration.google.client-secret=gPVHuGBgH5JtoCM4S62Fqsty
 #
 server:
-  port: 4480
-
+  port: 443
+  ssl:
+    key-store: keystore.p12
+    key-store-password: springboot
+    keyStoreType: PKCS12
+    keyAlias: tomcat
 
 spring:
   datasource:

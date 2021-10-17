@@ -5,11 +5,13 @@ import com.project.inventory.BeanUtils;
 import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.role.model.Role;
 import com.project.inventory.common.permission.service.AccountService;
+import com.project.inventory.common.permission.service.impl.AccountServiceImpl;
 import com.project.inventory.exception.notFound.NotFoundException;
 import com.project.inventory.jwtUtil.provider.JwtProvider;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshToken;
 import com.project.inventory.jwtUtil.refreshToken.model.RefreshTokenResponse;
 import com.project.inventory.jwtUtil.refreshToken.service.RefreshTokenService;
+import com.project.inventory.jwtUtil.refreshToken.service.impl.RefreshTokenServiceImpl;
 import com.project.inventory.webSecurity.impl.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -37,10 +39,12 @@ public class JwtProviderImpl implements JwtProvider {
 
     @Autowired
     private AccountService accountService;
+
     @Autowired
     private RefreshTokenService refreshTokenService;
+
     @Autowired
-    private UserDetailsServiceImpl userDetailsService = BeanUtils.getBean( UserDetailsServiceImpl.class );
+    private UserDetailsServiceImpl userDetailsService;
 
     @Override
     public String getUserNameFromToken( String token ) {
