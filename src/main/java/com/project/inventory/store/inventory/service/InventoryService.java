@@ -19,4 +19,6 @@ public interface InventoryService {
     int getTotalStocks( Product product );
 
     void updateThreshold(int productId, int threshold);
+
+    void updateStock(int productId, int quantity);
 }
