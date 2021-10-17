@@ -103,15 +103,15 @@ public class OrderServiceImpl implements OrderService {
                 orderItemService.saveOrderItem( orderItems );
                 emptyCart( cartItems );
 
-                    String message = "Your Order has been placed. Order id is "+order.getOrderId();
-                    sms.sendSms( "+639387193843",message );
+                String message = "Your Order has been placed. Order id is "+order.getOrderId();
+                //sms.sendSms( "+639387193843",message );
                 return order;
             } else {
                 logger.info( "Error has been occurs: " );
                 throw new OrderInvalidException( "Placing orders Unsuccessfully. Please Try Again" );
             }
         } catch ( Exception e ) {
-            logger.info( "Error :{}", e.getMessage() );
+            logger.info( "Error: {}", e.getMessage() );
             throw e;
         }
     }

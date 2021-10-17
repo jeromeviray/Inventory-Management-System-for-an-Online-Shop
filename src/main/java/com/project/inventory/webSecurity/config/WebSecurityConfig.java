@@ -81,6 +81,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers( HttpMethod.GET,
                         "/api/v1/products/getImages/bytesArrays/**",
                         "/api/v1/comments",
+                        "/api/v1/products/popular",
                         "/api/v1/products/discover",
                         "/api/v1/products/promo",
                         "/api/v1/products/details/**",

@@ -29,7 +29,7 @@ import java.util.function.Function;
 public class JwtProviderImpl implements JwtProvider {
     Logger logger = LoggerFactory.getLogger( JwtProviderImpl.class );
 
-    private static final Date accessTokenExpiresAt = new Date( System.currentTimeMillis() + 10 * 60 * 1000 ); // 1hr 3600000 or 10*60*1000 10 minutes duration
+    private static final Date accessTokenExpiresAt = new Date( System.currentTimeMillis() + 60 * 60 * 1000 ); // 1hr 3600000 or 10*60*1000 10 minutes duration
 
     private static final Date refreshTokenExpiresAt = new Date( System.currentTimeMillis() + 604800000 );
 

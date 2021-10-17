@@ -1,5 +1,6 @@
 package com.project.inventory.webSecurity.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
 public class AppProperties {
     private final OAuth2 oauth2 = new OAuth2();
 
+    @Value( "${app.hostname}" )
     private String hostName;
 
     public static final class OAuth2 {

@@ -41,15 +41,12 @@ public class Order {
     private Date orderedAt;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss a")
-    @UpdateTimestamp
     @Column( name = "delivered_at", nullable = false, columnDefinition = "DATETIME default current_timestamp on update current_timestamp" )
     private Date deliveredAt;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss a")
-    @UpdateTimestamp
     @Column( name = "paid_at", nullable = false, columnDefinition = "DATETIME default null")
     private Date paid_at;
-
 
     @ManyToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     @JoinColumn( name = "account_id", nullable = false )
