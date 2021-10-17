@@ -13,6 +13,9 @@ public class AppProperties {
     @Value( "${app.hostname}" )
     private String hostName;
 
+    @Value( "${app.fileImagePath}" )
+    private String fileImagePath;
+
     public static final class OAuth2 {
         private List<String> authorizedRedirectUris = new ArrayList<>();
 
@@ -32,6 +35,14 @@ public class AppProperties {
 
     public void setHostName( String hostName ) {
         this.hostName = hostName;
+    }
+
+    public String getFileImagePath() {
+        return fileImagePath;
+    }
+
+    public void setFileImagePath( String fileImagePath ) {
+        this.fileImagePath = fileImagePath;
     }
 
     public OAuth2 getOauth2() {

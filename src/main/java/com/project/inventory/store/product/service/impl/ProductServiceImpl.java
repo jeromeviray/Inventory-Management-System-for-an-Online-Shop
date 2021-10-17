@@ -23,6 +23,7 @@ import com.project.inventory.store.product.service.ProductService;
 import com.project.inventory.store.product.wishlist.model.Wishlist;
 import com.project.inventory.store.product.wishlist.service.WishlistService;
 import com.project.inventory.store.website.service.StoreInformationService;
+import com.project.inventory.webSecurity.config.AppProperties;
 import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -31,9 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,25 +51,35 @@ import java.util.Random;
 
 @Service( value = "productServiceImpl" )
 public class ProductServiceImpl implements ProductService {
-    private final String rootFile = System.getProperty( "user.dir" ) +
-            "/src/main/webapp/WEB-INF/reactjs/public/images/products/";
     Logger logger = LoggerFactory.getLogger( ProductServiceImpl.class );
+
+    @Autowired
+    private AppProperties appProperties;
+
     @Autowired
     private ProductRepository productRepository;
+
     @Autowired
     private InventoryService inventoryService;
+
     @Autowired
     private ModelMapper mapper;
+
     @Autowired
     private FileImageService fileImageService;
+
     @Autowired
     private ServletContext servletContext;
+
     @Autowired
     private BrandService brandService;
+
     @Autowired
     private CategoryService categoryService;
+
     @Autowired
     private AccountService accountService;
+
     @Autowired
     private WishlistService wishlistService;
 
@@ -80,6 +88,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private PromoService promoService;
+
     @Autowired
     private StoreInformationService storeInformationService;
 
@@ -170,7 +179,7 @@ public class ProductServiceImpl implements ProductService {
                 logger.info( "{}", removedImage );
                 FileImage fileImage = fileImageService.getFileImageByFileNameAndProductId( removedImage, savedProduct.getId() );
                 if ( fileImage != null ) {
-                    Path path = Paths.get( rootFile + product.getId(), removedImage );
+                    Path path = Paths.get( appProperties.getFileImagePath() + product.getId(), removedImage );
                     fileImageService.deleteFileImage( fileImage, path, product.getId() );
                 }
             }
@@ -368,6 +377,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public List<FileImage> getFileImages( MultipartFile[] files, Product product ) throws IOException {
+        String rootFile = appProperties.getFileImagePath();
         logger.info( "{}", rootFile );
         File directory = new File( rootFile + product.getId() );
         //folder for each product images

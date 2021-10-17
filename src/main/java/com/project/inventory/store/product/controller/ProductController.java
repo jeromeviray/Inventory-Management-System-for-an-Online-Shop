@@ -12,6 +12,7 @@ import com.project.inventory.store.product.model.ProductAndInventoryDto;
 import com.project.inventory.store.product.model.ProductDto;
 import com.project.inventory.store.product.service.ProductService;
 import com.project.inventory.store.product.wishlist.model.Wishlist;
+import com.project.inventory.webSecurity.config.AppProperties;
 import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletContext;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
@@ -60,6 +62,9 @@ public class ProductController {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private AppProperties appProperties;
+
     @PreAuthorize( "hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')" )
     @RequestMapping( value = "/save", method = RequestMethod.POST, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE } )
     public ResponseEntity<?> saveProduct( @RequestPart( value = "productImages[]", required = false ) MultipartFile[] productImages,
@@ -86,11 +91,16 @@ public class ProductController {
 
     @RequestMapping( value = "/getImages/bytesArrays/{path}/{image}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE )
     public ResponseEntity<?> getImage( @PathVariable String path,
-                                       @PathVariable String image ) throws IOException {
+                                       @PathVariable String image )  {
+        try {
+            logger.info(appProperties.getFileImagePath() + path + "/" + image);
+            InputStream readImage = new FileInputStream( appProperties.getFileImagePath() + path + "/" + image );
+            return new ResponseEntity( IOUtils.toByteArray( readImage ), HttpStatus.OK );
+        } catch ( Exception e ) {
+            logger.info(e.getMessage());
+        }
 
-        InputStream readImage = servletContext.getResourceAsStream( "WEB-INF/reactjs/public/images/products/" + path + "/" + image );
-
-        return new ResponseEntity( IOUtils.toByteArray( readImage ), HttpStatus.OK );
+        return new ResponseEntity( HttpStatus.OK );
     }
 
     @PreAuthorize( "hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')" )
