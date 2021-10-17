@@ -15,9 +15,6 @@ public class StoreInformation {
     @Column( name = "acronym", columnDefinition = "CHAR(10)" )
     private String acronym;
 
-    @Column( name = "logo" )
-    private String logo;
-
     @Column( name = "location" )
     private String location;
 
@@ -33,10 +30,9 @@ public class StoreInformation {
     public StoreInformation() {
     }
 
-    public StoreInformation( String storeName, String acronym, String logo, String location, String description, String contactNumber, String email ) {
+    public StoreInformation( String storeName, String acronym, String location, String description, String contactNumber, String email ) {
         this.storeName = storeName;
         this.acronym = acronym;
-        this.logo = logo;
         this.location = location;
         this.description = description;
         this.contactNumber = contactNumber;
@@ -65,14 +61,6 @@ public class StoreInformation {
 
     public void setAcronym( String acronym ) {
         this.acronym = acronym;
-    }
-
-    public String getLogo() {
-        return logo;
-    }
-
-    public void setLogo( String logo ) {
-        this.logo = logo;
     }
 
     public String getLocation() {
