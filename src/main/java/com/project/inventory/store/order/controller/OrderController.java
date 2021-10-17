@@ -1,7 +1,9 @@
 package com.project.inventory.store.order.controller;
 
 import com.project.inventory.api.payment.PaymongoAPI;
+import com.project.inventory.store.inventory.service.InventoryService;
 import com.project.inventory.store.order.model.*;
+import com.project.inventory.store.order.orderItem.model.OrderItem;
 import com.project.inventory.store.order.service.OrderService;
 import com.project.inventory.webSecurity.config.AppProperties;
 import org.slf4j.Logger;
@@ -27,6 +29,8 @@ class OrderController {
 
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private InventoryService inventoryService;
 
     private PaymongoAPI paymongoAPI = new PaymongoAPI();
 
@@ -83,6 +87,7 @@ class OrderController {
                 stat = OrderStatus.PENDING;
                 break;
             case "confirmed":
+
                 stat = OrderStatus.CONFIRMED;
                 break;
             case "shipped":
@@ -96,6 +101,11 @@ class OrderController {
             order.setPaymentStatus( 1 );
             order.setPaid_at( new Date() );
         } else {
+            if(stat.equals( OrderStatus.CONFIRMED )){
+                for( OrderItem orderItem : order.getOrderItems()){
+                    inventoryService.updateStock( orderItem.getProduct().getId(), orderItem.getQuantity() );
+                }
+            }
             order.setOrderStatus( stat );
         }
         orderService.saveOrder(order);

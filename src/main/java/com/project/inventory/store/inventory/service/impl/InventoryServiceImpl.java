@@ -8,6 +8,7 @@ import com.project.inventory.store.inventory.repository.InventoryRepository;
 import com.project.inventory.store.inventory.service.InventoryService;
 import com.project.inventory.store.inventory.stock.model.Stock;
 import com.project.inventory.store.inventory.stock.model.StockStatus;
+import com.project.inventory.store.inventory.stock.service.StockService;
 import com.project.inventory.store.product.model.Product;
 import com.project.inventory.store.product.service.ProductService;
 import org.modelmapper.ModelMapper;
@@ -26,6 +27,8 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Autowired
     private ProductService productService;
+    @Autowired
+    private StockService stockService;
 
     @Autowired
     private ModelMapper mapper;
@@ -96,6 +99,23 @@ public class InventoryServiceImpl implements InventoryService {
         inventory.setThreshold( threshold );
 
         inventoryRepository.save( inventory );
+    }
+
+    @Override
+    public void updateStock( int productId, int quantity ) {
+        Inventory inventory = getInventoryByProductId( productId );
+        for(Stock stock : stockService.getStocks( inventory.getId() )){
+            if(stock.getStock() > 0){
+                int minusQuantity = quantity;
+                if(quantity > stock.getStock()) {
+                    minusQuantity = quantity - stock.getStock();
+                } else if(minusQuantity == 0) {
+                    break;
+                }
+                stock.setStock( stock.getStock()-minusQuantity );
+                stockService.updateStock( stock, stock.getId() );
+            }
+        }
     }
 
     private GetProductDto convertProductEntityToDto( Product product ) {
