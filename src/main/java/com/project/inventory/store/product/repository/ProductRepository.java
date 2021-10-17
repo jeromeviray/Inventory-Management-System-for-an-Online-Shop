@@ -69,4 +69,15 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             "AND product.product_name LIKE concat('%', :query, '%') ",
             nativeQuery = true )
     Page<Product> findAllProductsWithPromoAndStatus( @Param( "query" ) String query, @Param( "status" ) String status, Pageable pageable );
+
+    @Query( value = "SELECT product.*, COUNT(product.id) as totalOrdered FROM order_items as item " +
+            "JOIN orders  ON orders.id = item.order_id " +
+            "JOIN products as product ON product.id = item.product_id " +
+            "WHERE orders.order_status IN ('delivered', 'shipped', 'confirmed', 'pending') AND product.product_is_deleted = 0 " +
+            "GROUP BY product.id " +
+            "ORDER BY count(product.id) ",
+            nativeQuery = true
+    )
+    Page<Product> getPopularProducts(Pageable pageable);
 }
+

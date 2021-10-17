@@ -403,6 +403,21 @@ public class ProductServiceImpl implements ProductService {
         return fileImageDto;
     }
 
+    @Override
+    public Page<ProductAndInventoryDto> getPopularProducts( String query, Pageable pageable ) throws ParseException {
+        try {
+            List<ProductAndInventoryDto> productRecordByPages = new ArrayList<>();
+            Page<Product> products = productRepository.getPopularProducts(pageable);
+            for ( Product product : products.getContent() ) {
+                ProductAndInventoryDto productAndInventory = getProductAndInventoryByProductId( product.getId() );
+                productRecordByPages.add( productAndInventory );
+            }
+            return new PageImpl<>( productRecordByPages, pageable, products.getTotalElements() );
+        } catch ( Exception e ) {
+            throw e;
+        }
+    }
+
     private String generateStrings() {
         String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijk";
         Random rnd = new Random();

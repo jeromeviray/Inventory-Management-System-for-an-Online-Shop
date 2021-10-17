@@ -52,4 +52,5 @@ public interface ProductService {
 
     Page<ProductAndInventoryDto> getProductsWithPromo(String query, String status, Pageable pageable) throws ParseException;
 
+    Page<ProductAndInventoryDto> getPopularProducts(String query, Pageable pageable) throws ParseException;
 }

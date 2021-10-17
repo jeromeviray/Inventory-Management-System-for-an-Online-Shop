@@ -91,11 +91,9 @@ class OrderController {
             case "delivered":
                 stat = OrderStatus.DELIVERED;
                 break;
-            case "payment_received":
-
         }
         if(status == "payment_received") {
-            order.setPaymentStatus( new Integer("1") );
+            order.setPaymentStatus( 1 );
             order.setPaid_at( new Date() );
         } else {
             order.setOrderStatus( stat );

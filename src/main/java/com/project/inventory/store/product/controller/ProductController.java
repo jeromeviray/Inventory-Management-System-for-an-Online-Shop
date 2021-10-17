@@ -178,6 +178,28 @@ public class ProductController {
         return ResponseEntity.ok( response );
     }
 
+    @RequestMapping( value = "/popular", method = RequestMethod.GET )
+    public ResponseEntity<?> getPopularProducts( @RequestParam( value = "query", defaultValue = "", required = false ) String query,
+                                                  @RequestParam( value = "page", defaultValue = "0" ) Integer page,
+                                                  @RequestParam( value = "limit", defaultValue = "0" ) Integer limit ) throws IOException, ParseException {
+        Map<String, Object> response = new HashMap<>();
+
+        Pageable pageable = PageRequest.of( page, limit );
+        Page<ProductAndInventoryDto> products = productService.getPopularProducts( query, pageable );
+        if(products.getTotalElements() == 0){
+            products = productService.getProducts( query, pageable );
+        }
+        for ( ProductAndInventoryDto product : products.getContent() ) {
+            product.getProduct().setRating( commentService.getProductRating( product.getProduct().getId() ) );
+        }
+        response.put( "data", products.getContent() );
+        response.put( "currentPage", products.getNumber() );
+        response.put( "totalItems", products.getTotalElements() );
+        response.put( "totalPages", products.getTotalPages() );
+
+        return ResponseEntity.ok( response );
+    }
+
     @RequestMapping( value = "/search", method = RequestMethod.GET )
     public ResponseEntity<?> searchProductByBarcodeOrProductName( @RequestParam( value = "query", defaultValue = "", required = false ) String query,
                                                                   @RequestParam( value = "page", defaultValue = "0" ) Integer page,
