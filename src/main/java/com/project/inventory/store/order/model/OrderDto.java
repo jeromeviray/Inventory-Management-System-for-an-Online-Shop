@@ -13,6 +13,7 @@ public class OrderDto {
     private Integer id;
     private String orderId;
     private OrderStatus orderStatus;
+    private Integer paymentStatus;
     private double totalAmount;
     private String orderedAt;
     private String deliveredAt;
@@ -52,6 +53,14 @@ public class OrderDto {
 
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public Integer getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus( Integer paymentStatus ) {
+        this.paymentStatus = paymentStatus;
     }
 
     public double getTotalAmount() {
