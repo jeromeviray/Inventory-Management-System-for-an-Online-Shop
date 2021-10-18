@@ -74,6 +74,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 //        logger.info( firstName );
         Optional<Account> getAccount = accountRepository.findByEmail( oAuth2UserInfo.getEmail() );
         Account account;
+        logger.info("Testing {}", getAccount);
+        logger.info("Testing {}", getAccount.isPresent());
         if( getAccount.isPresent() ) {
             account = getAccount.get();
             if( ! account.getAuthProvider().equals( AuthProvider.valueOf( request.getClientRegistration().getRegistrationId() ) ) ) {
@@ -129,7 +131,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         userService.saveUser( user );
         String username = auth2UserInfo.getEmail().substring( 0, auth2UserInfo.getEmail().indexOf( "@" ) );
-
+        logger.info("{}", account.getId());
         account.setUsername( username );
         return accountRepository.save( account );
     }

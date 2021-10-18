@@ -14,10 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "/api/v1")
@@ -27,8 +24,12 @@ public class DashboardController {
 
     @PreAuthorize( "hasRole('SUPER_ADMIN')" )
     @RequestMapping(value = "/summaries", method = RequestMethod.GET)
-    public ResponseEntity<?> getTotals(){
-        return new ResponseEntity<>(dashboardService.getTotals(), HttpStatus.OK );
+    public ResponseEntity<?> getTotals(@RequestParam( value = "year", required = false ) Integer year){
+//        System.out.println(year);
+
+        int currentYear;
+        currentYear = Objects.requireNonNullElseGet( year, () -> Calendar.getInstance().get( Calendar.YEAR ) );
+        return new ResponseEntity<>(dashboardService.getTotals(currentYear), HttpStatus.OK );
     }
     @PreAuthorize( "hasRole('SUPER_ADMIN')" )
     @RequestMapping(value = "/summaries/products/sold", method = RequestMethod.GET)
