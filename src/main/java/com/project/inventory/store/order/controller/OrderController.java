@@ -1,6 +1,7 @@
 package com.project.inventory.store.order.controller;
 
 import com.project.inventory.api.payment.PaymongoAPI;
+import com.project.inventory.store.cart.cartItem.model.CartItemDto;
 import com.project.inventory.store.inventory.service.InventoryService;
 import com.project.inventory.store.order.model.*;
 import com.project.inventory.store.order.orderItem.model.OrderItem;
@@ -47,9 +48,12 @@ class OrderController {
                     placeOrder.getPaymentId(),
                     placeOrder.getCartItems() );
             logger.info(order.getPaymentMethod().getPaymentMethod());
+            for( CartItemDto orderItem : placeOrder.getCartItems()){
+                inventoryService.updateStock( orderItem.getProduct().getProduct().getId(), orderItem.getQuantity() );
+            }
             if( Objects.equals( order.getPaymentMethod().getPaymentMethod(), "GCASH" ) ) {
-                String successUrl = String.format("%s/%s/%s", appProperties.getHostName(), order.getOrderId(), "payment/success");
-                String failedUrl = String.format("%s/%s/%s", appProperties.getHostName(), order.getOrderId(), "payment/failed");
+                String successUrl = String.format("%s/cart/%s/%s", appProperties.getHostName(), order.getOrderId(), "payment/success");
+                String failedUrl = String.format("%s/cart/%s/%s", appProperties.getHostName(), order.getOrderId(), "payment/failed");
                 Map resp = this.paymongoAPI.generateSource( order.getTotalAmount(), "PHP",  successUrl, failedUrl );
                 Map data = (Map ) resp.get("data");
                 Map attributes = (Map) data.get("attributes");
@@ -106,11 +110,6 @@ class OrderController {
             order.setPaymentStatus( 1 );
             order.setPaid_at( new Date() );
         } else {
-            if(stat.equals( OrderStatus.CONFIRMED )){
-                for( OrderItem orderItem : order.getOrderItems()){
-                    inventoryService.updateStock( orderItem.getProduct().getId(), orderItem.getQuantity() );
-                }
-            }
             order.setOrderStatus( stat );
         }
         orderService.saveOrder(order);
@@ -128,11 +127,12 @@ class OrderController {
     @RequestMapping(value = "/{orderId}/paid/{status}", method = RequestMethod.PUT)
     public ResponseEntity<?> markOrderAsPaid( @PathVariable String orderId, @PathVariable String status ){
         Order order = orderService.getOrderByOrderId( orderId );
-        int paymentStatus = 1;
-        if(status == "failed") {
+        Integer paymentStatus = 1;
+        if( Objects.equals( status, "failed" ) ) {
             paymentStatus = 2;
         }
-        if(order.getPaymentStatus() > 0 ) {
+        Integer currentPaymentStatus = order.getPaymentStatus();
+        if(currentPaymentStatus != null && currentPaymentStatus > 0 ) {
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Order "+order.getOrderId()+ " was already completed.");
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);

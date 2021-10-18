@@ -114,6 +114,10 @@ public class InventoryServiceImpl implements InventoryService {
                 }
                 stock.setStock( stock.getStock()-minusQuantity );
                 stockService.updateStock( stock, stock.getId() );
+
+                if(stock.getStock() > quantity ) {
+                    break;
+                }
             }
         }
     }

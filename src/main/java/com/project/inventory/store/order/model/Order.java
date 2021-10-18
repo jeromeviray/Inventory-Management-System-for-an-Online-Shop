@@ -40,9 +40,8 @@ public class Order {
     @Column( name = "ordered_at", nullable = false, columnDefinition = "DATETIME default current_timestamp" )
     private Date orderedAt;
 
-    @UpdateTimestamp
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss a")
-    @Column( name = "delivered_at", nullable = false, columnDefinition = "DATETIME default current_timestamp on update current_timestamp" )
+    @Column( name = "delivered_at", columnDefinition = "DATETIME default NULL" )
     private Date deliveredAt;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss a")
