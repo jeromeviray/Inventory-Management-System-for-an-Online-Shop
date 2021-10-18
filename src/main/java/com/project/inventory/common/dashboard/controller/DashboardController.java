@@ -24,12 +24,12 @@ public class DashboardController {
 
     @PreAuthorize( "hasRole('SUPER_ADMIN')" )
     @RequestMapping(value = "/summaries", method = RequestMethod.GET)
-    public ResponseEntity<?> getTotals(@RequestParam( value = "year", required = false ) Integer year){
-//        System.out.println(year);
-
-        int currentYear;
-        currentYear = Objects.requireNonNullElseGet( year, () -> Calendar.getInstance().get( Calendar.YEAR ) );
-        return new ResponseEntity<>(dashboardService.getTotals(currentYear), HttpStatus.OK );
+    public ResponseEntity<?> getTotals(){
+////        System.out.println(year);
+//
+//        int currentYear;
+//        currentYear = Objects.requireNonNullElseGet( year, () -> Calendar.getInstance().get( Calendar.YEAR ) );
+        return new ResponseEntity<>(dashboardService.getTotals(), HttpStatus.OK );
     }
     @PreAuthorize( "hasRole('SUPER_ADMIN')" )
     @RequestMapping(value = "/summaries/products/sold", method = RequestMethod.GET)
@@ -46,6 +46,15 @@ public class DashboardController {
         response.put( "totalItems", products.getTotalElements() );
         response.put( "totalPages", products.getTotalPages() );
         return new ResponseEntity<>(response, HttpStatus.OK );
+    }
+    @PreAuthorize( "hasRole('SUPER_ADMIN')" )
+    @RequestMapping(value = "/revenue", method = RequestMethod.GET)
+    public ResponseEntity<?> getRevenues(@RequestParam( value = "year", required = false ) Integer year){
+//        System.out.println(year);
+
+        int currentYear;
+        currentYear = Objects.requireNonNullElseGet( year, () -> Calendar.getInstance().get( Calendar.YEAR ) );
+        return new ResponseEntity<>(dashboardService.getTotalRevenues(currentYear), HttpStatus.OK );
     }
 
 }
