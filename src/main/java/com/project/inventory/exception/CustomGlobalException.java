@@ -31,6 +31,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.security.auth.login.AccountNotFoundException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -193,13 +194,13 @@ public class CustomGlobalException extends ResponseEntityExceptionHandler {
     // handle global exceptions
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGlobalExceptions(Exception exception,
-                                                    WebRequest request) {
+    public ResponseEntity<?> handleGlobalExceptions(Exception exception, WebRequest request) {
         ApiError apiError = new ApiError(new Date(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 exception.getMessage(),
                 request.getDescription(false));
+        logger.error("caught exception while doing whatever", exception);
         return new ResponseEntity(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

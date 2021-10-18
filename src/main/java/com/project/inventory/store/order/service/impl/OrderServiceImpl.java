@@ -220,6 +220,7 @@ public class OrderServiceImpl implements OrderService {
         order.setAccount( account );
         order.setTotalAmount( totalAmount );
         order.setOrderStatus( OrderStatus.PENDING );
+        order.setPaymentStatus( 0 );
         return order;
     }
 

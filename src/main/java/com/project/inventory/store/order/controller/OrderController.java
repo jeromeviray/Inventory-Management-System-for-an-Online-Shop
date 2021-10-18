@@ -48,8 +48,8 @@ class OrderController {
                     placeOrder.getCartItems() );
             logger.info(order.getPaymentMethod().getPaymentMethod());
             if( Objects.equals( order.getPaymentMethod().getPaymentMethod(), "GCASH" ) ) {
-                String successUrl = String.format("%s/%s/%s", appProperties.getHostName(), order.getOrderId(), "payment/success");
-                String failedUrl = String.format("%s/%s/%s", appProperties.getHostName(), order.getOrderId(), "payment/failed");
+                String successUrl = String.format("%s/cart/%s/%s", appProperties.getHostName(), order.getOrderId(), "payment/success");
+                String failedUrl = String.format("%s/cart/%s/%s", appProperties.getHostName(), order.getOrderId(), "payment/failed");
                 Map resp = this.paymongoAPI.generateSource( order.getTotalAmount(), "PHP",  successUrl, failedUrl );
                 Map data = (Map ) resp.get("data");
                 Map attributes = (Map) data.get("attributes");
@@ -128,11 +128,12 @@ class OrderController {
     @RequestMapping(value = "/{orderId}/paid/{status}", method = RequestMethod.PUT)
     public ResponseEntity<?> markOrderAsPaid( @PathVariable String orderId, @PathVariable String status ){
         Order order = orderService.getOrderByOrderId( orderId );
-        int paymentStatus = 1;
-        if(status == "failed") {
+        Integer paymentStatus = 1;
+        if( Objects.equals( status, "failed" ) ) {
             paymentStatus = 2;
         }
-        if(order.getPaymentStatus() > 0 ) {
+        Integer currentPaymentStatus = order.getPaymentStatus();
+        if(currentPaymentStatus != null && currentPaymentStatus > 0 ) {
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Order "+order.getOrderId()+ " was already completed.");
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);

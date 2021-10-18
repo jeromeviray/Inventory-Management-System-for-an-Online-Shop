@@ -1,5 +1,7 @@
 package com.project.inventory.customer.address.model;
 
+import com.project.inventory.common.permission.model.Account;
+
 public class CustomerAddressDto {
     private int id;
     private String firstName;
@@ -11,6 +13,7 @@ public class CustomerAddressDto {
     private String province;
     private String barangay;
     private String street;
+    private Account account;
     private boolean isDefault;
 
     public int getId() {
@@ -91,6 +94,14 @@ public class CustomerAddressDto {
 
     public void setStreet(String street) {
         this.street = street;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount( Account account ) {
+        this.account = account;
     }
 
     public boolean isDefault() {
