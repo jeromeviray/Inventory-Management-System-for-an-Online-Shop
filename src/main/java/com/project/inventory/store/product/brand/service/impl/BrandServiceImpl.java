@@ -59,7 +59,6 @@ public class BrandServiceImpl implements BrandService {
         Brand brand = getBrand( id );
         brand.setDeleted( true );
         saveBrand( brand );
-        //        brandRepository.deleteById( id );
     }
 
     @Override

@@ -23,8 +23,8 @@ public interface BrandRepository extends JpaRepository<Brand, Integer> {
     @Query( value = "SELECT * FROM brands WHERE brand_name =:brandName AND is_deleted = 0", nativeQuery = true )
     Brand findByBrandName( @Param( "brandName" ) String brandName );
 
-    @Query( value = "SELECT * FROM brands WHERE is_deleted = 0", nativeQuery = true )
-    Optional<Brand> findByIdAndIsDeleted( int id );
+    @Query( value = "SELECT * FROM brands WHERE is_deleted = 0 AND id=:id", nativeQuery = true )
+    Optional<Brand> findByIdAndIsDeleted(@Param( "id" ) int id );
 
     @Query( value = "SELECT brand.id, brand.brand_name as brandName, brand.created_at as createdAt, brand.is_deleted as isDeleted, COUNT(product.id) totalProducts " +
             "FROM brands as brand " +
