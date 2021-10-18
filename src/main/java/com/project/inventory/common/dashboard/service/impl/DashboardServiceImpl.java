@@ -23,8 +23,8 @@ public class DashboardServiceImpl implements DashboardService {
     @Autowired
     private DashboardRepository dashboardRepository;
     @Override
-    public Map<String, Object> getTotals(int year) {
-        TotalRevenue totalRevenue = dashboardRepository.getTotalRevenueByYear( year );
+    public Map<String, Object> getTotals() {
+        TotalRevenue totalRevenue = dashboardRepository.getTotalRevenueByYear(  );
         Totals getTotals = dashboardRepository.findAllTotals();
         Map<String, Object> totals = new HashMap<>();
 
@@ -48,5 +48,10 @@ public class DashboardServiceImpl implements DashboardService {
         }catch( Exception e ){
             throw e;
         }
+    }
+
+    @Override
+    public List<TotalRevenue> getTotalRevenues( int year ) {
+        return dashboardRepository.getRevenue( year );
     }
 }

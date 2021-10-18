@@ -28,9 +28,8 @@ public interface DashboardRepository extends JpaRepository<Account, Integer> {
     Totals findAllTotals();
 
     @Query(value = "SELECT year(paid_at) year, sum(total_amount) totalRevenue " +
-            " FROM orders o " +
-            " WHERE year(paid_at) =:year ", nativeQuery = true)
-    TotalRevenue getTotalRevenueByYear(@Param("year" ) int year);
+            " FROM orders o ", nativeQuery = true)
+    TotalRevenue getTotalRevenueByYear();
 
     @Query(value = "SELECT product.id id, product.product_name productName, product.product_price productPrice, product.barcode barcode, count(product.id) as totalSold, o.order_status status " +
             "FROM order_items item " +
