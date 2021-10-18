@@ -12,8 +12,8 @@ spring:
     username: admin
     password: 5AAm7g6nyaPwSfncHoD5
   jpa:
-#    hibernate:
-#      ddl-auto: update
+    hibernate:
+      ddl-auto: update
     show-sql: false
     properties:
       hibernate:
