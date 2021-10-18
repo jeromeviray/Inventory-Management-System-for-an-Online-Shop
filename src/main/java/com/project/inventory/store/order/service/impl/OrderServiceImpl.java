@@ -104,7 +104,7 @@ public class OrderServiceImpl implements OrderService {
                 emptyCart( cartItems );
 
                 String message = "Your Order has been placed. Order id is "+order.getOrderId();
-                //sms.sendSms( "+639387193843",message );
+                sms.sendSms( "+639387193843",message );
                 return order;
             } else {
                 logger.info( "Error has been occurs: " );

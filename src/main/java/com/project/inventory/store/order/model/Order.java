@@ -41,7 +41,7 @@ public class Order {
     private Date orderedAt;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss a")
-    @Column( name = "delivered_at", nullable = false, columnDefinition = "DATETIME default NULL" )
+    @Column( name = "delivered_at", columnDefinition = "DATETIME default NULL" )
     private Date deliveredAt;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss a")

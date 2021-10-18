@@ -47,6 +47,9 @@ class OrderController {
                     placeOrder.getPaymentId(),
                     placeOrder.getCartItems() );
             logger.info(order.getPaymentMethod().getPaymentMethod());
+            for( OrderItem orderItem : order.getOrderItems()){
+                inventoryService.updateStock( orderItem.getProduct().getId(), orderItem.getQuantity() );
+            }
             if( Objects.equals( order.getPaymentMethod().getPaymentMethod(), "GCASH" ) ) {
                 String successUrl = String.format("%s/cart/%s/%s", appProperties.getHostName(), order.getOrderId(), "payment/success");
                 String failedUrl = String.format("%s/cart/%s/%s", appProperties.getHostName(), order.getOrderId(), "payment/failed");
@@ -106,11 +109,6 @@ class OrderController {
             order.setPaymentStatus( 1 );
             order.setPaid_at( new Date() );
         } else {
-            if(stat.equals( OrderStatus.CONFIRMED )){
-                for( OrderItem orderItem : order.getOrderItems()){
-                    inventoryService.updateStock( orderItem.getProduct().getId(), orderItem.getQuantity() );
-                }
-            }
             order.setOrderStatus( stat );
         }
         orderService.saveOrder(order);
