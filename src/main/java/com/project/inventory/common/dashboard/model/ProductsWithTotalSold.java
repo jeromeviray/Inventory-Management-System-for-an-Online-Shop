@@ -1,11 +1,10 @@
 package com.project.inventory.common.dashboard.model;
 
 public interface ProductsWithTotalSold {
-    int getId();
+    Integer getId();
     String getProductName();
-    double getProductPrice();
-    int getBarcode();
-    int getTotalSold();
+    Double getProductPrice();
+    Integer getBarcode();
+    Integer getTotalSold();
     String getStatus();
-
 }
