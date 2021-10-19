@@ -35,7 +35,7 @@ app:
   oauth2:
     authorizedRedirectUris:
       - https://elite-replica-329023.as.r.appspot.com/oauth2/redirect
-  hostName: https://elite-replica-329023.as.r.appspot.com/
+  hostName: https://elite-replica-329023.as.r.appspot.com
   fileImagePath: /var/data/product-img/
 #logging:
 #  level:
