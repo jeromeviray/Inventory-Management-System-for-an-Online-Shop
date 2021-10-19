@@ -104,21 +104,32 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public void updateStock( int productId, int quantity ) {
         Inventory inventory = getInventoryByProductId( productId );
-        for(Stock stock : stockService.getStocks( inventory.getId() )){
-            if(stock.getStock() > 0){
+        for( Stock stock : stockService.getStocks( inventory.getId() ) ) {
+            if( stock.getStock() > 0 ) {
                 int minusQuantity = quantity;
-                if(quantity > stock.getStock()) {
+                if( quantity > stock.getStock() ) {
                     minusQuantity = quantity - stock.getStock();
-                } else if(minusQuantity == 0) {
+                } else if( minusQuantity == 0 ) {
                     break;
                 }
-                stock.setStock( stock.getStock()-minusQuantity );
+                stock.setStock( stock.getStock() - minusQuantity );
                 stockService.updateStock( stock, stock.getId() );
 
-                if(stock.getStock() > quantity ) {
+                if( stock.getStock() > quantity ) {
                     break;
                 }
             }
+        }
+    }
+
+    @Override
+    public void cancelStock( int productId, int quantity ) {
+        Inventory inventory = getInventoryByProductId( productId );
+        for( Stock stock : stockService.getStocks( inventory.getId() ) ) {
+            stock.setStock( stock.getStock() + quantity );
+
+            stockService.updateStock( stock, stock.getId() );
+            break;
         }
     }
 
