@@ -84,7 +84,6 @@ class OrderController {
 
     @RequestMapping( value = "/{orderId}/status/{status}", method = RequestMethod.PUT )
     public ResponseEntity<Map> updateOrdersByStatus( @PathVariable String orderId, @PathVariable( value = "status" ) String status ) {
-
         Order order = orderService.getOrderByOrderId( orderId );
         OrderStatus stat = OrderStatus.PENDING;
         switch( status ) {
@@ -102,6 +101,9 @@ class OrderController {
                 order.setDeliveredAt( new Date() );
                 stat = OrderStatus.DELIVERED;
                 break;
+            case "request_refund":
+                stat = OrderStatus.REQUEST_REFUND;
+                break;
 
         }
         if( status.equals( "payment_received" ) ) {
@@ -109,6 +111,13 @@ class OrderController {
             order.setPaid_at( new Date() );
         } else if( status.equals( "cancel" ) ) {
             order.setOrderStatus( OrderStatus.CANCELLED );
+            for( OrderItem item : order.getOrderItems() ) {
+                inventoryService.cancelStock( item.getProduct().getId(), item.getQuantity() );
+            }
+        }else if( status.equals( "accept_refund" ) ) {
+            order.setPaymentStatus( 3 );
+            order.setRefundAt( new Date() );
+            order.setOrderStatus( OrderStatus.REFUNDED );
             for( OrderItem item : order.getOrderItems() ) {
                 inventoryService.cancelStock( item.getProduct().getId(), item.getQuantity() );
             }

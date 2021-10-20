@@ -48,6 +48,10 @@ public class Order {
     @Column( name = "paid_at",  columnDefinition = "DATETIME default null")
     private Date paid_at;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss a")
+    @Column( name = "refund_at",  columnDefinition = "DATETIME default null")
+    private Date refundAt;
+
     @ManyToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     @JoinColumn( name = "account_id", nullable = false )
     private Account account;
@@ -173,6 +177,14 @@ public class Order {
 
     public void setPaid_at( Date paid_at ) {
         this.paid_at = paid_at;
+    }
+
+    public Date getRefundAt() {
+        return refundAt;
+    }
+
+    public void setRefundAt( Date refundAt ) {
+        this.refundAt = refundAt;
     }
 
     public Integer getPaymentStatus() {

@@ -252,7 +252,6 @@ public class OrderServiceImpl implements OrderService {
             statuses.add("payment_received");
         }
 
-        logger.info(statuses.toString());
         for ( Order savedOrder : orderRepository.findAllByOrderStatusAndAccountId( statuses, id ) ) {
             orders.add( convertEntityToDto( savedOrder ) );
         }

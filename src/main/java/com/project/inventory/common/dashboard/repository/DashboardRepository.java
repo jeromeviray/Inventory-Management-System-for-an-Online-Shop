@@ -32,7 +32,7 @@ public interface DashboardRepository extends JpaRepository<Account, Integer> {
             "WHERE o.payment_status = 1", nativeQuery = true)
     TotalRevenue getTotalRevenueByYear();
 
-    @Query(value = "SELECT product.id id, product.product_name productName, product.product_price productPrice, product.barcode barcode, count(product.id) as totalSold, o.order_status status " +
+    @Query(value = "SELECT product.id id, product.product_name productName, product.product_price productPrice, product.barcode barcode, sum(item.quantity) as totalSold, o.order_status status " +
             "FROM order_items item " +
             "JOIN products product " +
             "ON item.product_id = product.id " +
