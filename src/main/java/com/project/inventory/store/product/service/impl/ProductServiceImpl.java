@@ -211,21 +211,9 @@ public class ProductServiceImpl implements ProductService {
         try {
             List<ProductAndInventoryDto> productRecordByPages = new ArrayList<>();
             Page<Product> products = productRepository.findAll( query, pageable );
-//            Account account = getUserAccount();
-//            logger.info( "{}", account.getId() );
+
             for ( Product product : products.getContent() ) {
                 ProductAndInventoryDto productAndInventory = getProductAndInventoryByProductId( product.getId() );
-//                ProductAndInventoryDto productAndInventory = new ProductAndInventoryDto();
-//                InventoryDto inventory = inventoryService.convertEntityToDto( product.getInventory() );
-//                productAndInventory.setProduct( convertEntityToDto( product ) );
-//                productAndInventory.setInventory( inventory );
-//
-//                if ( product.getPromo() != null ) {
-//                    Promo promo = product.getPromo();
-//                    promo.setStatus( promoService.checkSchedulePromo( promo ) );
-//                    promoService.updatePromo( promo.getId(), promo );
-//                    productAndInventory.setPromo( promoService.convertEntityToDto( promo ) );
-//                }
                 productRecordByPages.add( productAndInventory );
             }
             return new PageImpl<>( productRecordByPages, pageable, products.getTotalElements() );
@@ -241,21 +229,6 @@ public class ProductServiceImpl implements ProductService {
             Page<Product> products = productRepository.findAllProductsByCategoryName( categoryName, query, pageable );
             for ( Product product : products.getContent() ) {
                 ProductAndInventoryDto productAndInventory = getProductAndInventoryByProductId( product.getId() );
-//                InventoryDto inventory = inventoryService.convertEntityToDto( product.getInventory() );
-//                productAndInventory.setProduct( convertEntityToDto( product ) );
-//                productAndInventory.setInventory( inventory );
-////                try {
-////                    Wishlist wishlist = wishlistService.getWishlistByProductId( account.getId(), product.getId() );
-////                    productAndInventory.setWishlist( wishlist );
-////                } catch ( Exception e ) {
-////                    ///
-////                }
-//                if ( product.getPromo() != null ) {
-//                    Promo promo = product.getPromo();
-//                    promo.setStatus( promoService.checkSchedulePromo( promo ) );
-//                    promoService.updatePromo( promo.getId(), promo );
-//                    productAndInventory.setPromo( promoService.convertEntityToDto( promo ) );
-//                }
                 productRecordByPages.add( productAndInventory );
             }
             return new PageImpl<>( productRecordByPages, pageable, products.getTotalElements() );
@@ -347,7 +320,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getAvailableProductById( int id ) {
-        logger.info( "{}", "product ID: " + id );
         Product product = productRepository.findAvailableProductById( id )
                 .orElseThrow( () -> new ProductNotFound( String.format( "Product Not Found with ID: " + id ) ) );
 

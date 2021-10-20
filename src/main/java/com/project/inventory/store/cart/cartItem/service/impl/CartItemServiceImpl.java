@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.List;
 
 @Service( value = "cartItemServiceImpl" )
@@ -37,7 +38,7 @@ public class CartItemServiceImpl implements CartItemService {
     private AuthenticatedUser authenticatedUser;
 
     @Override
-    public void addCartItem( int productId ) {
+    public void addCartItem( int productId ) throws ParseException {
         // get the product
         // get the cart that exist with account id
         Product product = productService.getAvailableProductById( productId );
@@ -51,15 +52,14 @@ public class CartItemServiceImpl implements CartItemService {
             // will create new cart
             // save the cart item
 
-            createCart( cartItem, product, authenticatedUser.getUserDetails().getId());
+            createCart( cartItem, product, authenticatedUser.getUserDetails().getId() );
         } else {
             // if the user/customer has already Cart and item. the item will
             // just increment
             // get the saved item
             CartItem savedCartItem = getCartItemByCartIdAndProductId( cart.getId(), product.getId() );
             if ( savedCartItem != null ) {
-                int quantity = incrementQuantity( savedCartItem.getId() );
-                logger.info( "Updated Quantity", quantity );
+                increaseQuantity( savedCartItem.getProduct().getId() );
             } else {
                 //check if the product has promo and it's on going
 
@@ -76,17 +76,39 @@ public class CartItemServiceImpl implements CartItemService {
     // item can be increment and decrement of the quantity
     // this is for api when the user is in shopping cart
     @Override
-    public int increaseQuantity( int productId ) {
+    public CartItem increaseQuantity( int productId ) throws ParseException {
         Cart cart = cartService.getCartByAccountId( authenticatedUser.getUserDetails().getId() );
         CartItem savedCartItem = getCartItemByCartIdAndProductId( cart.getId(), productId );
-        return incrementQuantity( savedCartItem.getId() );
+        if (  productService.getProductAndInventoryByProductId(
+                        savedCartItem
+                                .getProduct()
+                                .getId() )
+                .getInventory()
+                .getTotalStock() > savedCartItem.getQuantity() ) {
+
+            savedCartItem.setQuantity( savedCartItem.getQuantity() + 1 ); // increment the quantity of existing item in cart item
+            // existing amount of item plus the product price
+            // and save the new amount when incrementing the quantity
+            savedCartItem.setAmount( savedCartItem.getAmount() + savedCartItem.getProduct().getPrice() );
+            return cartItemRepository.save( savedCartItem );
+        }else{
+            throw new CartItemNotValidException( "You Reach the Limitation of Quantity" );
+        }
     }
 
     @Override
-    public int decreaseQuantity( int productId ) {
+    public CartItem decreaseQuantity( int productId ) {
         Cart cart = cartService.getCartByAccountId( authenticatedUser.getUserDetails().getId() );
         CartItem savedCartItem = getCartItemByCartIdAndProductId( cart.getId(), productId );
-        return decrementQuantity( savedCartItem.getId() );
+        if ( savedCartItem.getQuantity() > 1 ) {
+            savedCartItem.setQuantity( savedCartItem.getQuantity() - 1 );
+            // existing amount of item minus the product price
+            // and save the new amount when incrementing the quantity
+            savedCartItem.setAmount( savedCartItem.getAmount() - savedCartItem.getProduct().getPrice() );
+            return cartItemRepository.save( savedCartItem );
+        } else {
+            throw new CartItemNotValidException( "You Reach the Limit of Quantity to be added in your cart. Please check your cart" );
+        }
     }
 
     @Override
@@ -156,35 +178,35 @@ public class CartItemServiceImpl implements CartItemService {
         cartItemRepository.save( cartItem );
     }
 
-    public int incrementQuantity( int cartItemId ) {
-        CartItem savedCartItem = getCartItemById( cartItemId );
+//    public int incrementQuantity( int cartItemId ) {
+//        CartItem savedCartItem = getCartItemById( cartItemId );
+//
+//        savedCartItem.setQuantity( savedCartItem.getQuantity() + 1 ); // increment the quantity of existing item in cart item
+//
+//        // existing amount of item plus the product price
+//        // and save the new amount when incrementing the quantity
+//        savedCartItem.setAmount( savedCartItem.getAmount() + savedCartItem.getProduct().getPrice() );
+//
+//        CartItem updatedCartItem = cartItemRepository.save( savedCartItem );
+//        return updatedCartItem.getQuantity();
+//    }
 
-        savedCartItem.setQuantity( savedCartItem.getQuantity() + 1 ); // increment the quantity of existing item in cart item
-
-        // existing amount of item plus the product price
-        // and save the new amount when incrementing the quantity
-        savedCartItem.setAmount( savedCartItem.getAmount() + savedCartItem.getProduct().getPrice() );
-
-        CartItem updatedCartItem = cartItemRepository.save( savedCartItem );
-        return updatedCartItem.getQuantity();
-    }
-
-    public int decrementQuantity( int cartItemId ) {
-        CartItem savedCartItem = getCartItemById( cartItemId );
-
-        if ( savedCartItem.getQuantity() > 1 ) {
-
-            savedCartItem.setQuantity( savedCartItem.getQuantity() - 1 );
-
-            // existing amount of item minus the product price
-            // and save the new amount when incrementing the quantity
-            savedCartItem.setAmount( savedCartItem.getAmount() - savedCartItem.getProduct().getPrice() );
-
-            CartItem updatedCartItem = cartItemRepository.save( savedCartItem );
-            return updatedCartItem.getQuantity();
-        }
-        throw new CartItemNotValidException( String.format( "You Reach the Limitation of Quantity" ) );
-    }
+//    public int decrementQuantity( int cartItemId ) {
+//        CartItem savedCartItem = getCartItemById( cartItemId );
+//
+//        if ( savedCartItem.getQuantity() > 1 ) {
+//
+//            savedCartItem.setQuantity( savedCartItem.getQuantity() - 1 );
+//
+//            // existing amount of item minus the product price
+//            // and save the new amount when incrementing the quantity
+//            savedCartItem.setAmount( savedCartItem.getAmount() - savedCartItem.getProduct().getPrice() );
+//
+//            CartItem updatedCartItem = cartItemRepository.save( savedCartItem );
+//            return updatedCartItem.getQuantity();
+//        }
+//        throw new CartItemNotValidException( String.format( "You Reach the Limitation of Quantity" ) );
+//    }
 
     public CartItem getCartItemByIdAndCartId( int id, int cartId ) { // get the item with cart id
         return cartItemRepository.findByIdAndCartId( id, cartId )

@@ -3,15 +3,16 @@ package com.project.inventory.store.cart.cartItem.service;
 import com.project.inventory.store.cart.cartItem.model.CartItem;
 import com.project.inventory.store.cart.cartItem.model.CartItemDto;
 
+import java.text.ParseException;
 import java.util.List;
 
 public interface CartItemService {
 
-    void addCartItem( int productId );
+    void addCartItem( int productId ) throws ParseException;
 
-    int increaseQuantity( int productId );
+    CartItem increaseQuantity( int productId ) throws ParseException;
 
-    int decreaseQuantity( int productId );
+    CartItem decreaseQuantity( int productId );
 
     CartItem getCartItemByCartIdAndProductId( int cartId, int productId );
 
