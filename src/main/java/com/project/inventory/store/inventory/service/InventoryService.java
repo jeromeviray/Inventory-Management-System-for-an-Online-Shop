@@ -21,4 +21,6 @@ public interface InventoryService {
     void updateThreshold(int productId, int threshold);
 
     void updateStock(int productId, int quantity);
+
+    void cancelStock(int productId, int quantity);
 }

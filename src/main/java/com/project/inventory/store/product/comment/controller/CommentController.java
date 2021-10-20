@@ -3,6 +3,7 @@ package com.project.inventory.store.product.comment.controller;
 import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.service.AccountService;
 import com.project.inventory.common.permission.service.AuthenticatedUser;
+import com.project.inventory.store.order.model.Order;
 import com.project.inventory.store.order.service.OrderService;
 import com.project.inventory.store.product.comment.model.Comment;
 import com.project.inventory.store.product.comment.service.CommentService;
@@ -60,14 +61,16 @@ public class CommentController {
         return new ResponseEntity<>(rp, HttpStatus.OK );
     }
 
-    @RequestMapping( value = "/bulk", method = RequestMethod.POST )
-    public ResponseEntity<?> saveComments(@RequestBody List<Comment> comments) {
+    @RequestMapping( value = "/bulk/{orderId}", method = RequestMethod.POST )
+    public ResponseEntity<?> saveComments(@PathVariable String orderId, @RequestBody List<Comment> comments) {
         Account account = authenticatedUser.getUserDetails();
         List<Map<String, Object>> response = new ArrayList<>();
         for(Comment comment : comments) {
             Product prod = productService.getProductById( comment.getProduct().getId() );
+            Order order = orderService.getOrderByOrderId( orderId );
             comment.setAccountId( account.getId() );
             comment.setProduct( prod );
+            comment.setOrder( order );
             commentService.saveComment( comment );
             Map<String, Object> rp = new HashMap<>();
             rp.put("id", comment.getId());
