@@ -87,6 +87,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/v1/products/details/**",
                         "/api/v1/products/search",
                         "/api/v1/store",
+                        "/api/v1/terms",
                         "/api/v1/carousel",
                         "/api/v1/carousel/getImages/bytesArrays/**",
                         "/api/v1/products/category/**",
