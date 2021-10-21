@@ -18,26 +18,31 @@ public class CustomerAddressController {
     private CustomerAddressService customerAddressService;
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public ResponseEntity<CustomerAddressDto> saveCustomerAddress(@RequestBody CustomerAddress customerAddress){
+    public ResponseEntity<?> saveCustomerAddress(@RequestBody CustomerAddress customerAddress){
         CustomerAddressDto customerAddressDto = customerAddressService.convertEntityToDto(customerAddressService.saveCustomerAddress(customerAddress));
-        return new ResponseEntity(customerAddressDto, HttpStatus.OK);
+        return new ResponseEntity<>(customerAddressDto, HttpStatus.OK);
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<CustomerAddressDto> getCustomerAddresses(){
+    public ResponseEntity<?> getCustomerAddresses(){
 
-        return new ResponseEntity(customerAddressService.getCustomerAddresses(), HttpStatus.OK);
+        return new ResponseEntity<>(customerAddressService.getCustomerAddresses(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{accountId}", method = RequestMethod.GET)
     public ResponseEntity<CustomerAddressDto> getCustomerAddressesByAccount(@PathVariable int accountId){
-        return new ResponseEntity(customerAddressService.getCustomerAddressByAccountId(accountId), HttpStatus.OK);
+        return new ResponseEntity<>(customerAddressService.getCustomerAddressByAccountId(accountId), HttpStatus.OK);
     }
 
     @RequestMapping(value = "update/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<CustomerAddressDto> updateCustomerAddress(@PathVariable int id, @RequestBody CustomerAddress customerAddress){
+    public ResponseEntity<?> updateCustomerAddress(@PathVariable int id, @RequestBody CustomerAddress customerAddress){
         CustomerAddressDto customerAddressDto = customerAddressService.convertEntityToDto(customerAddressService.updateCustomerAddress(id, customerAddress));
 
-        return new ResponseEntity(customerAddressDto, HttpStatus.OK);
+        return new ResponseEntity<>(customerAddressDto, HttpStatus.OK);
+    }
+    @RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteCustomerAddress(@PathVariable int id){
+        customerAddressService.deleteCustomerAddress( id );
+        return new ResponseEntity<>( HttpStatus.OK);
     }
 }

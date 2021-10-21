@@ -60,7 +60,8 @@ app:
       - https://localhost:4000/oauth2/redirect
   hostName: http://localhost:4000
   #hostName: https://d3dw1h6vufmuro.cloudfront.net
-  fileImagePath: /home/jerome/Documents/inventory-img/
+  fileImagePath: D:\inventory-img\
+  #/home/jerome/Documents/inventory-img/
 #logging:
 #  level:
 #    root: ERROR

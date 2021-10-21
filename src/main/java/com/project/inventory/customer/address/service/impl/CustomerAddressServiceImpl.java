@@ -59,8 +59,8 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
 
     @Override
     public CustomerAddress updateCustomerAddress(int id, CustomerAddress customerAddress) {
-        CustomerAddress savedCustomerAddress = customerAddressRepository.findByAccountId(id);
-
+        CustomerAddress savedCustomerAddress = customerAddressRepository.findById(id)
+                .orElseThrow(() -> new CustomerAddressNotFoundException(String.format("Customer Address Not Found with ID: " + id)));
         savedCustomerAddress.setFirstName(customerAddress.getFirstName());
         savedCustomerAddress.setLastName(customerAddress.getLastName());
         savedCustomerAddress.setPhoneNumber(customerAddress.getPhoneNumber());
@@ -77,7 +77,10 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
 
     @Override
     public void deleteCustomerAddress(int id) {
-        customerAddressRepository.deleteById(id);
+        CustomerAddress customerAddress = customerAddressRepository.findById(id)
+                .orElseThrow(() -> new CustomerAddressNotFoundException(String.format("Customer Address Not Found with ID: " + id)));
+        customerAddress.setDeleted( true );
+        customerAddressRepository.save( customerAddress );
     }
 
     @Override

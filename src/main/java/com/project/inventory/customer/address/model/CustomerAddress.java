@@ -42,8 +42,8 @@ public class CustomerAddress {
     @Column(name = "street", nullable = false, length = 100)
     private String street;
 
-    @Column(name = "isDefault", columnDefinition = "TINYINT(1) default 0", nullable = false)
-    private boolean isDefault;
+    @Column(name = "is_deleted", columnDefinition = "TINYINT(1) default 0", nullable = false)
+    private boolean isDeleted;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "accountId", nullable = false)
@@ -129,12 +129,12 @@ public class CustomerAddress {
         this.street = street;
     }
 
-    public boolean isDefault() {
-        return isDefault;
+    public boolean isDeleted() {
+        return isDeleted;
     }
 
-    public void setDefault(boolean aDefault) {
-        isDefault = aDefault;
+    public void setDeleted( boolean deleted ) {
+        isDeleted = deleted;
     }
 
     public Account getAccount() {
@@ -147,33 +147,17 @@ public class CustomerAddress {
 
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CustomerAddress)) return false;
-        CustomerAddress that = (CustomerAddress) o;
-        return getId() == that.getId() && getPhoneNumber() == that.getPhoneNumber() && getPostalCode() == that.getPostalCode() && isDefault() == that.isDefault() && Objects.equals(getFirstName(), that.getFirstName()) && Objects.equals(getLastName(), that.getLastName()) && Objects.equals(getRegion(), that.getRegion()) && Objects.equals(getCity(), that.getCity()) && Objects.equals(getProvince(), that.getProvince()) && Objects.equals(getBarangay(), that.getBarangay()) && Objects.equals(getStreet(), that.getStreet()) && Objects.equals(getAccount(), that.getAccount());
+    public int hashCode() {
+        return super.hashCode();
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getFirstName(), getLastName(), getPhoneNumber(), getPostalCode(), getRegion(), getCity(), getProvince(), getBarangay(), getStreet(), isDefault(), getAccount());
+    public boolean equals( Object obj ) {
+        return super.equals( obj );
     }
 
     @Override
     public String toString() {
-        return "CustomerAddress{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", phoneNumber=" + phoneNumber +
-                ", postalCode=" + postalCode +
-                ", region='" + region + '\'' +
-                ", city='" + city + '\'' +
-                ", province='" + province + '\'' +
-                ", barangay='" + barangay + '\'' +
-                ", street='" + street + '\'' +
-                ", isDefault=" + isDefault +
-                ", account=" + account +
-                '}';
+        return super.toString();
     }
 }
