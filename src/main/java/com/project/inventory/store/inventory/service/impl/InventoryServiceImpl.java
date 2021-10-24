@@ -1,6 +1,11 @@
 package com.project.inventory.store.inventory.service.impl;
 
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.service.AccountService;
+import com.project.inventory.common.permission.service.AuthenticatedUser;
 import com.project.inventory.exception.notFound.NotFoundException;
+import com.project.inventory.store.cart.cartItem.model.CartItem;
+import com.project.inventory.store.cart.cartItem.repository.CartItemRepository;
 import com.project.inventory.store.inventory.model.GetProductDto;
 import com.project.inventory.store.inventory.model.Inventory;
 import com.project.inventory.store.inventory.model.InventoryDto;
@@ -17,18 +22,29 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.Date;
+import java.util.List;
+
 
 @Service( "inventoryServiceImpl" )
 public class InventoryServiceImpl implements InventoryService {
     Logger logger = LoggerFactory.getLogger( InventoryServiceImpl.class );
 
     @Autowired
+    private CartItemRepository cartItemRepository;
+
+    @Autowired
     private InventoryRepository inventoryRepository;
 
     @Autowired
     private ProductService productService;
+
     @Autowired
     private StockService stockService;
+
+    @Autowired
+    private AuthenticatedUser authenticatedUser;
 
     @Autowired
     private ModelMapper mapper;
@@ -69,14 +85,31 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public int getTotalStocks( Product product ) {
-        int sum = 0;
-        Inventory inventory = getInventoryByProductId( product.getId() );
+        Integer sum = stockService.getProductStocks(product.getId());
+        if(sum == null) {
+            return 0;
+        }
+        int accountId = 0;
 
-        for( Stock stock : inventory.getStock() ) {
-            if( inventory.getId() == stock.getInventory().getId() ) {
-                sum += stock.getStock();
+        try {
+            Account account = authenticatedUser.getUserDetails();
+            if(account != null && account.getId() > 0) {
+                accountId = account.getId();
+            }
+        } catch(Exception e) {
+            // do nothing
+        }
+
+        Integer quantityLock = cartItemRepository.getLockProducts( product.getId(), accountId, new Date());
+        logger.info("{}, {}, {}", new Date(), quantityLock, accountId);
+
+        if(quantityLock != null && quantityLock > 0) {
+            sum -= quantityLock;
+            if(sum < 0 ) {
+                sum = 0;
             }
         }
+
         return sum;
     }
 

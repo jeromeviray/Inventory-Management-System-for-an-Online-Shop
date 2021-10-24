@@ -15,4 +15,6 @@ public interface StockService {
     Inventory getStockByInventoryId( int inventoryId );
 
     List<Stock> getStocks(int inventoryId);
+
+    Integer getProductStocks(Integer productId);
 }

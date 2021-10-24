@@ -6,6 +6,8 @@ spring:
     username: root
     password: User@root123
   jpa:
+    hibernate:
+      ddl-auto: update
     show-sql: false
     properties:
       hibernate:

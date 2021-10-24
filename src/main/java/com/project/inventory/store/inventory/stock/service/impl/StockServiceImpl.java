@@ -56,4 +56,9 @@ public class StockServiceImpl implements StockService {
     public List<Stock> getStocks(int inventoryId) {
         return stockRepository.findAllByInventoryId( inventoryId );
     }
+
+    @Override
+    public Integer getProductStocks( Integer productId ) {
+        return stockRepository.getProductStocks( productId );
+    }
 }

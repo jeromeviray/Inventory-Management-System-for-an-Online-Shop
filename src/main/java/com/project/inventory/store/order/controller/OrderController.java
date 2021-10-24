@@ -1,11 +1,16 @@
 package com.project.inventory.store.order.controller;
 
 import com.project.inventory.api.payment.PaymongoAPI;
+import com.project.inventory.store.cart.cartItem.model.CartItem;
 import com.project.inventory.store.cart.cartItem.model.CartItemDto;
+import com.project.inventory.store.cart.cartItem.repository.CartItemRepository;
+import com.project.inventory.store.inventory.model.InventoryDto;
 import com.project.inventory.store.inventory.service.InventoryService;
 import com.project.inventory.store.order.model.*;
 import com.project.inventory.store.order.orderItem.model.OrderItem;
 import com.project.inventory.store.order.service.OrderService;
+import com.project.inventory.store.product.model.Product;
+import com.project.inventory.store.product.model.ProductDto;
 import com.project.inventory.webSecurity.config.AppProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @RequestMapping( value = "api/v1/orders" )
@@ -33,6 +35,10 @@ class OrderController {
     private OrderService orderService;
     @Autowired
     private InventoryService inventoryService;
+
+    @Autowired
+    private CartItemRepository cartItemRepository;
+
     private PaymongoAPI paymongoAPI = new PaymongoAPI();
 
     @RequestMapping( value = "/checkout", method = RequestMethod.POST )
@@ -172,18 +178,28 @@ class OrderController {
         return new ResponseEntity( response, HttpStatus.OK );
     }
 
-//    @RequestMapping(value = "/transactions", method = RequestMethod.GET)
-//    public ResponseEntity<?> getPaymentTransaction( @RequestParam(value = "query", defaultValue = "") String query,
-//                                       @RequestParam(value = "page", defaultValue = "0") Integer page,
-//                                       @RequestParam(value = "limit", defaultValue = "10") Integer limit ){
-//        Pageable pageable = PageRequest.of( page, limit );
-//        Page<UserDto> users = orderService.getPaymentTransaction(query, pageable);
-//
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("data", users.getContent());
-//        response.put("currentPage", users.getNumber());
-//        response.put("totalItems", users.getTotalElements());
-//        response.put("totalPages", users.getTotalPages());
-//        return new ResponseEntity(response , HttpStatus.OK );
-//    }
+    @RequestMapping( value = "/validate", method = RequestMethod.POST )
+    public ResponseEntity<?> validateStock( @RequestBody CheckoutOrderValidate checkoutOrderValidate) {
+        Map<String, Object> response = new HashMap<>();
+        List<String> errorMessages = new ArrayList<>();
+
+        for( CartItemDto item : checkoutOrderValidate.getItems() ) {
+            ProductDto product = item.getProduct().getProduct();
+
+            Product prod = new Product();
+            prod.setId( product.getId() );
+
+            Integer totalStock = inventoryService.getTotalStocks(prod);
+
+            logger.info("{} > {}", item.getQuantity(), totalStock);
+            if(item.getQuantity() > totalStock) {
+                errorMessages.add( String.format("Insufficient available quantity for product %s", product.getProductName()) );
+            }
+        }
+        response.put("error_messages", errorMessages);
+        response.put("is_invalidate", errorMessages.size() > 0);
+        return new ResponseEntity( response, HttpStatus.OK );
+    }
+
+
 }

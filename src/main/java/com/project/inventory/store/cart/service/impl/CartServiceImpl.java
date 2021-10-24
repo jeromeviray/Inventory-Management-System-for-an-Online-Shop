@@ -80,31 +80,34 @@ public class CartServiceImpl implements CartService {
     public CartDto getCartByAccountIdDto( int accountId ) throws ParseException {
         Cart cart = cartRepository.findByAccountId( accountId );
         List<CartItemDto> cartItems = new ArrayList<>();
-        for ( CartItem item : cart.getCartItems() ) {
-            CartItemDto cartItem = new CartItemDto();
-            cartItem.setId( item.getId() );
-            cartItem.setAmount( item.getAmount() );
-            cartItem.setAddedAt( new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format( item.getAddedAt() ) );
-            cartItem.setQuantity( item.getQuantity() );
-            InventoryDto inventory = inventoryService.convertEntityToDto(
-                    inventoryService.getInventoryByProductId(
-                            item.getProduct().getId() ) );
-            ProductAndInventoryDto product = new ProductAndInventoryDto();
-            product.setInventory( inventory );
-            product.setProduct( productService.convertEntityToDto( item.getProduct() ) );
-            if ( item.getProduct().getPromo() != null ) {
-                Promo promo = item.getProduct().getPromo();
-                promo.setStatus( promoService.checkSchedulePromo( promo ) );
-                promoService.updatePromo( promo.getId(), promo );
-                product.setPromo( promoService.convertEntityToDto( promo ) );
-            }
-            cartItem.setProduct( product );
-            cartItems.add( cartItem );
-        }
         CartDto cartDto = new CartDto();
-        cartDto.setCartId( cart.getId() );
+        cartDto.setCartItems( new ArrayList<>() );
         cartDto.setAccountId( accountId );
-        cartDto.setCartItems( cartItems );
+        if(cart != null) {
+            for ( CartItem item : cart.getCartItems() ) {
+                CartItemDto cartItem = new CartItemDto();
+                cartItem.setId( item.getId() );
+                cartItem.setAmount( item.getAmount() );
+                cartItem.setAddedAt( new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format( item.getAddedAt() ) );
+                cartItem.setQuantity( item.getQuantity() );
+                InventoryDto inventory = inventoryService.convertEntityToDto(
+                        inventoryService.getInventoryByProductId(
+                                item.getProduct().getId() ) );
+                ProductAndInventoryDto product = new ProductAndInventoryDto();
+                product.setInventory( inventory );
+                product.setProduct( productService.convertEntityToDto( item.getProduct() ) );
+                if ( item.getProduct().getPromo() != null ) {
+                    Promo promo = item.getProduct().getPromo();
+                    promo.setStatus( promoService.checkSchedulePromo( promo ) );
+                    promoService.updatePromo( promo.getId(), promo );
+                    product.setPromo( promoService.convertEntityToDto( promo ) );
+                }
+                cartItem.setProduct( product );
+                cartItems.add( cartItem );
+            }
+            cartDto.setCartId( cart.getId() );
+            cartDto.setCartItems( cartItems );
+        }
         return cartDto;
     }
 

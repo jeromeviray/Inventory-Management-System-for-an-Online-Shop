@@ -1,16 +1,19 @@
 package com.project.inventory.store.inventory.stock.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.project.inventory.store.inventory.model.Inventory;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table( name = "stocks" )
+@Transactional
 public class Stock {
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY )
@@ -32,6 +35,7 @@ public class Stock {
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn( name = "inventory_id" )
+    @JsonIgnore
     private Inventory inventory;
 
     public int getId() {

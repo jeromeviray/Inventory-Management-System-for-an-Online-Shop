@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.project.inventory.store.inventory.stock.model.Stock;
 import com.project.inventory.store.inventory.stock.model.StockStatus;
 import com.project.inventory.store.product.model.Product;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -25,7 +26,8 @@ public class Inventory implements Serializable {
     @Column( name = "threshold_stock" )
     private int threshold;
 
-    @OneToMany( mappedBy = "inventory" )
+    @OneToMany( mappedBy = "inventory", fetch = FetchType.LAZY )
+    @JsonIgnoreProperties({"inventory"})
     private List<Stock> stocks;
 
     @OneToOne( fetch = FetchType.LAZY, cascade = CascadeType.ALL )

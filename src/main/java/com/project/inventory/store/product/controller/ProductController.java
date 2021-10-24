@@ -93,7 +93,6 @@ public class ProductController {
     public ResponseEntity<?> getImage( @PathVariable String path,
                                        @PathVariable String image )  {
         try {
-            logger.info(appProperties.getFileImagePath() + path + "/" + image);
             InputStream readImage = new FileInputStream( appProperties.getFileImagePath() + path + "/" + image );
             return new ResponseEntity( IOUtils.toByteArray( readImage ), HttpStatus.OK );
         } catch ( Exception e ) {

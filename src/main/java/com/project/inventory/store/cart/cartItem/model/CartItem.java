@@ -38,6 +38,9 @@ public class CartItem implements Serializable {
     @JsonIgnore
     private Cart cart;
 
+    @Column(name = "checkout_expiration", columnDefinition="DATETIME DEFAULT NULL")
+    private Date checkExpiration;
+
     public int getId() {
         return id;
     }
@@ -84,6 +87,14 @@ public class CartItem implements Serializable {
 
     public void setCart(Cart cart) {
         this.cart = cart;
+    }
+
+    public Date getCheckExpiration() {
+        return checkExpiration;
+    }
+
+    public void setCheckExpiration( Date checkExpiration ) {
+        this.checkExpiration = checkExpiration;
     }
 
     @Override

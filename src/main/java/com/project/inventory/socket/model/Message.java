@@ -1,9 +1,12 @@
 package com.project.inventory.socket.model;
 
+import java.util.Map;
+
 public class Message {
 
     private String from;
-    private String text;
+    private String eventType;
+    private Map<String, Object> message;
 
     public String getFrom() {
         return from;
@@ -13,11 +16,19 @@ public class Message {
         this.from = from;
     }
 
-    public String getText() {
-        return text;
+    public String getEventType() {
+        return eventType;
     }
 
-    public void setText( String text ) {
-        this.text = text;
+    public void setEventType( String eventType ) {
+        this.eventType = eventType;
+    }
+
+    public Map<String, Object> getMessage() {
+        return message;
+    }
+
+    public void setMessage( Map<String, Object> message ) {
+        this.message = message;
     }
 }

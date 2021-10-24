@@ -1,13 +1,17 @@
 package com.project.inventory.socket.model;
 
+import java.util.Map;
+
 public class OutputMessage {
     String from;
-    String message;
+    String eventType;
+    Map<String, Object> message;
     String time;
 
-    public OutputMessage( String from, String message, String time ) {
+    public OutputMessage( String from, Map<String, Object> message, String time, String eventType ) {
         this.from = from;
         this.message = message;
+        this.eventType = eventType;
         this.time = time;
     }
 
@@ -19,11 +23,19 @@ public class OutputMessage {
         this.from = from;
     }
 
-    public String getMessage() {
+    public String getEventType() {
+        return eventType;
+    }
+
+    public void setEventType( String eventType ) {
+        this.eventType = eventType;
+    }
+
+    public Map<String, Object> getMessage() {
         return message;
     }
 
-    public void setMessage( String message ) {
+    public void setMessage( Map<String, Object> message ) {
         this.message = message;
     }
 
