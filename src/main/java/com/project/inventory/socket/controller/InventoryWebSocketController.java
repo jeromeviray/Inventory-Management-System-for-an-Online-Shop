@@ -55,7 +55,6 @@ public class InventoryWebSocketController {
         List<Map<String, Object>> items = ( ArrayList<Map<String, Object>>) data.get( "items" );
         int addMinuteTime = 8;
         Calendar currentTimeNow = Calendar.getInstance();
-        logger.info("Current time now : " + currentTimeNow.getTime());
         currentTimeNow.add(Calendar.MINUTE, addMinuteTime);
         Date cartExpiration = currentTimeNow.getTime();
         List<Map<String, Object>> newItems = new ArrayList<Map<String, Object>>();

@@ -14,8 +14,11 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     @Modifying
-    @Query( value = "SELECT * FROM orders WHERE order_status =:status", nativeQuery = true )
-    List<Order> findAllByOrderStatus( @Param( "status" ) String status );
+    @Query( value = "SELECT * FROM orders " +
+            "WHERE order_status =:status " +
+            "AND (tracking_number LIKE concat('%', :query, '%') " +
+            "OR order_id LIKE concat('%', :query,'%'))", nativeQuery = true )
+    List<Order> findAllByOrderStatus( @Param( "status" ) String status, @Param( "query" ) String query );
 
     @Modifying
     @Query( value = "SELECT order_status, COUNT(*) as totalCount FROM orders WHERE account_id =:accountId GROUP BY order_status", nativeQuery = true )
@@ -25,12 +28,12 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query( value = "SELECT order_status, COUNT(*) as totalCount FROM orders  GROUP BY order_status", nativeQuery = true )
     List<Object[]> getOrderCountGroupBy();
 
-    @Modifying
-    @Query( value = "SELECT * FROM orders WHERE payment_status != 2 AND order_status IN (:status) AND account_id =:id", nativeQuery = true )
+    @Query( value = "SELECT * FROM orders WHERE payment_status != 2 AND order_status IN (:status) AND account_id =:id " +
+            "AND (tracking_number LIKE concat('%', :query, '%') OR order_id LIKE concat('%', :query, '%'))", nativeQuery = true )
     List<Order> findAllByOrderStatusAndAccountId( @Param( "status" ) List<String> status,
-                                                  @Param( "id" ) int id );
+                                                  @Param( "id" ) int id,
+                                                  @Param( "query" ) String query );
 
-    @Modifying
     @Query( value = "SELECT * FROM orders WHERE account_id =:id", nativeQuery = true )
     List<Order> findAllByAccountId( @Param( "id" ) int id );
 
@@ -39,7 +42,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query( value = "SELECT * FROM orders ", nativeQuery = true )
     Page<Order> getPaymentTransactions( Pageable pageable );
 
-    @Query(value = "SELECT product.id, product.product_name, product.product_price,product.barcode, count(product.id) as totalSold FROM inventory_system.order_items item\n" +
+    @Query( value = "SELECT product.id, product.product_name, product.product_price,product.barcode, count(product.id) as totalSold FROM inventory_system.order_items item\n" +
             "JOIN inventory_system.products product " +
             "ON item.product_id = product.id " +
             "JOIN inventory_system.orders o " +
@@ -47,7 +50,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             "WHERE o.order_status = 'PAYMENT_RECEIVED' " +
             "AND (product.product_name LIKE concat('%',:query,'%') OR product.barcode LIKE concat('%',:query,'%')) " +
             "GROUP BY product.id " +
-            "ORDER BY totalSold", nativeQuery = true)
-    Page<Object[]> getProductsAndTotalSold(@Param("query") String query, Pageable pageable);
+            "ORDER BY totalSold", nativeQuery = true )
+    Page<Object[]> getProductsAndTotalSold( @Param( "query" ) String query, Pageable pageable );
 
 }

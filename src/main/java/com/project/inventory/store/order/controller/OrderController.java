@@ -51,10 +51,10 @@ class OrderController {
                     placeOrder.getPaymentId(),
                     placeOrder.getCartItems() );
             logger.info( order.getPaymentMethod().getPaymentMethod() );
-            for( CartItemDto orderItem : placeOrder.getCartItems() ) {
+            for ( CartItemDto orderItem : placeOrder.getCartItems() ) {
                 inventoryService.updateStock( orderItem.getProduct().getProduct().getId(), orderItem.getQuantity() );
             }
-            if( Objects.equals( order.getPaymentMethod().getPaymentMethod(), "GCASH" ) ) {
+            if ( Objects.equals( order.getPaymentMethod().getPaymentMethod(), "GCASH" ) ) {
                 String successUrl = String.format( "%s/cart/%s/%s", appProperties.getHostName(), order.getOrderId(), "payment/success" );
                 String failedUrl = String.format( "%s/cart/%s/%s", appProperties.getHostName(), order.getOrderId(), "payment/failed" );
                 Map resp = this.paymongoAPI.generateSource( order.getTotalAmount(), "PHP", successUrl, failedUrl );
@@ -65,43 +65,49 @@ class OrderController {
                 order.setExternalReference( ( String ) data.get( "id" ) );
                 orderService.saveOrder( order );
             }
-        } catch( Exception e ) {
+        } catch ( Exception e ) {
             httpStatus = HttpStatus.BAD_REQUEST;
             response.setSuccess( false );
             response.setMessage( e.getMessage() );
             throw e;
         }
-        return new ResponseEntity( response, httpStatus );
+        return new ResponseEntity<>( response, httpStatus );
     }
 
     @PreAuthorize( "hasRole('ROLE_CUSTOMER') or hasRole('ROLE_USER')" )
     @RequestMapping( value = "", method = RequestMethod.GET )
-    public ResponseEntity<OrderDto> getOrdersByAccountId() {
-        return new ResponseEntity( orderService.getOrdersByAccountId(), HttpStatus.OK );
+    public ResponseEntity<?> getOrdersByAccountId() {
+        return new ResponseEntity<>( orderService.getOrdersByAccountId(), HttpStatus.OK );
     }
 
     @RequestMapping( value = "/status/{status}", method = RequestMethod.GET )
-    public ResponseEntity<Map> getOrdersByStatus( @PathVariable( value = "status" ) String status ) {
-        Map response = new HashMap();
-        response.put( "orders", orderService.getOrdersByStatus( status ) );
+    public ResponseEntity<?> getOrdersByStatus( @PathVariable( value = "status" ) String status,
+                                                  @RequestParam( value = "query", defaultValue = "", required = false ) String query ) {
+        logger.info( status );
+        Map<String, Object> response = new HashMap();
+        response.put( "orders", orderService.getOrdersByStatus( status, query ) );
         response.put( "orderCounts", orderService.getOrderCountByStatus() );
-        return new ResponseEntity( response, HttpStatus.OK );
+        return new ResponseEntity<>( response, HttpStatus.OK );
     }
 
     @RequestMapping( value = "/{orderId}/status/{status}", method = RequestMethod.PUT )
-    public ResponseEntity<Map> updateOrdersByStatus( @PathVariable String orderId, @PathVariable( value = "status" ) String status ) {
+    public ResponseEntity<Map> updateOrdersByStatus( @PathVariable String orderId,
+                                                     @PathVariable( value = "status" ) String status,
+                                                     @RequestParam( value = "trackingNumber", required = false ) String trackingNumber,
+                                                     @RequestParam( value = "trackingUrl", required = false ) String trackingUrl ) {
         Order order = orderService.getOrderByOrderId( orderId );
         OrderStatus stat = OrderStatus.PENDING;
-        switch( status ) {
+        switch ( status ) {
             case "pending":
                 stat = OrderStatus.PENDING;
                 break;
             case "confirmed":
-
                 stat = OrderStatus.CONFIRMED;
                 break;
             case "shipped":
                 stat = OrderStatus.SHIPPED;
+                order.setTrackingNumber( trackingNumber );
+                order.setTrackingUrl( trackingUrl );
                 break;
             case "delivered":
                 order.setDeliveredAt( new Date() );
@@ -112,19 +118,19 @@ class OrderController {
                 break;
 
         }
-        if( status.equals( "payment_received" ) ) {
+        if ( status.equals( "payment_received" ) ) {
             order.setPaymentStatus( 1 );
             order.setPaid_at( new Date() );
-        } else if( status.equals( "cancel" ) ) {
+        } else if ( status.equals( "cancel" ) ) {
             order.setOrderStatus( OrderStatus.CANCELLED );
-            for( OrderItem item : order.getOrderItems() ) {
+            for ( OrderItem item : order.getOrderItems() ) {
                 inventoryService.cancelStock( item.getProduct().getId(), item.getQuantity() );
             }
-        }else if( status.equals( "accept_refund" ) ) {
+        } else if ( status.equals( "accept_refund" ) ) {
             order.setPaymentStatus( 3 );
             order.setRefundAt( new Date() );
             order.setOrderStatus( OrderStatus.REFUNDED );
-            for( OrderItem item : order.getOrderItems() ) {
+            for ( OrderItem item : order.getOrderItems() ) {
                 inventoryService.cancelStock( item.getProduct().getId(), item.getQuantity() );
             }
         } else {
@@ -146,11 +152,11 @@ class OrderController {
     public ResponseEntity<?> markOrderAsPaid( @PathVariable String orderId, @PathVariable String status ) {
         Order order = orderService.getOrderByOrderId( orderId );
         Integer paymentStatus = 1;
-        if( Objects.equals( status, "failed" ) ) {
+        if ( Objects.equals( status, "failed" ) ) {
             paymentStatus = 2;
         }
         Integer currentPaymentStatus = order.getPaymentStatus();
-        if( currentPaymentStatus != null && currentPaymentStatus > 0 ) {
+        if ( currentPaymentStatus != null && currentPaymentStatus > 0 ) {
             Map<String, Object> response = new HashMap<>();
             response.put( "message", "Order " + order.getOrderId() + " was already completed." );
             return new ResponseEntity( response, HttpStatus.BAD_REQUEST );
@@ -179,25 +185,25 @@ class OrderController {
     }
 
     @RequestMapping( value = "/validate", method = RequestMethod.POST )
-    public ResponseEntity<?> validateStock( @RequestBody CheckoutOrderValidate checkoutOrderValidate) {
+    public ResponseEntity<?> validateStock( @RequestBody CheckoutOrderValidate checkoutOrderValidate ) {
         Map<String, Object> response = new HashMap<>();
         List<String> errorMessages = new ArrayList<>();
 
-        for( CartItemDto item : checkoutOrderValidate.getItems() ) {
+        for ( CartItemDto item : checkoutOrderValidate.getItems() ) {
             ProductDto product = item.getProduct().getProduct();
 
             Product prod = new Product();
             prod.setId( product.getId() );
 
-            Integer totalStock = inventoryService.getTotalStocks(prod);
+            Integer totalStock = inventoryService.getTotalStocks( prod );
 
-            logger.info("{} > {}", item.getQuantity(), totalStock);
-            if(item.getQuantity() > totalStock) {
-                errorMessages.add( String.format("Insufficient available quantity for product %s", product.getProductName()) );
+            logger.info( "{} > {}", item.getQuantity(), totalStock );
+            if ( item.getQuantity() > totalStock ) {
+                errorMessages.add( String.format( "Insufficient available quantity for product %s", product.getProductName() ) );
             }
         }
-        response.put("error_messages", errorMessages);
-        response.put("is_invalidate", errorMessages.size() > 0);
+        response.put( "error_messages", errorMessages );
+        response.put( "is_invalidate", errorMessages.size() > 0 );
         return new ResponseEntity( response, HttpStatus.OK );
     }
 

@@ -6,6 +6,7 @@ import com.project.inventory.store.order.orderItem.model.OrderItemDto;
 import com.project.inventory.common.permission.model.AccountDto;
 import com.project.inventory.store.product.comment.model.Comment;
 
+import javax.persistence.Column;
 import java.util.List;
 
 public class OrderDto {
@@ -17,6 +18,8 @@ public class OrderDto {
     private double totalAmount;
     private String orderedAt;
     private String deliveredAt;
+    String trackingUrl;
+    String trackingNumber;
     private AccountDto account;
     private PaymentMethodDto paymentMethod;
     private CustomerAddressDto customerAddress;
@@ -85,6 +88,22 @@ public class OrderDto {
 
     public void setDeliveredAt(String deliveredAt) {
         this.deliveredAt = deliveredAt;
+    }
+
+    public String getTrackingUrl() {
+        return trackingUrl;
+    }
+
+    public void setTrackingUrl( String trackingUrl ) {
+        this.trackingUrl = trackingUrl;
+    }
+
+    public String getTrackingNumber() {
+        return trackingNumber;
+    }
+
+    public void setTrackingNumber( String trackingNumber ) {
+        this.trackingNumber = trackingNumber;
     }
 
     public AccountDto getAccount() {

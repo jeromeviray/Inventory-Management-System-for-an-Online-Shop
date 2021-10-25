@@ -127,7 +127,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDto> getOrdersByStatus(String status) {
+    public List<OrderDto> getOrdersByStatus(String status, String query) {
         // retrieve all the pending orders dynamically based on the role
         // with role customer or user they just retrieve their own order data
 
@@ -136,10 +136,10 @@ public class OrderServiceImpl implements OrderService {
 
         String permission = getRoles( account.getRoles() );
         if ( permission.equals( "ROLE_SUPER_ADMIN" ) || permission.equals( "ROLE_ADMIN" ) ) {
-            return getOrders( status );
+            return getOrders( status, query );
 
         } else if ( permission.equals( "ROLE_USER" ) || permission.equals( "ROLE_CUSTOMER" ) ) {
-            return getCustomerOrders( status, account.getId() );
+            return getCustomerOrders( status, account.getId(), query );
         } else {
             throw new AccessDeniedException( "ACCESS DENIED" );
         }
@@ -244,7 +244,7 @@ public class OrderServiceImpl implements OrderService {
         return getRolesName.get( 0 );
     }
 
-    private List<OrderDto> getCustomerOrders( String status, int id ) {
+    private List<OrderDto> getCustomerOrders( String status, int id, String query ) {
         List<OrderDto> orders = new ArrayList<>();
         List<String> statuses = new ArrayList<>();
         statuses.add(status);
@@ -252,15 +252,15 @@ public class OrderServiceImpl implements OrderService {
             statuses.add("payment_received");
         }
 
-        for ( Order savedOrder : orderRepository.findAllByOrderStatusAndAccountId( statuses, id ) ) {
+        for ( Order savedOrder : orderRepository.findAllByOrderStatusAndAccountId( statuses, id, query ) ) {
             orders.add( convertEntityToDto( savedOrder ) );
         }
         return orders;
     }
 
-    private List<OrderDto> getOrders( String status ) {
+    private List<OrderDto> getOrders( String status, String query ) {
         List<OrderDto> orders = new ArrayList<>();
-        for ( Order savedOrder : orderRepository.findAllByOrderStatus( status ) ) {
+        for ( Order savedOrder : orderRepository.findAllByOrderStatus( status, query ) ) {
             orders.add( convertEntityToDto( savedOrder ) );
         }
         return orders;

@@ -16,7 +16,7 @@ public interface OrderService {
                      int paymentMethodId,
                      List<CartItemDto> cartItems );
 
-    List<OrderDto> getOrdersByStatus(String status);
+    List<OrderDto> getOrdersByStatus(String status, String query);
 
     Page<Order> getPaymentTransactions( String query, Pageable pageable);
 
