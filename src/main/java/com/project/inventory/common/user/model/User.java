@@ -19,9 +19,9 @@ public class User {
 
     @Column(name = "last_name", length = 50)
     private String lastName;
-
-    @Column(name = "phone_number", columnDefinition = "VARCHAR(15)")
-    private String phoneNumber;
+//
+//    @Column(name = "phone_number", columnDefinition = "VARCHAR(15)")
+//    private String phoneNumber;
 
     @Column(name = "birthday")
     private String birthday;
@@ -57,14 +57,14 @@ public class User {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber( String phoneNumber ) {
-        this.phoneNumber = phoneNumber;
-    }
+//
+//    public String getPhoneNumber() {
+//        return phoneNumber;
+//    }
+//
+//    public void setPhoneNumber( String phoneNumber ) {
+//        this.phoneNumber = phoneNumber;
+//    }
 
     public String getBirthday() {
         return birthday;

@@ -7,8 +7,8 @@ import com.project.inventory.customer.payment.model.PaymentMethod;
 import com.project.inventory.store.order.orderItem.model.OrderItem;
 import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.store.product.comment.model.Comment;
+import com.project.inventory.store.shipping.model.ShippingFee;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.transaction.Transactional;
@@ -31,6 +31,10 @@ public class Order {
     @Column( name = "order_status", nullable = false, columnDefinition = "varchar(30)" )
     @Enumerated( EnumType.STRING )
     private OrderStatus orderStatus;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name="shipping_fee_id")
+    private ShippingFee shippingFee;
 
     @Column( name = "total_amount", nullable = false, columnDefinition = "double" )
     private double totalAmount;
@@ -105,6 +109,14 @@ public class Order {
 
     public void setOrderStatus( OrderStatus orderStatus ) {
         this.orderStatus = orderStatus;
+    }
+
+    public ShippingFee getShippingFee() {
+        return shippingFee;
+    }
+
+    public void setShippingFee( ShippingFee shippingFee ) {
+        this.shippingFee = shippingFee;
     }
 
     public double getTotalAmount() {

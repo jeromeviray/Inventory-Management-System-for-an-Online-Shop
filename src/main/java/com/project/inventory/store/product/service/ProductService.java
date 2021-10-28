@@ -38,6 +38,8 @@ public interface ProductService {
 
     Product getProductById( int id );
 
+    Product getProductByIdAndIsNotDeleted( int id );
+
     Product getAvailableProductById( int id );
 
     ProductDto convertEntityToDto( Product product );

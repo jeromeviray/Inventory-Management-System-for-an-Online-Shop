@@ -9,7 +9,6 @@ public class UserDto {
     private int id;
     private String firstName;
     private String lastName;
-    private int phoneNumber;
     private String birthday;
     private AccountInfoDto account;
     private String profileImage;
@@ -38,14 +37,6 @@ public class UserDto {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public int getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(int phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     public String getBirthday() {

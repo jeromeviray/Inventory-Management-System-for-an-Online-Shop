@@ -82,7 +82,7 @@ public class AccountServiceImpl implements AccountService {
                 User user = new User();
                 user.setFirstName( userAccount.getFirstName() );
                 user.setLastName( userAccount.getLastName() );
-                user.setPhoneNumber( userAccount.getPhoneNumber() );
+//                user.setPhoneNumber( userAccount.getPhoneNumber() );
 
                 userService.saveUserInformation( savedAccount, user );
 

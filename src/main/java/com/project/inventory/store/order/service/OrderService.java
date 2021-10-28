@@ -1,9 +1,9 @@
 package com.project.inventory.store.order.service;
 
-import com.project.inventory.store.cart.cartItem.model.CartItem;
 import com.project.inventory.store.cart.cartItem.model.CartItemDto;
 import com.project.inventory.store.order.model.Order;
 import com.project.inventory.store.order.model.OrderDto;
+import com.project.inventory.store.shipping.model.ShippingFee;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -13,10 +13,11 @@ import java.util.Map;
 
 public interface OrderService {
     Order placeOrder( int customerAddressId,
-                     int paymentMethodId,
-                     List<CartItemDto> cartItems );
+                      int paymentMethodId,
+                      List<CartItemDto> cartItems,
+                      ShippingFee shippingFee);
 
-    List<OrderDto> getOrdersByStatus(String status, String query);
+    Page<OrderDto> getOrdersByStatus(String status, String query, Pageable pageable);
 
     Page<Order> getPaymentTransactions( String query, Pageable pageable);
 

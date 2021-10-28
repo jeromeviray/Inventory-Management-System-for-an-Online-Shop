@@ -292,6 +292,13 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow( () -> new ProductNotFound( String.format( "Product Not Found with ID: " + id ) ) );
         return product;
     }
+    @Override
+    public Product getProductByIdAndIsNotDeleted( int id ) {
+
+        Product product = productRepository.findByIdAndIsNotDeleted( id )
+                .orElseThrow( () -> new ProductNotFound( String.format( "Product Not Found with ID: " + id ) ) );
+        return product;
+    }
 
     @Override
     public ProductAndInventoryDto getProductAndInventoryByProductId( int id ) throws ParseException {

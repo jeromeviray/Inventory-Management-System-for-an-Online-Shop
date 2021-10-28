@@ -7,7 +7,7 @@ import java.util.Date;
 public class RequestUserAccount {
     private String firstName;
     private String lastName;
-    private String phoneNumber;
+//    private String phoneNumber;
     private String username;
     private String email;
     private String birthday;
@@ -27,14 +27,14 @@ public class RequestUserAccount {
     public void setLastName( String lastName ) {
         this.lastName = lastName;
     }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber( String phoneNumber ) {
-        this.phoneNumber = phoneNumber;
-    }
+//
+//    public String getPhoneNumber() {
+//        return phoneNumber;
+//    }F
+//
+//    public void setPhoneNumber( String phoneNumber ) {
+//        this.phoneNumber = phoneNumber;
+//    }
 
     public String getUsername() {
         return username;

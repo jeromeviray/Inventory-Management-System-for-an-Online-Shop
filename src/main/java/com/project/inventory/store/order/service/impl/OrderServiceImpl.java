@@ -3,7 +3,6 @@ package com.project.inventory.store.order.service.impl;
 import com.project.inventory.common.permission.role.model.Role;
 import com.project.inventory.common.sms.service.Sms;
 import com.project.inventory.exception.notFound.NotFoundException;
-import com.project.inventory.store.cart.cartItem.model.CartItem;
 import com.project.inventory.store.cart.cartItem.model.CartItemDto;
 import com.project.inventory.store.cart.cartItem.service.CartItemService;
 import com.project.inventory.customer.address.model.CustomerAddress;
@@ -11,6 +10,7 @@ import com.project.inventory.customer.address.service.CustomerAddressService;
 import com.project.inventory.customer.payment.model.PaymentMethod;
 import com.project.inventory.customer.payment.service.PaymentMethodService;
 import com.project.inventory.exception.invalid.order.OrderInvalidException;
+import com.project.inventory.store.inventory.service.InventoryService;
 import com.project.inventory.store.order.orderItem.model.OrderItem;
 import com.project.inventory.store.order.orderItem.service.OrderItemService;
 import com.project.inventory.store.order.model.OrderStatus;
@@ -26,11 +26,13 @@ import com.project.inventory.store.product.promo.model.Promo;
 import com.project.inventory.store.product.promo.model.PromoStatus;
 import com.project.inventory.store.product.promo.service.PromoService;
 import com.project.inventory.store.product.service.ProductService;
+import com.project.inventory.store.shipping.model.ShippingFee;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -64,9 +66,11 @@ public class OrderServiceImpl implements OrderService {
     private Sms sms;
     @Autowired
     private PromoService promoService;
+    @Autowired
+    private InventoryService inventoryService;
 
     @Override
-    public Order placeOrder( int customerAddressId, int paymentId, List<CartItemDto> cartItems ) {
+    public Order placeOrder( int customerAddressId, int paymentId, List<CartItemDto> cartItems, ShippingFee shippingFee ) {
         try {
             //get customer address
             CustomerAddress customerAddress = getCustomerAddress( customerAddressId );
@@ -79,13 +83,14 @@ public class OrderServiceImpl implements OrderService {
             if ( customerAddress != null && paymentMethod != null ) {
                 Order order = orderRepository.save( getAllRequiredInformation( customerAddress,
                         paymentMethod,
-                        cartItems ) );
+                        cartItems,
+                        shippingFee ) );
                 for ( CartItemDto cartItem : cartItems ) {
                     Product product = productService.getProductById( cartItem.getProduct().getProduct().getId() );
 
-                    if(product.getPromo() != null){
+                    if ( product.getPromo() != null ) {
                         Promo promo = product.getPromo();
-                        if(promo.getStatus().equals( PromoStatus.ONGOING )){
+                        if ( promo.getStatus().equals( PromoStatus.ONGOING ) ) {
                             promoService.setSoldItems( promo.getId(), cartItem.getQuantity() );
                         }
                     }
@@ -96,15 +101,16 @@ public class OrderServiceImpl implements OrderService {
                             amount,
                             product,
                             order );
-
+                    logger.info( "{}", cartItem.getQuantity() );
+                    inventoryService.updateStock( cartItem.getProduct().getProduct().getId(), cartItem.getQuantity() );
                     orderItems.add( orderItem );
 
                 }
                 orderItemService.saveOrderItem( orderItems );
                 emptyCart( cartItems );
 
-                String message = "Your Order has been placed. Order id is "+order.getOrderId();
-                sms.sendSms( "+639387193843",message );
+                String message = "Your Order has been placed. Order id is " + order.getOrderId();
+                sms.sendSms( "+639387193843", message );
                 return order;
             } else {
                 logger.info( "Error has been occurs: " );
@@ -127,7 +133,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDto> getOrdersByStatus(String status, String query) {
+    public Page<OrderDto> getOrdersByStatus( String status, String query, Pageable pageable ) {
         // retrieve all the pending orders dynamically based on the role
         // with role customer or user they just retrieve their own order data
 
@@ -136,10 +142,9 @@ public class OrderServiceImpl implements OrderService {
 
         String permission = getRoles( account.getRoles() );
         if ( permission.equals( "ROLE_SUPER_ADMIN" ) || permission.equals( "ROLE_ADMIN" ) ) {
-            return getOrders( status, query );
-
+            return getOrders( status, query, pageable );
         } else if ( permission.equals( "ROLE_USER" ) || permission.equals( "ROLE_CUSTOMER" ) ) {
-            return getCustomerOrders( status, account.getId(), query );
+            return getCustomerOrders( status, account.getId(), query, pageable );
         } else {
             throw new AccessDeniedException( "ACCESS DENIED" );
         }
@@ -156,36 +161,36 @@ public class OrderServiceImpl implements OrderService {
             counts = orderRepository.getOrderCountGroupBy();
         } else if ( permission.equals( "ROLE_USER" ) || permission.equals( "ROLE_CUSTOMER" ) ) {
             accountId = account.getId();
-            counts = orderRepository.getCustomerOrderCountGroupBy(accountId);
+            counts = orderRepository.getCustomerOrderCountGroupBy( accountId );
         } else {
             throw new AccessDeniedException( "ACCESS DENIED" );
         }
 
         Map<String, BigInteger> totals = new HashMap<>();
-        for (Object[] result : counts) {
-            totals.put(result[0].toString(), ( BigInteger ) result[1]);
+        for ( Object[] result : counts ) {
+            totals.put( result[ 0 ].toString(), ( BigInteger ) result[ 1 ] );
         }
-        if(accountId > 0 ) {
+        if ( accountId > 0 ) {
             BigInteger delivered = totals.get( "DELIVERED" );
-            BigInteger paymentReceived = totals.get("PAYMENT_RECEIVED");
+            BigInteger paymentReceived = totals.get( "PAYMENT_RECEIVED" );
             BigInteger total = null;
-            if(delivered == null) {
-                delivered = new BigInteger( "0");
+            if ( delivered == null ) {
+                delivered = new BigInteger( "0" );
             }
-            if(paymentReceived == null) {
-                paymentReceived = new BigInteger("0");
+            if ( paymentReceived == null ) {
+                paymentReceived = new BigInteger( "0" );
             } else {
                 totals.remove( "PAYMENT_RECEIVED" );
             }
-            totals.put("DELIVERED", paymentReceived.add(delivered));
+            totals.put( "DELIVERED", paymentReceived.add( delivered ) );
         }
         return totals;
     }
 
     @Override
     public Order getOrderByOrderId( String orderId ) {
-        return  orderRepository.findByOrderId( orderId )
-                .orElseThrow(() -> new NotFoundException("No Order Found") );
+        return orderRepository.findByOrderId( orderId )
+                .orElseThrow( () -> new NotFoundException( "No Order Found" ) );
     }
 
     @Override
@@ -198,16 +203,17 @@ public class OrderServiceImpl implements OrderService {
         return mapper.map( orderDto, Order.class );
     }
 
-    public Order getAllRequiredInformation( CustomerAddress customerAddress, PaymentMethod paymentMethod, List<CartItemDto> cartItems ) {
+    public Order getAllRequiredInformation( CustomerAddress customerAddress,
+                                            PaymentMethod paymentMethod,
+                                            List<CartItemDto> cartItems,
+                                            ShippingFee shippingFee ) {
         double totalAmount = 0.0;
         Order order = new Order();
         Account account = accountService.getAccountById( authenticatedUser.getUserDetails().getId() );
         UUID uuid = UUID.randomUUID();
         String orderId = uuid.toString();
-
         for ( CartItemDto cartItem : cartItems ) {
             Product product = productService.getProductById( cartItem.getProduct().getProduct().getId() );
-
             double discount = promoService.getDiscount( product );
             double price = product.getPrice() - discount;
             double amount = cartItem.getQuantity() * price;
@@ -218,7 +224,8 @@ public class OrderServiceImpl implements OrderService {
         order.setCustomerAddress( customerAddress );
         order.setPaymentMethod( paymentMethod );
         order.setAccount( account );
-        order.setTotalAmount( totalAmount );
+        order.setShippingFee( shippingFee );
+        order.setTotalAmount( totalAmount + shippingFee.getShippingAmount() );
         order.setOrderStatus( OrderStatus.PENDING );
         order.setPaymentStatus( 0 );
         return order;
@@ -244,26 +251,31 @@ public class OrderServiceImpl implements OrderService {
         return getRolesName.get( 0 );
     }
 
-    private List<OrderDto> getCustomerOrders( String status, int id, String query ) {
-        List<OrderDto> orders = new ArrayList<>();
+    private Page<OrderDto> getCustomerOrders( String status, int id, String query, Pageable pageable ) {
+//        List<OrderDto> orders = new ArrayList<>();
         List<String> statuses = new ArrayList<>();
-        statuses.add(status);
-        if( Objects.equals( status, "delivered" ) ) {
-            statuses.add("payment_received");
+        statuses.add( status );
+        if ( Objects.equals( status, "delivered" ) ) {
+            statuses.add( "payment_received" );
         }
+        List<OrderDto> orderRecordByPages = new ArrayList<>();
+        Page<Order> orders = orderRepository.findAllByOrderStatusAndAccountId( statuses, id, query, pageable );
 
-        for ( Order savedOrder : orderRepository.findAllByOrderStatusAndAccountId( statuses, id, query ) ) {
-            orders.add( convertEntityToDto( savedOrder ) );
+        for ( Order order : orders.getContent() ) {
+            orderRecordByPages.add( convertEntityToDto( order ) );
         }
-        return orders;
+        return new PageImpl<>( orderRecordByPages, pageable, orders.getTotalElements() );
     }
 
-    private List<OrderDto> getOrders( String status, String query ) {
-        List<OrderDto> orders = new ArrayList<>();
-        for ( Order savedOrder : orderRepository.findAllByOrderStatus( status, query ) ) {
-            orders.add( convertEntityToDto( savedOrder ) );
+    private Page<OrderDto> getOrders( String status, String query, Pageable pageable ) {
+
+        List<OrderDto> orderRecordByPages = new ArrayList<>();
+        Page<Order> orders = orderRepository.findAllByOrderStatus( status, query, pageable );
+
+        for ( Order order : orders.getContent() ) {
+            orderRecordByPages.add( convertEntityToDto( order ) );
         }
-        return orders;
+        return new PageImpl<>( orderRecordByPages, pageable, orders.getTotalElements() );
     }
 
     @Override

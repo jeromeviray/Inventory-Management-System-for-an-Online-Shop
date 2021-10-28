@@ -58,7 +58,7 @@ public class Account implements Serializable {
     private Set<Role> roles = new HashSet<>();
 
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id", nullable = false)
+    @JoinColumn(name = "store_id")
     @JsonIgnore
     private StoreInformation storeInformation;
 

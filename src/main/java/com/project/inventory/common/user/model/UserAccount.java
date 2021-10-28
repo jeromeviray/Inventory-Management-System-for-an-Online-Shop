@@ -3,7 +3,6 @@ package com.project.inventory.common.user.model;
 public class UserAccount {
     private String firstName;
     private String lastName;
-    private String phoneNumber;
     private String username;
     private String role;
     private String birthday;
@@ -25,14 +24,6 @@ public class UserAccount {
 
     public void setLastName( String lastName ) {
         this.lastName = lastName;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber( String phoneNumber ) {
-        this.phoneNumber = phoneNumber;
     }
 
     public boolean isEnabled() {

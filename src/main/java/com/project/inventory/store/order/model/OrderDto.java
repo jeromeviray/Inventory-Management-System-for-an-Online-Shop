@@ -5,6 +5,7 @@ import com.project.inventory.customer.payment.model.PaymentMethodDto;
 import com.project.inventory.store.order.orderItem.model.OrderItemDto;
 import com.project.inventory.common.permission.model.AccountDto;
 import com.project.inventory.store.product.comment.model.Comment;
+import com.project.inventory.store.shipping.model.ShippingFee;
 
 import javax.persistence.Column;
 import java.util.List;
@@ -15,6 +16,7 @@ public class OrderDto {
     private String orderId;
     private OrderStatus orderStatus;
     private Integer paymentStatus;
+    private ShippingFee shippingFee;
     private double totalAmount;
     private String orderedAt;
     private String deliveredAt;
@@ -56,6 +58,14 @@ public class OrderDto {
 
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public ShippingFee getShippingFee() {
+        return shippingFee;
+    }
+
+    public void setShippingFee( ShippingFee shippingFee ) {
+        this.shippingFee = shippingFee;
     }
 
     public Integer getPaymentStatus() {

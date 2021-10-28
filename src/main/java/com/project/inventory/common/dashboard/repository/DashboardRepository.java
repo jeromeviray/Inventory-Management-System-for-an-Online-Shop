@@ -27,7 +27,7 @@ public interface DashboardRepository extends JpaRepository<Account, Integer> {
             "WHERE role.role_name = 'USER' OR role.role_name = 'CUSTOMER'", nativeQuery = true)
     Totals findAllTotals();
 
-    @Query(value = "SELECT year(paid_at) year, sum(total_amount) totalRevenue " +
+    @Query(value = "SELECT sum(total_amount) totalRevenue " +
             " FROM orders o " +
             "WHERE o.payment_status = 1 ", nativeQuery = true)
     TotalRevenue getTotalRevenueByYear();

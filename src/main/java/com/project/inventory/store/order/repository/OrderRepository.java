@@ -13,26 +13,24 @@ import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Integer> {
 
-    @Modifying
     @Query( value = "SELECT * FROM orders " +
             "WHERE order_status =:status " +
             "AND (tracking_number LIKE concat('%', :query, '%') " +
             "OR order_id LIKE concat('%', :query,'%'))", nativeQuery = true )
-    List<Order> findAllByOrderStatus( @Param( "status" ) String status, @Param( "query" ) String query );
+    Page<Order> findAllByOrderStatus( @Param( "status" ) String status, @Param( "query" ) String query, Pageable pageable );
 
-    @Modifying
     @Query( value = "SELECT order_status, COUNT(*) as totalCount FROM orders WHERE account_id =:accountId GROUP BY order_status", nativeQuery = true )
     List<Object[]> getCustomerOrderCountGroupBy( @Param( "accountId" ) Integer accountId );
 
-    @Modifying
     @Query( value = "SELECT order_status, COUNT(*) as totalCount FROM orders  GROUP BY order_status", nativeQuery = true )
     List<Object[]> getOrderCountGroupBy();
 
-    @Query( value = "SELECT * FROM orders WHERE payment_status != 2 AND order_status IN (:status) AND account_id =:id " +
+    @Query( value = "SELECT * FROM orders WHERE order_status IN (:status) AND account_id =:id " +
             "AND (tracking_number LIKE concat('%', :query, '%') OR order_id LIKE concat('%', :query, '%'))", nativeQuery = true )
-    List<Order> findAllByOrderStatusAndAccountId( @Param( "status" ) List<String> status,
+    Page<Order> findAllByOrderStatusAndAccountId( @Param( "status" ) List<String> status,
                                                   @Param( "id" ) int id,
-                                                  @Param( "query" ) String query );
+                                                  @Param( "query" ) String query,
+                                                  Pageable pageable);
 
     @Query( value = "SELECT * FROM orders WHERE account_id =:id", nativeQuery = true )
     List<Order> findAllByAccountId( @Param( "id" ) int id );

@@ -1,6 +1,8 @@
 package com.project.inventory.store.order.controller;
 
 import com.project.inventory.api.payment.PaymongoAPI;
+import com.project.inventory.common.permission.model.Account;
+import com.project.inventory.common.permission.service.AuthenticatedUser;
 import com.project.inventory.store.cart.cartItem.model.CartItem;
 import com.project.inventory.store.cart.cartItem.model.CartItemDto;
 import com.project.inventory.store.cart.cartItem.repository.CartItemRepository;
@@ -10,7 +12,9 @@ import com.project.inventory.store.order.model.*;
 import com.project.inventory.store.order.orderItem.model.OrderItem;
 import com.project.inventory.store.order.service.OrderService;
 import com.project.inventory.store.product.model.Product;
+import com.project.inventory.store.product.model.ProductAndInventoryDto;
 import com.project.inventory.store.product.model.ProductDto;
+import com.project.inventory.store.shipping.service.ShippingFeeService;
 import com.project.inventory.webSecurity.config.AppProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +42,11 @@ class OrderController {
 
     @Autowired
     private CartItemRepository cartItemRepository;
+    @Autowired
+    private ShippingFeeService shippingFeeService;
+
+    @Autowired
+    private AuthenticatedUser authenticatedUser;
 
     private PaymongoAPI paymongoAPI = new PaymongoAPI();
 
@@ -46,14 +55,25 @@ class OrderController {
         OrderResponse response = new OrderResponse();
         HttpStatus httpStatus = HttpStatus.OK;
         try {
+
+            Account account = authenticatedUser.getUserDetails();
+
+            CheckoutOrderValidate checkoutOrderValidate = new CheckoutOrderValidate();
+            checkoutOrderValidate.setAccountId( account.getId() );
+            checkoutOrderValidate.setCartId( placeOrder.getCartId() );
+            checkoutOrderValidate.setItems( placeOrder.getCartItems() );
+
+            Map<String, Object> rs = this.validateCheckoutErrors( checkoutOrderValidate );
+            if( (Boolean ) rs.get("is_invalidate")) {
+                return new ResponseEntity<>( rs, HttpStatus.BAD_REQUEST );
+            }
+
             Order order = orderService.placeOrder(
                     placeOrder.getCustomerAddressId(),
                     placeOrder.getPaymentId(),
-                    placeOrder.getCartItems() );
-            logger.info( order.getPaymentMethod().getPaymentMethod() );
-            for ( CartItemDto orderItem : placeOrder.getCartItems() ) {
-                inventoryService.updateStock( orderItem.getProduct().getProduct().getId(), orderItem.getQuantity() );
-            }
+                    placeOrder.getCartItems(),
+                    shippingFeeService.getShippingFeeById( placeOrder.getShippingFeeId() ) );
+
             if ( Objects.equals( order.getPaymentMethod().getPaymentMethod(), "GCASH" ) ) {
                 String successUrl = String.format( "%s/cart/%s/%s", appProperties.getHostName(), order.getOrderId(), "payment/success" );
                 String failedUrl = String.format( "%s/cart/%s/%s", appProperties.getHostName(), order.getOrderId(), "payment/failed" );
@@ -63,6 +83,8 @@ class OrderController {
                 Map redirect = ( Map ) attributes.get( "redirect" );
                 response.setRedirectUrl( ( String ) redirect.get( "checkout_url" ) );
                 order.setExternalReference( ( String ) data.get( "id" ) );
+                order.setPaymentStatus( 2 );
+                order.setOrderStatus( OrderStatus.CONFIRMED );
                 orderService.saveOrder( order );
             }
         } catch ( Exception e ) {
@@ -82,11 +104,23 @@ class OrderController {
 
     @RequestMapping( value = "/status/{status}", method = RequestMethod.GET )
     public ResponseEntity<?> getOrdersByStatus( @PathVariable( value = "status" ) String status,
-                                                  @RequestParam( value = "query", defaultValue = "", required = false ) String query ) {
-        logger.info( status );
-        Map<String, Object> response = new HashMap();
-        response.put( "orders", orderService.getOrdersByStatus( status, query ) );
+                                                @RequestParam( value = "query", defaultValue = "", required = false ) String query,
+                                                @RequestParam( value = "page", defaultValue = "0" ) Integer page,
+                                                @RequestParam( value = "limit", defaultValue = "0" ) Integer limit ) {
+//        Map<String, Object> response = new HashMap();
+//        response.put( "orders", orderService.getOrdersByStatus( status, query ) );
+//        response.put( "orderCounts", orderService.getOrderCountByStatus() );
+        Map<String, Object> response = new HashMap<>();
+
+        Pageable pageable = PageRequest.of( page, limit );
+        Page<OrderDto> orders = orderService.getOrdersByStatus( status, query, pageable ) ;
+
+        response.put( "data", orders.getContent() );
+        response.put( "currentPage", orders.getNumber() );
+        response.put( "totalItems", orders.getTotalElements() );
+        response.put( "totalPages", orders.getTotalPages() );
         response.put( "orderCounts", orderService.getOrderCountByStatus() );
+
         return new ResponseEntity<>( response, HttpStatus.OK );
     }
 
@@ -186,6 +220,12 @@ class OrderController {
 
     @RequestMapping( value = "/validate", method = RequestMethod.POST )
     public ResponseEntity<?> validateStock( @RequestBody CheckoutOrderValidate checkoutOrderValidate ) {
+        Map<String, Object> response = this.validateCheckoutErrors( checkoutOrderValidate );
+        return new ResponseEntity( response, HttpStatus.OK );
+    }
+
+
+    private Map<String, Object> validateCheckoutErrors(CheckoutOrderValidate checkoutOrderValidate) {
         Map<String, Object> response = new HashMap<>();
         List<String> errorMessages = new ArrayList<>();
 
@@ -197,14 +237,13 @@ class OrderController {
 
             Integer totalStock = inventoryService.getTotalStocks( prod );
 
-            logger.info( "{} > {}", item.getQuantity(), totalStock );
             if ( item.getQuantity() > totalStock ) {
                 errorMessages.add( String.format( "Insufficient available quantity for product %s", product.getProductName() ) );
             }
         }
         response.put( "error_messages", errorMessages );
         response.put( "is_invalidate", errorMessages.size() > 0 );
-        return new ResponseEntity( response, HttpStatus.OK );
+        return  response;
     }
 
 

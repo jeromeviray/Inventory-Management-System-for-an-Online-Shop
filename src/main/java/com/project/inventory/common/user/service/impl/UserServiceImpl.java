@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setFirstName( userAccount.getFirstName() );
         user.setLastName( userAccount.getLastName() );
-        user.setPhoneNumber( userAccount.getPhoneNumber() );
+//        user.setPhoneNumber( userAccount.getPhoneNumber() );
         user.setBirthday( pattern.format( pattern.parse( userAccount.getBirthday() ) ) );
         saveUserInformation( account, user );
     }
@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
         User savedUser = getUserInformationById( id );
         savedUser.setFirstName( userAccount.getFirstName() );
         savedUser.setLastName( userAccount.getLastName() );
-        savedUser.setPhoneNumber( userAccount.getPhoneNumber() );
+//        savedUser.setPhoneNumber( userAccount.getPhoneNumber() );
         savedUser.setBirthday( pattern.format( pattern.parse( userAccount.getBirthday() ) ) );
         userRepository.save( savedUser );
     }

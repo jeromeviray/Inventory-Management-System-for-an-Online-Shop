@@ -66,7 +66,7 @@ public class CommentController {
         Account account = authenticatedUser.getUserDetails();
         List<Map<String, Object>> response = new ArrayList<>();
         for(Comment comment : comments) {
-            Product prod = productService.getProductById( comment.getProduct().getId() );
+            Product prod = productService.getProductByIdAndIsNotDeleted( comment.getProduct().getId() );
             Order order = orderService.getOrderByOrderId( orderId );
             comment.setAccountId( account.getId() );
             comment.setProduct( prod );
