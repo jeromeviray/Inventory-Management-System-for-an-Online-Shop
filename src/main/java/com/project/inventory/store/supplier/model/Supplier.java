@@ -18,6 +18,12 @@ public class Supplier {
     @Column( name = "name" )
     private String name;
 
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @CreationTimestamp
     @Column( name = "created_at" )
@@ -45,6 +51,22 @@ public class Supplier {
 
     public void setName( String name ) {
         this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress( String address ) {
+        this.address = address;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber( String phoneNumber ) {
+        this.phoneNumber = phoneNumber;
     }
 
     public Date getCreatedAt() {

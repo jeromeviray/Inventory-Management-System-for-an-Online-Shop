@@ -101,7 +101,6 @@ public class OrderServiceImpl implements OrderService {
                             amount,
                             product,
                             order );
-                    logger.info( "{}", cartItem.getQuantity() );
                     inventoryService.updateStock( cartItem.getProduct().getProduct().getId(), cartItem.getQuantity() );
                     orderItems.add( orderItem );
 
@@ -110,7 +109,9 @@ public class OrderServiceImpl implements OrderService {
                 emptyCart( cartItems );
 
                 String message = "Your Order has been placed. Order id is " + order.getOrderId();
-                sms.sendSms( "+639387193843", message );
+                String number = order.getCustomerAddress().getPhoneNumber().substring( 1 );
+                logger.info( "{}", number );
+                sms.sendSms( "+63"+number, message );
                 return order;
             } else {
                 logger.info( "Error has been occurs: " );

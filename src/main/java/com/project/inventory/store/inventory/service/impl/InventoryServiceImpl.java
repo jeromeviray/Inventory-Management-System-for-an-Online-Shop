@@ -136,6 +136,7 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public void updateStock( int productId, int quantity ) {
+        logger.info( "{}",quantity );
         Inventory inventory = getInventoryByProductId( productId );
         for( Stock stock : stockService.getStocks( inventory.getId() ) ) {
             if( stock.getStock() > 0 ) {

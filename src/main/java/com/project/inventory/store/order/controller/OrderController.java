@@ -83,8 +83,6 @@ class OrderController {
                 Map redirect = ( Map ) attributes.get( "redirect" );
                 response.setRedirectUrl( ( String ) redirect.get( "checkout_url" ) );
                 order.setExternalReference( ( String ) data.get( "id" ) );
-                order.setPaymentStatus( 2 );
-                order.setOrderStatus( OrderStatus.CONFIRMED );
                 orderService.saveOrder( order );
             }
         } catch ( Exception e ) {
@@ -193,7 +191,7 @@ class OrderController {
         if ( currentPaymentStatus != null && currentPaymentStatus > 0 ) {
             Map<String, Object> response = new HashMap<>();
             response.put( "message", "Order " + order.getOrderId() + " was already completed." );
-            return new ResponseEntity( response, HttpStatus.BAD_REQUEST );
+            return new ResponseEntity( response, HttpStatus.OK );
         }
         order.setPaymentStatus( paymentStatus );
         order.setPaid_at( new Date() );
