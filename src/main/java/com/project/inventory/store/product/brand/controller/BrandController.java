@@ -65,4 +65,9 @@ public class BrandController {
         brandService.deleteBrand( id );
         return new ResponseEntity<>( HttpStatus.OK );
     }
+
+    @RequestMapping( value = "/list", method = RequestMethod.GET )
+    public ResponseEntity<?> getBrandsList(  ) {
+        return new ResponseEntity<>( brandService.getBrands(), HttpStatus.OK );
+    }
 }

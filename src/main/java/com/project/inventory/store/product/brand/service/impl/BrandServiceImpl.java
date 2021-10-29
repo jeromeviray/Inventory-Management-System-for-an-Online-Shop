@@ -31,8 +31,8 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public List<Brand> getBrands() {
-        return brandRepository.findAll();
+    public List<BrandsWithTotalProductsDto> getBrands() {
+        return brandRepository.findAllBrands();
     }
 
     @Override

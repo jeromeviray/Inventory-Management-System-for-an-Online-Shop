@@ -12,7 +12,7 @@ public interface BrandService {
 
     Brand getBrandByBrandName(String brandName);
 
-    List<Brand> getBrands();
+    List<BrandsWithTotalProductsDto> getBrands();
 
     Brand getBrand( int id );
 

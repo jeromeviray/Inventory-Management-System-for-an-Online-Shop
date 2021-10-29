@@ -3,6 +3,7 @@ package com.project.inventory.store.order.controller;
 import com.project.inventory.api.payment.PaymongoAPI;
 import com.project.inventory.common.permission.model.Account;
 import com.project.inventory.common.permission.service.AuthenticatedUser;
+import com.project.inventory.common.sms.service.impl.SmsImpl;
 import com.project.inventory.store.cart.cartItem.model.CartItem;
 import com.project.inventory.store.cart.cartItem.model.CartItemDto;
 import com.project.inventory.store.cart.cartItem.repository.CartItemRepository;
@@ -47,6 +48,8 @@ class OrderController {
 
     @Autowired
     private AuthenticatedUser authenticatedUser;
+    @Autowired
+    private SmsImpl sms;
 
     private PaymongoAPI paymongoAPI = new PaymongoAPI();
 
@@ -168,6 +171,9 @@ class OrderController {
         } else {
             order.setOrderStatus( stat );
         }
+        String message = "Your Order has been "+status+". Order id is " + order.getOrderId();
+        String number = order.getCustomerAddress().getPhoneNumber().substring( 1 );
+        sms.sendSms( "+63"+number, message );
         orderService.saveOrder( order );
         return new ResponseEntity( HttpStatus.OK );
     }

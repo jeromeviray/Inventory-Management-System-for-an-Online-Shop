@@ -164,7 +164,7 @@ public class ProductServiceImpl implements ProductService {
         Category category = categoryService.getCategoryByCategoryName( categoryName );
         Brand brand = brandService.getBrandByBrandName( brandName );
         Product product = getProductById( id );
-
+        logger.info( "{}", barcode );
         product.setBarcode( barcode );
         product.setName( productName );
         product.setDescription( ( String ) productDescription );

@@ -13,8 +13,12 @@ import java.util.Optional;
 
 public interface BrandRepository extends JpaRepository<Brand, Integer> {
 
-    @Query( value = "SELECT * FROM brands WHERE is_deleted = 0", nativeQuery = true )
-    List<Brand> findAll();
+    @Query( value = "SELECT brand.id, brand.brand_name as brandName, brand.created_at as createdAt, brand.is_deleted as isDeleted, COUNT(product.id) totalProducts " +
+            "FROM brands as brand " +
+            "LEFT JOIN products as product ON brand.id = product.brand_id " +
+            "WHERE brand.is_deleted = 0 GROUP BY brand.id",
+            nativeQuery = true )
+    List<BrandsWithTotalProductsDto> findAllBrands(  );
 
 //    @Modifying
 //    @Query(value = "SELECT * FROM brands WHERE is_deleted = 0 AND id =:id", nativeQuery = true)
